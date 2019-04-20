@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>TICKI</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../public/stylesheets/bootstrap.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/customSindarin.css"> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h1> Willkommen zu Ticki</h1>
+
+
+        </div>
+        <% if (messages) { %>
+            <%- messages() %> 
+            <% } %>
+
+
+        <% if(messages.length > 0){ %>
+        <div class="alert alert-info" role="alert">
+            <%- messages() %>
+        </div>
+        <% } %>
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="col-md-6">
+                    <H6>Passwort zurücksetzen?</H6>
+                    <form action="../reset/<%= token %> " method="post" id="reset_form">
+                        <div class="form-group">
+                            <label for="new_pwd_id">Geben Sie ein Passwort an</label>
+                            <input type="password" class="form-control" id="new_pwd_id" name="new_pwd" <% if (y){ %>
+                                placeholder="<%=pwd%>" <% } else { %> placeholder="<%=pwd%>" <% } %> >
+                          </div>
+                          <div class="form-group">
+                            <label for="new_pwd2_id">Bestätigen Sie das Passwort</label>
+                            <input type="password" class="form-control" id="new_pwd2_id" name="new_pwd2" <% if (z){ %>
+                                placeholder="<%=pwd2%>" <% } else { %> placeholder="<%=pwd2%>" <% } %> >
+                          </div>
+                        <div class="form-group">
+                            <input class="btn btn-success" type="submit" value="senden" id="submit" name="submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    </div>
+
+</body>
+
+</html>

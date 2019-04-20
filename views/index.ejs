@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <title>TICKI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.min.css">
+  <!--<link rel="stylesheet" type="text/css" href="css/customSindarin.css"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="jumbotron">
+      <h1> Willkommen zu Ticki</h1>
+
+
+    </div>
+
+      
+      <% if(messages.length > 0){ %>
+        <div class="alert alert-info" role="alert">
+             <%- messages() %>
+        </div>
+        <% } %>
+
+    <div class="row">
+
+      <div class="col-md-6">
+        <div class="col-md-8">
+          <form action="../users/login" method="post" id="login_form">
+            <div class="form-group">
+              <label for="user_name">Benutzername</label>
+              <input type="text" class="form-control" id="username22" name="username" placeholder="Benutzername oder E-Mail">
+            </div>
+
+            <div class="form-group">
+              <label for="user_pwd">Passwort</label>
+              <input type="password" class="form-control" id="password22" placeholder="Passwort" name="password">
+            </div>
+            <div class="form-group">
+              <input class="btn btn-success" type="submit" value="Anmelden" id="submit" name="submit">
+            </div>
+          </form>
+          <H6>Passwort zurücksetzen?</H6>
+          <form action="../users/forgot" method="post" id="login_form">
+            <div class="form-group">
+              <label for="user_name">Email</label>
+              <input type="text" class="form-control" id="email" name="email" placeholder="E-Mail">
+            </div>
+            <div class="form-group">
+              <input class="btn btn-success" type="submit" value="senden" id="submit" name="submit">
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col_md-6">
+        <h3>Noch nicht Registriert?</h3>
+        <P>Melden Sie sich an um Sie in unsere Datenbank aufzunehmen</P>
+
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
+          data-target="#exampleModal3">Registrieren</button>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModal3Label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModal3Label">Registrieren</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="/users/register" enctype="multipart/form-data" method="post" id="form_register">
+            <div class="modal-body">
+
+              <div class="form-group">
+                <label for="new_user_name">Geben Sie einen Benutzernamen an</label>
+                <input type="text" class="form-control" id="new_user_name" name="newusername"
+                  placeholder="Benutzername">
+              </div>
+              <div class="form-group">
+                <label for="new_user_email">Geben Sie eine E-Mail an</label>
+                <input type="text" class="form-control" id="new_user_email" name="newemail" placeholder="E-Mail">
+              </div>
+              <div class="form-group">
+                <label for="new_pwd_id">Geben Sie ein Passwort an</label>
+                <input type="password" class="form-control" id="new_pwd_id" name="new_pwd" placeholder="Passwort">
+              </div>
+              <div class="form-group">
+                <label for="new_pwd2_id">Bestätigen Sie das Passwort</label>
+                <input type="password" class="form-control" id="new_pwd2_id" name="new_pwd2" placeholder="Passwort">
+              </div>
+              <div class="form-group">
+                <label for="new_pic">Profilbild</label>
+                <input type="file" class="form-control" id="new_profil_pic" name="image">
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+              <button type="submit" class="btn btn-primary" name="submit_registration">Registrieren</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>newevent</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/bootstrap.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/customSindarin.css"> -->
+
+    <script src="http://trentrichardson.com/examples/timepicker/js/jquery-1.7.1.min.js">     </script>
+    <script src="http://trentrichardson.com/examples/timepicker/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script src="http://trentrichardson.com/examples/timepicker/js/jquery-ui-sliderAccess.js"></script>
+    <script src="http://trentrichardson.com/examples/timepicker/js/jquery-ui-timepicker-addon.js"></script>
+    <link type="text/css" href="http://trentrichardson.com/examples/timepicker/css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#!"><%= user.name %></a>
+
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/../users/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h1><%= title %></h1>
+            <h4> <%= veranstalter %></h4>
+        </div>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal3Label">Tickets eröffnen</h5>
+                </div>
+                <form action="/dashboard/saveticket" method="post" id="form_register">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="new_user_name">Geben Sie eine Ticket Kategorie an</label>
+                            <input type="text" class="form-control" id="new_user_name" name="kategorie"
+                                placeholder="Z.B VIP / normal /earlybird /1 oder 2 tage / Eminem / etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Geben Sie eine Beschreibung an (max 500 zeichen)</label>
+                            <input type="text-area" class="form-control" id="new_user_name" name="beschreibung"
+                                placeholder="Beschreibung">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">An welchem Datum ist das Ticket gültig?</label>
+                            <input type="date" class="form-control" id="new_user_name" name="gueltig_datum">
+                        </div>
+                        <div class="form-group">
+                                <label for="new_user_name">Zu welcher Zeit beginnt der Event?</label>
+                                <input type="time" class="form-control" id="new_user_name" name="gueltig_time">
+                            </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Geben Sie den Namen der Lokation an</label>
+                            <input type="text" class="form-control" id="new_user_name" name="lokation"
+                                placeholder="zb. Hallenstadion Zürich">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Geben Sie die Strasse und Nr an (optional)</label>
+                            <input type="text" class="form-control" id="new_user_name" name="address"
+                                placeholder="Musterstr. 10">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Geben Sie die PLZ und den Ort an</label>
+                            <input type="text" class="form-control" id="new_user_name" name="plz"
+                                placeholder="3011, Bern">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Anzal Tickets der Kategorie : </label>
+                            <input type="number" class="form-control" id="new_user_name" name="anzahl">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_user_name">Bis wann sind die Tickets erhältlich?</label>
+                            <input type="date" class="form-control" id="new_user_name" name="biswann">
+                        </div>
+                    
+                        <div class="form-group">
+                            <label for="new_user_name">Wie Teuer wird das Ticket sein? (10% oder pauschal 2Fr pro ticket
+                                werden abgezogen)</label>
+                            <input type="number" class="form-control" id="new_user_name" name="preis">
+                        </div>
+                        <input type="hidden" value="<%= title %>" name="title" />
+                        <input type="hidden" value="<%= veranstalter %>" name="veranstalter" />
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="location.href='/users/mainpage';">Zurück</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="location.href='/users/mainpage';">Abbrechen</button>
+                            <button type="submit" class="btn btn-primary" name="submit" value="more">Weitere Ticketkategorie
+                                    erfassen</button>
+                        <button type="submit" class="btn btn-primary" name="submit" value="finish">Erfassung abschiessen</button>
+
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

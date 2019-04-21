@@ -54,22 +54,23 @@
             <form action="../dashboard/neweventLokation" method="post" id="event_form">
                 <div class="form-group">
                     <label for="beschrieb">Geben Sie den Namen der Lokation an</label>
-                    <input type="text" class="form-control" id="lokation" name="lokation" placeholder="link">
+                    <input type="text" class="form-control" id="lokation" name="lokation" placeholder="Lokation">
                 </div>
                 <div class="form-group">
                     <label for="beschrieb">Geben sie die Strasse und Nummer oder eine Adresse an</label>
-                    <input type="text" class="form-control" id="address" name="address" placeholder="link">
+                    <input type="text" class="form-control" id="address" name="address" placeholder="Musterstr 10">
                 </div>
                 <div class="form-group">
                     <label for="beschrieb">Geben Sie eine Postleitzahl und einen Ort an</label>
-                    <input type="text" class="form-control" id="plz" name="plz" placeholder="link">
+                    <input type="text" class="form-control" id="plz" name="plz" placeholder="Ort und PLZ">
                 </div>
 
-                <input type="hidden" value="<%= title %>">
-                <input type="hidden" value="<%= veranstalter %>">
-                <input type="hidden" value="<%= beschreibung %>">
-                <input type="hidden" value="<%= pic %>">
-                <input type="hidden" value="<%= youtube %>">
+                <input type="hidden" value="<%= title %>" name="title">
+                <input type="hidden" value="<%= veranstalter %>" name="veranstalter">
+                <input type="hidden" value="<%= beschreibung %>" name="beschreibung">
+                <input type="hidden" value="<%= picUrl %>" name="picUrl">
+                <input type="hidden" value="<%= picId %>" name="picId">
+                <input type="hidden" value="<%= youtube %>" name="youtube">
 
                 <div class="form-group">
                     <button type="button" class="btn btn-secondary"

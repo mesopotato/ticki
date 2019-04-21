@@ -57,11 +57,13 @@
                     <input type="text" class="form-control" id="youtube" name="youtube"
                         placeholder="link">
                 </div>
-               
-                <input type="hidden" value="<%= title %>">
-                <input type="hidden" value="<%= veranstalter %>">
-                <input type="hidden" value="<%= beschreibung %>">
-                <input type="hidden" value="<%= pic %>">
+                <input type="hidden" value="<%= title %>" name="title">
+                <input type="hidden" value="<%= veranstalter %>" name="veranstalter">
+                <input type="hidden" value="<%= beschreibung %>" name="beschreibung">
+                <input type="hidden" value="<%= picUrl %>" name="picUrl">
+                <input type="hidden" value="<%= picId %>" name="picId">
+
+
 
                 <div class="form-group">
                     <button type="button" class="btn btn-secondary"

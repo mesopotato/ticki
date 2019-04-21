@@ -11,7 +11,7 @@ var async = require("async");
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var Event = require('../models/event');
-var Tickets = require('../models/tickets');
+var Ticket = require('../models/tickets');
 var appNpay = require('../models/appNpayment');
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
@@ -118,7 +118,6 @@ router.post('/neweventDescription', parser.single('new_pic'), function (req, res
             beschreibung: req.body.beschreibung
         });
     }
-
 });
 
 
@@ -181,18 +180,18 @@ router.post('/neweventLokation', function (req, res) {
 router.post('/saveticket', function (req, res) {
     console.log('savetickets POST');
     var kategorie = req.body.kategorie;
-    var beschreibung = req.body.beschreibung;
     var gueltig_datum = req.body.gueltig_datum;
     var gueltig_time = req.body.gueltig_time;
-    var lokation = req.body.lokation;
-    var address = req.body.address;
-    var plz = req.body.plz;
+    var tueroeffnung = req.body.tueroeffnung;
     var anzahl = req.body.anzahl;
     var biswann = req.body.biswann;
+    var preis = req.body.preis;
+    var eventId = req.body.eventId;
+    
     console.log('req.body');
-
     console.log(req.body);
-    console.log('/////')
+    console.log('/////');
+
     var newTicket = new Ticket({
 
         kategorie: kategorie,
@@ -206,52 +205,37 @@ router.post('/saveticket', function (req, res) {
     });
 
     Ticket.createTicket(newTicket, function (err, ticket) {
-        console.log('create event');
+        console.log('create tickets');
         if (err) {
             req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
             res.location('/dashboard/newtickets');
             res.redirect('/dashboard/newtickets');
         } else {
-            console.log('event created');
+            console.log('ticket created');
             req.flash('success', 'Erfolgreich tickets gespeichert');
             res.location('/dashboard/appNPayment');
             res.redirect('/dashboard/appNPayments');
+
+            if (req.body.submit == 'finish') {
+
+                res.render('abschluss', {
+                    user: req.user,
+                    title: req.body.title,
+                    veranstalter: req.body.veranstalter,
+                    eventId: req.body.eventId
+                })
+            }
+            if (req.body.submit == 'more') {
+                res.render('newtickets', {
+                    user: req.user,
+                    title: req.body.title,
+                    veranstalter: req.body.veranstalter,
+                    eventId: req.body.eventId
+                });
+            }
         }
     });
 
-    if (req.body.submit == 'finish') {
-
-        res.render('abschluss', {
-            user: req.user,
-            title: req.body.title,
-            veranstalter: req.body.veranstalter,
-            kategorie: req.body.kategorie,
-            beschreibung: req.body.beschreibung,
-            gueltig_datum: req.body.gueltig_datum,
-            gueltig_time: req.body.gueltig_time,
-            lokation: req.body.lokation,
-            address: req.body.address,
-            plz: req.body.plz,
-            anzahl: req.body.anzahl,
-            biswann: req.body.biswann
-        })
-    }
-    if (req.body.submit == 'more') {
-        res.render('newtickets', {
-            user: req.user,
-            title: req.body.title,
-            veranstalter: req.body.veranstalter,
-            kategorie: req.body.kategorie,
-            beschreibung: req.body.beschreibung,
-            gueltig_datum: req.body.gueltig_datum,
-            gueltig_time: req.body.gueltig_time,
-            lokation: req.body.lokation,
-            address: req.body.address,
-            plz: req.body.plz,
-            nzahl: req.body.anzahl,
-            biswann: req.body.biswann
-        });
-    }
 })
 
 router.post('/abschluss', function (req, res) {

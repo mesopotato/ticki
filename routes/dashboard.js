@@ -68,7 +68,10 @@ router.post('/newevent', function (req, res) {
 
 });
 
+
 router.post('/neweventDescription', function (req, res) {
+
+    //upload image ????????????????????
 
     res.render('newYoutube', {
         user: req.user,

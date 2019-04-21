@@ -17,7 +17,6 @@ var Event = require('../models/event');
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
 
-
 cloudinary.config({
   cloud_name: 'dzcxfnvyu',
   api_key: '771478566264235',

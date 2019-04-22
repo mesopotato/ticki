@@ -5,14 +5,16 @@
     <title>mainpage</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/bootstrap.min.css">
+    
     <!--<link rel="stylesheet" type="text/css" href="css/customSindarin.css"> -->
+    <link rel="stylesheet" type="text/css" href="../stylesheets/bootstrap.min.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 <style>
 a.custom-card,
 a.custom-card:hover {
@@ -43,15 +45,13 @@ a.custom-card:hover {
         </div>
     </nav>
     <div class="container">
-        <div class="jumbotron">
-            <h1> Dashboard </h1>
             <% if (messages) { %>
             <%- messages() %>
             <% } %>
-        </div>
+
         <div class="jumbotron">
             <h3> Angaben zum Event</h3>
-            <h4><%= event.title</h4>
+            <h4><%= event.title %></h4>
      
         </div>
 

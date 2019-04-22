@@ -20,6 +20,11 @@
             text-decoration: none;
         }
     </style>
+    <script>
+        function goBack() {
+            window.history.back()
+        }
+    </script>
 </head>
 
 <body>
@@ -44,9 +49,9 @@
     </nav>
     <div class="container">
 
-            <% if (messages) { %>
-            <%- messages() %>
-            <% } %>
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
 
 
         <div class="jumbotron" style="margin-top: 5%;">
@@ -54,8 +59,7 @@
             <form action="../dashboard/neweventYoutube" method="post" id="event_form">
                 <div class="form-group">
                     <label for="beschrieb">Geben ein Link zu einem Youtube video an</label>
-                    <input type="text" class="form-control" id="youtube" name="youtube"
-                        placeholder="link">
+                    <input type="text" class="form-control" id="youtube" name="youtube" placeholder="link">
                 </div>
                 <input type="hidden" value="<%= title %>" name="title">
                 <input type="hidden" value="<%= veranstalter %>" name="veranstalter">
@@ -66,8 +70,9 @@
 
 
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="location.href='/users/mainpage';">Zurück</button>
+                    <!--<button type="button" class="btn btn-secondary"
+                        onclick="location.href='/users/mainpage';">Zurück</button>-->
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Zurück</button>
                     <input class="btn btn-success" type="submit" value="weiter" id="submit" name="submit">
                 </div>
             </form>

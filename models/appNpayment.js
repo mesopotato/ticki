@@ -8,7 +8,7 @@ var db = mongoose.connection;
 var PaymentSchema = new mongoose.Schema({
     app : Boolean, 
     payment : Boolean, 
-    appLoginUser: String, 
+    appLoginUser: { type: String, unique: true}, 
     appLoginPwd : String,  
     eventId : { type: String, required: true }
 });

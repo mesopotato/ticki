@@ -40,6 +40,9 @@
     </nav>
 
     <div class="container">
+            <% if (messages) { %>
+                <%- messages() %>
+                <% } %>
         <div class="jumbotron" style="margin-top: 5%;">
             <h1><%= title %></h1>
             <h4> <%= veranstalter %></h4>
@@ -52,7 +55,7 @@
                     <form action="/dashboard/saveticket" method="post" id="form_register">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="new_user_name">Geben Sie eine Ticket Kategorie an</label>
+                                <label for="new_user_name">Geben Sie eine Ticket-Kategorie an</label>
                                 <input type="text" class="form-control" id="new_user_name" name="kategorie"
                                     placeholder="Z.B VIP / normal /earlybird /1 oder 2 tage / Eminem / etc.">
                             </div>
@@ -84,12 +87,10 @@
                                 <input type="number" class="form-control" id="new_user_name" name="preis">
                             </div>
                             <input type="hidden" value="<%= eventId %>" name="eventId" />
+                            <input type="hidden" value="<%= title %>" name="title" />
+                            <input type="hidden" value="<%= veranstalter %>" name="veranstalter" />
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                onclick="location.href='/users/mainpage';">Zurück</button>
-                            <button type="button" class="btn btn-secondary"
-                                onclick="location.href='/users/mainpage';">Abbrechen</button>
                             <button type="submit" class="btn btn-primary" name="submit" value="more">Weitere
                                 Ticketkategorie
                                 erfassen</button>

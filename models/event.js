@@ -15,6 +15,7 @@ var EventSchema = new mongoose.Schema({
     address: String,
     plz: String,
     userId : {type: String, required: true}
+    // ,bezahlt : Boolean
 });
 
 EventSchema.plugin(uniqueValidator);
@@ -33,7 +34,8 @@ module.exports.getEventByTitle = function (title, callback) {
     Event.findOne({ title: title }, callback);
 }
 module.exports.getEventByUser = function (user, callback) {
-    Event.find().where("user", user).
+    //sort does not work yet :(
+    Event.find().sort({id: 1}).where("userId", user.id).
     exec(function(err, events) {
         callback(err, events);
     });

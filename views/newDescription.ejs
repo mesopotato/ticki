@@ -20,6 +20,11 @@
             text-decoration: none;
         }
     </style>
+    <script>
+        function goBack() {
+            window.history.back()
+        }
+    </script>
 </head>
 
 <body>
@@ -44,9 +49,9 @@
     </nav>
     <div class="container">
 
-            <% if (messages) { %>
-            <%- messages() %>
-            <% } %>
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
 
 
         <div class="jumbotron" style="margin-top: 5%;">
@@ -54,8 +59,8 @@
             <form action="../dashboard/neweventDescription" enctype="multipart/form-data" method="post" id="event_form">
                 <div class="form-group">
                     <label for="beschrieb">Geben Sie eine Beschreibung des Events an</label>
-                    <textarea rows="4" cols="50" class="form-control" id="beschrieb" name="beschreibung"
-                        >max. 500 Zeichen </textarea>
+                    <textarea rows="4" cols="50" class="form-control" id="beschrieb"
+                        name="beschreibung">max. 500 Zeichen </textarea>
                 </div>
                 <div class="form-group">
                     <label for="new_pic">Bild passend zum Event</label>
@@ -65,8 +70,9 @@
                 <input type="hidden" value="<%= veranstalter %>" name="veranstalter">
 
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="location.href='/users/mainpage';">Zurück</button>
+                   <!-- <button type="button" class="btn btn-secondary"
+                        onclick="location.href='/users/mainpage';">Zurück</button>-->
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Zurück</button>
                     <input class="btn btn-success" type="submit" value="weiter" id="submit" name="submit">
                 </div>
             </form>

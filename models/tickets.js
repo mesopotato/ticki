@@ -9,7 +9,7 @@ var TicketSchema = new mongoose.Schema({
     kategorie: String,
     gueltig_datum: Date,
     gueltig_time: String,
-    tueroeffnung: Date,
+    tueroeffnung: String,
     anzahl: Number,
     biswann: Date,
     preis: Number,
@@ -23,6 +23,7 @@ var Ticket = module.exports = mongoose.model('tickets', TicketSchema);
 module.exports.getTicketById = function (id, callback) {
     Ticket.findById(id, callback);
 }
+
 
 module.exports.getTicketsByEventId = function (eventId, callback) {
     Ticket.find().where("eventId", eventId).

@@ -13,6 +13,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <style>
+        .hide {
+            display: block;
+        }
+    </style>
+    <script>
+        function show1() {
+            document.getElementById('div1').style.display = 'none';
+        }
+        function show2() {
+            document.getElementById('div1').style.display = 'block';
+        }
+
+        var show1 = function () {
+            document.getElementById('div1').style.display = 'none';
+        }
+        var show2 = function () {
+            document.getElementById('div1').style.display = 'block';
+        }
+        var check = function () {
+            if (document.getElementById('appLoginPwd').value ==
+                document.getElementById('appLoginPwd2').value) {
+                document.getElementById('message').style.color = 'green';
+                document.getElementById('message').innerHTML = 'matching';
+            } else {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').innerHTML = 'not matching';
+            }
+        }
+    </script>
 
 </head>
 
@@ -37,29 +67,27 @@
         </div>
     </nav>
     <div class="container">
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
+
         <div class="jumbotron">
-            <h1> Übersicht </h1>
-            <% if (messages) { %>
-            <%- messages() %>
-            <% } %>
-        </div>
-        <div class="jumbotron">
-            <h4>Kaufen und veröffentlichen</h4>
+            <h4>Abschluss</h4>
             <form action="../dashboard/abschluss" method="post" id="event_form">
 
                 <div class="form-group">
-                        <label for="formGroupExampleInput">2 Fr Pro Ticket oder 10%
-                            durchführen?</label><br><br>
-                        <div class="btn-group btn-group-toggle" data-toggle="buttons" id="radioB">
-                            <label class="btn btn-secondary active">
-                                <input type="radio" autocomplete="off" name="halo" value="on" id="retweet" checked>
-                                yep
-                            </label>
-                            <label class="btn btn-secondary">
-                                <input type="radio" name="halo" id="option2" autocomplete="off" value="off"> nein
-                            </label>
-                        </div><br>
-                    </div>
+                    <label for="formGroupExampleInput">App login definieren? </label><br><br>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons" id="radioB">
+                        <label class="btn btn-secondary active">
+                            <input type="radio" autocomplete="off" name="halo" value="on" id="retweet" onclick='show2();' checked>
+                            yep
+                        </label>
+                        <label class="btn btn-secondary">
+                            <input type="radio" name="halo" id="option2" autocomplete="off" value="off" 
+                                onclick='show1();' > nein
+                        </label>
+                    </div><br>
+                </div>
                 <div class="form-group">
                     <label for="formGroupExampleInput">2 Fr Pro Ticket oder 10%
                         durchführen?</label><br><br>
@@ -74,35 +102,33 @@
                     </div><br>
                 </div>
 
-
-                <div class="form-group">
-                    <label for="title">Definieren SIe ein Login für das Einloggen in die App</label>
-                    <input type="text" class="form-control" id="titleid" name="app" placeholder="Veranstalter">
+                <div id="div1" class="hide">
+                    <div class="form-group">
+                        <label for="title">Definieren Sie einen Benutzernamen für das Einloggen in die App</label>
+                        <input type="text" class="form-control" id="appLoginUser" name="appLoginUser"
+                            placeholder="benutzername">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Definieren Sie ein Passwort für das Einloggen in die App</label>
+                        <input type="password" class="form-control" id="appLoginPwd" name="appLoginPwd"
+                            onkeyup='check();'>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Wiederholen Sie das Passwort für das Einloggen in die App</label>
+                        <input type="password" class="form-control" id="appLoginPwd2" name="appLoginPwd2"
+                            onkeyup='check();'>
+                        <span id='message'></span>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="location.href='/dashboard/newtickets';">Zurück</button>
 
-                    <button type="button" class="btn btn-secondary"
-                        onclick="location.href='/users/mainpage';">Abbrechen</button>
                     <input class="btn btn-success" type="submit" value="event eröffnen" id="submit" name="submit">
                 </div>
                 <input type="hidden" value="<%= title %>" name="title" />
                 <input type="hidden" value="<%= veranstalter %>" name="veranstalter" />
-                <input type="hidden" value="<%= kategorie %>" name="kategorie" />
-                <input type="hidden" value="<%= beschreibung %>" name="beschreibung" />
-                <input type="hidden" value="<%= gueltig_datum %>" name="gueltig_datum" />
-                <input type="hidden" value="<%= gueltig_time %>" name="gueltig_time" />
-                <input type="hidden" value="<%= lokation %>" name="lokation" />
-                <input type="hidden" value="<%= address %>" name="address" />
-                <input type="hidden" value="<%= plz %>" name="plz" />
-                <input type="hidden" value="<%= anzahl %>" name="anzahl" />
-                <input type="hidden" value="<%= biswann %>" name="biswann" />
+                <input type="hidden" value="<%= eventId %>" name="eventId" />
 
             </form>
-        </div>
-        <div class="jumbotron">
-            <h4> Ihre Events</h4>
         </div>
     </div>
 

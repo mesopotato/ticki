@@ -20,6 +20,11 @@
             text-decoration: none;
         }
     </style>
+    <script>
+        function goBack() {
+            window.history.back()
+        }
+    </script>
 </head>
 
 <body>
@@ -73,9 +78,11 @@
                 <input type="hidden" value="<%= youtube %>" name="youtube">
 
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary"
-                        onclick="location.href='/users/mainpage';">Zurück</button>
-                    <input class="btn btn-success" type="submit" value="event definitiv eröffnen" id="submit" name="submit">
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Zurück</button>
+
+                   <!-- <button type="button" class="btn btn-secondary" onclick="location.href='/dashboard/neweventYoutube';">Zurück</button> -->
+                    <input class="btn btn-success" type="submit" value="event definitiv eröffnen" id="submit"
+                        name="submit">
                 </div>
             </form>
         </div>

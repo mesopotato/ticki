@@ -38,28 +38,35 @@ router.get('/newtickets', function (req, res) {
 //get the event for the seller
 router.get('/getEvent/:id', function (req, res) {
     console.log('is in get event');
-    Event.getEventById(id, function (err, event) {
+    Event.getEventById(req.params.id, function (err, event) {
         if (err) {
             console.log('error is thrown in get eventID');
-        }
-        console.log('event is: ' + event);
-        Tickets.getTicketsByEventId(event.id, function (err, tickets) {
-            if (err) {
-                console.log('error is thrown in get tickt');
-            }
-            console.log('tickets array : ' + tickets)
-            appNpay.getAppNpayByEventId(event.id, function (err, infos) {
+            console.log(err);
+        } else {
+            console.log('event is: ' + event);
+            console.log('id is : ' +event.id);
+            Ticket.getTicketsByEventId(event.id, function (err, tickets) {
                 if (err) {
-                    console.log('error is thorwn in get infos');
+                    console.log('error is thrown in get tickt');
+                    console.log(err);
+                } else {
+                    console.log('tickets array : ' + tickets)
+                    appNpay.getAppNpayByEventId(event.id, function (err, infos) {
+                        if (err) {
+                            console.log('error is thorwn in get infos');
+                            console.log(err);
+                        } else {
+                            res.render('checkEvent', {
+                                user: req.user,
+                                event: event,
+                                tickets: tickets,
+                                appNpay: infos
+                            });
+                        }
+                    });
                 }
-                res.render('checkEvent', {
-                    user: req.user,
-                    event: event,
-                    tickets: tickets,
-                    appNpay: infos
-                });
             });
-        });
+        }
     });
 });
 
@@ -120,7 +127,18 @@ router.post('/neweventDescription', parser.single('new_pic'), function (req, res
     }
 });
 
-
+// braucht es mit der back funkiton nicht.. lasse es jedoch trotzdem hier.. 
+router.get('/neweventYoutube', function (req, res) {
+    res.render('neweventYoutube', {
+        user: req.user,
+        title: req.body.title,
+        veranstalter: req.body.veranstalter,
+        picUrl: req.body.picUrl,
+        picId: req.body.picId,
+        beschreibung: req.body.beschreibung,
+        youtube: req.body.youtube
+    });
+});
 router.post('/neweventYoutube', function (req, res) {
 
     res.render('newLokation', {
@@ -144,36 +162,36 @@ router.post('/neweventLokation', function (req, res) {
         console.log('no pic.url found....___')
     }
 
-        var newEvent = new Event({
-            title: req.body.title,
-            veranstalter: req.body.veranstalter,
-            picUrl: req.body.picUrl,
-            picId: req.body.picId,
-            youtube: req.body.youtube,
-            lokation: req.body.lokation,
-            address: req.body.address,
-            plz: req.body.plz,
-            userId: req.user.id
-        });
-    
-        Event.createEvent(newEvent, function (err, event) {
-            console.log('create event');
-            if (err) {
-                req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
-                res.location('/dashboard/newtickets');
-                res.redirect('/dashboard/newtickets');
-            } else {
-                console.log('event created');
-                req.flash('success', 'Erfolgreich eröffnet');
-                // events ist gespeichert machen wir mit den tickets weiter
-                res.render('newtickets', {
-                    user: req.user,
-                    title: req.body.title,
-                    veranstalter: req.body.veranstalter,
-                    eventId: event.id
-                });
-            }
-        });
+    var newEvent = new Event({
+        title: req.body.title,
+        veranstalter: req.body.veranstalter,
+        picUrl: req.body.picUrl,
+        picId: req.body.picId,
+        youtube: req.body.youtube,
+        lokation: req.body.lokation,
+        address: req.body.address,
+        plz: req.body.plz,
+        userId: req.user.id
+    });
+
+    Event.createEvent(newEvent, function (err, event) {
+        console.log('create event');
+        if (err) {
+            req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
+            res.location('/dashboard/newtickets');
+            res.redirect('/dashboard/newtickets');
+        } else {
+            console.log('event created');
+            req.flash('success', 'Erfolgreich eröffnet');
+            // events ist gespeichert machen wir mit den tickets weiter
+            res.render('newtickets', {
+                user: req.user,
+                title: req.body.title,
+                veranstalter: req.body.veranstalter,
+                eventId: event.id
+            });
+        }
+    });
 });
 
 //the seller would like to finish the eventopening
@@ -187,7 +205,7 @@ router.post('/saveticket', function (req, res) {
     var biswann = req.body.biswann;
     var preis = req.body.preis;
     var eventId = req.body.eventId;
-    
+
     console.log('req.body');
     console.log(req.body);
     console.log('/////');
@@ -204,17 +222,21 @@ router.post('/saveticket', function (req, res) {
         eventId: eventId
     });
 
-    Ticket.createTicket(newTicket, function (err, ticket) {
+    Ticket.saveTickets(newTicket, function (err, ticket) {
         console.log('create tickets');
         if (err) {
             req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
-            res.location('/dashboard/newtickets');
-            res.redirect('/dashboard/newtickets');
+            console.log('err is da.. ')
+            res.render('newtickets', {
+                user: req.user,
+                title: req.body.title,
+                veranstalter: req.body.veranstalter,
+                eventId: req.body.eventId
+            });
         } else {
             console.log('ticket created');
             req.flash('success', 'Erfolgreich tickets gespeichert');
-            res.location('/dashboard/appNPayment');
-            res.redirect('/dashboard/appNPayments');
+
 
             if (req.body.submit == 'finish') {
 
@@ -223,7 +245,7 @@ router.post('/saveticket', function (req, res) {
                     title: req.body.title,
                     veranstalter: req.body.veranstalter,
                     eventId: req.body.eventId
-                })
+                });
             }
             if (req.body.submit == 'more') {
                 res.render('newtickets', {
@@ -242,28 +264,18 @@ router.post('/abschluss', function (req, res) {
     console.log('post abschluss');
     console.log(req.body);
 
-    var title = req.body.title;
-    var veranstalter = req.body.veranstalter;
-    //var pic = req.body.pic;
-    var kategorie = req.body.kategorie;
-    var beschreibung = req.body.beschreibung;
-    //var youtube = req.body.youtube;
-    var gueltig_datum = req.body.gueltig_datum;
-    var gueltig_time = req.body.gueltig_time;
-    // var tueroeffnung = req.body.oeffnung;
-    var lokation = req.body.lokation;
-    var address = req.body.address;
-    var plz = req.body.plz;
-    var anzahl = req.body.anzahl;
-    var biswann = req.body.biswann;
-
 
     if (req.body.halo == 'on') {
         console.log('war on');
         var app = true;
+        var appLoginUser = req.body.appLoginUser;
+        var appLoginPwd = req.body.appLoginPwd;
+
     } else {
         console.log('war off');
         var app = false;
+        var appLoginUser;
+        var appLoginPwd;
     }
     if (req.body.payment == 'prozent') {
         console.log('war prozent');
@@ -273,7 +285,7 @@ router.post('/abschluss', function (req, res) {
         var payment = false;
     }
 
-    var appNpay = new appNpay({
+    var newappNpay = new appNpay({
         app: app,
         payment: payment,
         appLoginUser: appLoginUser,
@@ -281,14 +293,25 @@ router.post('/abschluss', function (req, res) {
         eventId: req.body.eventId
     });
 
-    Event.createEvent(newEvent, function (err, event) {
-        console.log('create event');
+    appNpay.saveAppNpayment(newappNpay, function (err, infos) {
+        console.log('create infos');
         if (err) {
-            req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
-            res.location('/dashboard/newtickets');
-            res.redirect('/dashboard/newtickets');
+            console.log(err);
+            console.log(err.errors);
+            if (err.errors.appLoginUser) {
+                req.flash('error', 'Wählen Sie einen anderen Benutzernamen');
+            } else {
+                req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
+            }
+            res.render('abschluss', {
+                user: req.user,
+                title: req.body.title,
+                veranstalter: req.body.veranstalter,
+                eventId: req.body.eventId
+            });
+
         } else {
-            console.log('event created');
+            console.log('event created with tickets and infos');
             req.flash('success', 'Erfolgreich eröffnet');
             res.location('/users/mainpage');
             res.redirect('/users/mainpage');

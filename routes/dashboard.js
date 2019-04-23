@@ -16,6 +16,7 @@ var appNpay = require('../models/appNpayment');
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
 
+
 cloudinary.config({
     cloud_name: 'dzcxfnvyu',
     api_key: '771478566264235',
@@ -165,6 +166,7 @@ router.post('/neweventLokation', function (req, res) {
     var newEvent = new Event({
         title: req.body.title,
         veranstalter: req.body.veranstalter,
+        beschreibung: req.body.beschreibung,
         picUrl: req.body.picUrl,
         picId: req.body.picId,
         youtube: req.body.youtube,
@@ -219,6 +221,7 @@ router.post('/saveticket', function (req, res) {
         anzahl: anzahl,
         biswann: biswann,
         preis: preis,
+        verkauft: 0,
         eventId: eventId
     });
 

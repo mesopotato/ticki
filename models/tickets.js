@@ -13,12 +13,13 @@ var TicketSchema = new mongoose.Schema({
     anzahl: Number,
     biswann: Date,
     preis: Number,
+    verkauft: Number,
     eventId : { type: String, required: true }
 });
 
 TicketSchema.plugin(uniqueValidator);
 
-var Ticket = module.exports = mongoose.model('tickets', TicketSchema);
+var Ticket = module.exports = mongoose.model('ticketsT', TicketSchema);
 
 module.exports.getTicketById = function (id, callback) {
     Ticket.findById(id, callback);

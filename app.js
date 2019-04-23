@@ -14,6 +14,7 @@ var flash = require('connect-flash');
 var bcrypt = require('bcryptjs');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+var path = require('path')
 var db = mongoose.connection;
 
 var indexRouter = require('./routes/index');
@@ -33,7 +34,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 //handle sessions
 app.use(session({

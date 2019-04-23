@@ -8,19 +8,20 @@ var db = mongoose.connection;
 var EventSchema = new mongoose.Schema({
     title: { type: String, required: true },
     veranstalter: String,
-    pic : String, 
+    picUrl : String, 
+    picId : String, 
     beschreibung : String,
     youtube: String,
     lokation: String,
     address: String,
     plz: String,
     userId : {type: String, required: true}
-    // ,bezahlt : Boolean
+    ,bezahlt : Boolean
 });
 
 EventSchema.plugin(uniqueValidator);
 
-var Event = module.exports = mongoose.model('events', EventSchema);
+var Event = module.exports = mongoose.model('eventsT', EventSchema);
 
 module.exports.getEventById = function (id, callback) {
     Event.findById(id, callback);

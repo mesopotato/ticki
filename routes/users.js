@@ -254,7 +254,7 @@ router.post('/register', parser.single('image'), function (req, res, next) {
       console.log('No File Uploaded..');
     }
 
-
+    //geht dnicht wenn kein bild!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     User.createUser(newUser, function (err, user) {
       if (err) {
         if (err.errors.name) {

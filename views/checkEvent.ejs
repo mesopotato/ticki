@@ -45,7 +45,7 @@
                     <a class="nav-link" href="/../users/logout">Logout</a>
                 </li>
             </ul>
-            
+
         </div>
     </nav>
     <div class="container">
@@ -53,25 +53,70 @@
         <% if (messages) { %>
         <%- messages() %>
         <% } %>
-            <h1  style="margin-top: 5%;"> Übersicht</h1>
+        <h1 style="margin-top: 5%;"> Übersicht</h1>
 
         <div class="jumbotron" style="margin-top: 5%;">
             <div class="media">
                 <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
                 <div class="media-body">
-                    <h3 class="mt-0"><%= event.title %></h3>                    
-                    <h4><%= event.veranstalter %></h4>
-                    <p><b><%= event.lokation%></b></p>
-                    <p><%= event.beschreibung%></p>
-                    
+                    <h3 class="mt-0"> Titel : <%= event.title %></h3>
+                    <h4>Veranstalter : <%= event.veranstalter %></h4>
+                    <p><b> Lokation : <%= event.lokation%></b></p>
+                    <p>Beschreibung : </p> <br>
+                    <p> <%= event.beschreibung%></p>
+
                     <ul class="list-group">
-                        <li class="list-group-item"><%=event.address %></li>
-                        <li class="list-group-item"><%=event.plz %></li>
+                        <li class="list-group-item">Adresse : <%=event.address %></li>
+                        <li class="list-group-item">Ort : <%=event.plz %> </li>
+                        <li class="list-group-item">Payment : <%=appNpay.payment %></li>
+                        <li class="list-group-item">App User Login :<%=appNpay.userLoginUser %></li>
+                        <li class="list-group-item">App user Password :<%=appNpay.userLoginPwd %></li>
                     </ul>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/9YffrCViTVk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    <button type="button" class="btn btn-secondary float-right" style="margin-top: 5%;" onclick="">Bearbeiten</button>
+                    <div style="margin-top: 5%;">
+                        <h4 style="margin-top: 5%;"> Youtube Video</h4>
+                        <%- event.youtube %>
+                    </div>
+                    <button type="button" class="btn btn-secondary float-right" style="margin-top: 5%;"
+                        onclick="">Bearbeiten</button>
+
+                    <h4 style="margin-top: 5%;">Tickets</h4>
+                    <table class="table" style="margin-top: 5%;">
+                        <thead>
+                            <tr>
+                                <th>Kategorie</th>
+                                <th>Gültig Datum</th>
+                                <th>Zeitpunkt</th>
+                                <th>Türöffnung</th>
+                                <th>Vorverkauf bis</th>
+                                <th>Verkaufspreis</th>
+                                <th>Anzahl Tickets</th>
+                                <th>Bereits verkauft</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% tickets.forEach(function(ticket){ %>
+                            <tr class="table-info">
+                                <th scope="row"><%= ticket.kategorie %></th>
+                                <td><%= ticket.gueltig_datum %></td>
+                                <td><%= ticket.gueltig_time %></td>
+                                <td><%= ticket.tueroeffnung %></td>
+                                <td><%= ticket.biswann %></td>
+                                <td><%= ticket.preis %> CHF</td>
+                                <td><%= ticket.anzahl %> stk</td>
+                                <td><%= ticket.verkauft %> stk</td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-primary float-right" style="margin: 2%;" onclick="">Tickets
+                        hinzufügen</button>
+                    <button type="button" class="btn btn-secondary float-right" style="margin: 2%;" onclick="">Tickets
+                        Bearbeiten</button>
+
+
                 </div>
-                
+
+
             </div>
 
         </div>

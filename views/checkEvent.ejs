@@ -59,27 +59,27 @@
             <div class="media">
                 <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
                 <div class="media-body">
-                    <h3 class="mt-0"> Titel : <%= event.title %></h3>
+                    <h3 class="mt-0" style="margin-bottom: 2%;"> Titel : <%= event.title %></h3>
                     <h4>Veranstalter : <%= event.veranstalter %></h4>
                     <p><b> Lokation : <%= event.lokation%></b></p>
-                    <p>Beschreibung : </p> <br>
+                    <p>Beschreibung : </p> 
                     <p> <%= event.beschreibung%></p>
 
                     <ul class="list-group">
                         <li class="list-group-item">Adresse : <%=event.address %></li>
                         <li class="list-group-item">Ort : <%=event.plz %> </li>
-                        <li class="list-group-item">Payment : <%=appNpay.payment %></li>
-                        <li class="list-group-item">App User Login :<%=appNpay.userLoginUser %></li>
-                        <li class="list-group-item">App user Password :<%=appNpay.userLoginPwd %></li>
+                        <li class="list-group-item">Payment : <% if (infos.payment == false) { %> pauschal 0.5 CHF pro Ticket<% } else { %> 5% des Verkaufspreises <% } %></li>
+                        <li class="list-group-item">App User Login : <%=infos.appLoginUser %></li>
+                        <li class="list-group-item">App user Password : <%=infos.appLoginPwd %></li>
                     </ul>
                     <div style="margin-top: 5%;">
-                        <h4 style="margin-top: 5%;"> Youtube Video</h4>
+                        <h4 style="margin-top: 5%; margin-bottom: 2%;"> Youtube Video</h4>
                         <%- event.youtube %>
                     </div>
                     <button type="button" class="btn btn-secondary float-right" style="margin-top: 5%;"
                         onclick="">Bearbeiten</button>
 
-                    <h4 style="margin-top: 5%;">Tickets</h4>
+                    <h4 style="margin-top: 5%; margin-bottom: 2%;">Tickets</h4>
                     <table class="table" style="margin-top: 5%;">
                         <thead>
                             <tr>

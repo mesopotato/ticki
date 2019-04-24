@@ -15,17 +15,14 @@ var PaymentSchema = new mongoose.Schema({
 
 PaymentSchema.plugin(uniqueValidator);
 
-var appNpay = module.exports = mongoose.model('appNpaymentsT', PaymentSchema);
+var appNpay = module.exports = mongoose.model('appnpaymentsts', PaymentSchema);
 
 module.exports.getAppNpayById = function (id, callback) {
     appNpay.findById(id, callback);
 }
 
 module.exports.getAppNpayByEventId = function (eventId, callback) {
-    appNpay.find().where("eventId", eventId).
-    exec(function(err, payNlogin) {
-        callback(err, payNlogin);
-    });
+    appNpay.findOne({ eventId: eventId }, callback);
 }
 module.exports.saveAppNpayment = function (newLogin, callback) {
         newLogin.save(callback);

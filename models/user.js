@@ -6,21 +6,6 @@ mongoose.connect('mongodb://localhost/nodeauth', { useNewUrlParser: true });
 
 var db = mongoose.connection;
 
-/*user schema
-var UserSchema = mongoose.Schema({
-    name: {
-        type: String,
-        index: true
-    },
-    email: {
-        type: String
-    },
-    password: {
-        type: String
-    }
-}); 
-
-*/
 var UserSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     password: String,
@@ -31,7 +16,6 @@ var UserSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date
 });
-
 
 UserSchema.pre('save', function (next) {
     var user = this;
@@ -76,11 +60,6 @@ module.exports.comparePassword = function (candidatePassword, hash, callback) {
     });
 }
 module.exports.createUser = function (newUser, callback) {
-
-        console.log('ich hasche in der eigenen');
-        /*bcrypt.hash(newUser.password, salt, function (err, hash) {
-            newUser.password = hash;
-            newUser.save(callback);
-        });*/
+        console.log('saving user');
         newUser.save(callback);
 }

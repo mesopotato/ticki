@@ -57,11 +57,17 @@ router.get('/getEvent/:id', function (req, res) {
                             console.log('error is thorwn in get infos');
                             console.log(err);
                         } else {
+                            console.log('infos sind : ______')
+                            console.log(infos);
+                            console.log('appLoginUser : ' + infos.appLoginUser);
+                            console.log('appLoginPwd : '+ infos.appLoginPwd);
+                            console.log('app payment : '+ infos.payment);
+                            console.log('app app : '+ infos.app);
                             res.render('checkEvent', {
                                 user: req.user,
                                 event: event,
                                 tickets: tickets,
-                                appNpay: infos
+                                infos: infos
                             });
                         }
                     });

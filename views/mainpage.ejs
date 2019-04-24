@@ -13,13 +13,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-<style>
-a.custom-card,
-a.custom-card:hover {
-  color: inherit;
-  text-decoration: none;
-}
-</style>
+    <style>
+        a.custom-card,
+        a.custom-card:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .img-wrapper {
+            display: inline-block;
+            height: 159px;
+            overflow: hidden;
+            width: 153px;
+        }
+
+        .img-wrapper img {
+            height: 159px;
+        }
+    </style>
+    </style>
 </head>
 
 <body>
@@ -50,7 +62,7 @@ a.custom-card:hover {
             <% } %>
         </div>
         <div class="jumbotron">
-            <h4>Neuen Event</h4>
+            <h4 style="margin-bottom: 2%;">Neuen Event</h4>
             <form action="../dashboard/newevent" method="post" id="event_form">
                 <div class="form-group">
                     <label for="title">Geben den Titel des Events an</label>
@@ -66,21 +78,24 @@ a.custom-card:hover {
             </form>
         </div>
         <div class="jumbotron">
-            <h2> Ihre Events</h2>
+            <h2 style="margin-bottom: 2%;"> Ihre Events</h2>
             <% events.forEach(function(event){ %>
-        <a class="custom-card" href="/dashboard/getEvent/<%= event.id %>" >
-            <div class="card shadow p-6 mb-4 bg-white rounded">
-                
-                <div class="card-body">
-                    <h4 class="card-title redtext"><%= event.title %></h4>
-                    <br>
-                    <h6 class="card-subtitle mb-2 text-muted"><%= event.veranstalter %></h6>
-                    <p class="card-text"> <%= event.lokation %></p> <br>
-                    <p class="greentext"><%= event.gueltig_datum %>'</p><br>
-                    <p class="redtext"><%=  event.gueltig_time %></p>
+
+            <a class="custom-card" href="/dashboard/getEvent/<%= event.id %>">
+                <div class="card shadow p-6 mb-4 bg-white rounded">
+                    <div class="img-wrapper">
+                        <img src="<%= event.picUrl %>" alt="Event image" height="10%">
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title redtext"><%= event.title %></h4>
+                        <br>
+                        <h5 class="card-subtitle mb-2 text-muted"><%= event.veranstalter %></h5>
+                        <p class="card-text"> <%= event.lokation %></p> <br>
+                        <p class="greentext"><%= event.address %>'</p><br>
+                        <p class="redtext"><%=  event.plz %></p>
+                    </div>
                 </div>
-            </div>
-        </a>
+            </a>
             <% }) %>
 
 

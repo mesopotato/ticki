@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>mainpage</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/bootstrap.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/customSindarin.css"> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <style>
+        a.custom-card,
+        a.custom-card:hover {
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        function goBack() {
+            window.history.back()
+        }
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#!"></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="../client/clientMainpage">Home <span class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+    <div class="container">
+
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
+        <h1 style="margin-top: 5%;"> Tickets</h1>
+
+        <div class="jumbotron" style="margin-top: 5%;">
+
+            <div class="media">
+                <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
+                <div class="media-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <!-- Content -->
+                            <h3 class="mt-0" style="margin-bottom: 2%;"><%= event.title %></h3>
+                            <h4>Veranstalter : <%= event.veranstalter %></h4>
+                            <p><b> Lokation : <%= event.lokation%></b></p>
+                        </div>
+                        <div class="col-6">
+                            <!-- Content -->
+                            <p><b><%= tickets[0].gueltig_datum %></b></p>
+                            <p>Beginn : <%= tickets[0].gueltig_time%></p>
+                            <p>Türöffnung : <%= tickets[0].tueroeffnung%></p>
+                        </div>
+                    </div>
+
+
+                    <table class="table" style="margin-top: 5%;">
+                        <thead>
+                            <tr>
+                                <th>Kategorie</th>
+                                <th>Preis</th>
+                                <th>Anzahl Tickets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <form action="/client/buyTickets" method="post" id="buyThat">
+                                <% i= 1; tickets.forEach(function(ticket){ %>
+                                <tr class="table-info">
+                                    <th scope="row"><%= ticket.kategorie %></th>
+                                    
+                                    <td><%= ticket.preis %> CHF</td>
+                                    <td><input type="number" class="form-control" id="anzahl<%=i%>" name="anzahl<%=i%>" style="font-size:11pt;height:30px;width:100px;"> 
+                                    </td>
+                                </tr>
+                                <% i = i + 1; }) %>
+                            </form>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-primary float-right" style="margin: 2%;"
+                        onclick="location.href='/client/buyTickets/<%= event.id %>';">Tickets
+                        kaufen</button>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

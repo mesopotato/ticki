@@ -41,6 +41,13 @@ module.exports.getEventByUser = function (user, callback) {
         callback(err, events);
     });
 }
+module.exports.getEvents = function (callback) {
+    //sort does not work yet :(
+    Event.find().
+    exec(function(err, events) {
+        callback(err, events);
+    });
+}
 module.exports.createEvent = function (newEvent, callback) {
         newEvent.save(callback);
 }

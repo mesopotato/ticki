@@ -30,6 +30,7 @@
     "nodemailer": "^6.0.0",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*"
+    "passport-local": "*",
+    "pdfmake": "^0.1.54"
   }
 }

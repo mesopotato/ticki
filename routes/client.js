@@ -13,6 +13,8 @@ var nodemailer = require('nodemailer');
 var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var appNpay = require('../models/appNpayment');
+const pdfMakePrinter = require('pdfmake');
+var fs = require('fs');
 
 router.get('/clientMainpage', function (req, res, next) {
     console.log('get mainpage');
@@ -79,5 +81,58 @@ router.get('/buyTickets/:id', function (req, res) {
     });
 });
 
+router.post('/buyTickets', function (req, res) {
+    console.log('in buytickets');
+    generatePdf(docDefinition, (response) => {
+        res.render('buyed', {
+            pdf: response
+        });
+        //res.send(response); // sends a base64 encoded string to client
+    });
+})
+
+//pdf
+
+const docDefinition = {
+    content: ['This will show up in the file created']
+};
+
+
+function generatePdf(docDefinition, callback) {
+    try {
+        /*var fontDescriptors = {
+            Roboto: {
+                normal: 'Roboto-Regular.ttf',
+                bold: 'Roboto-Medium.ttf',
+                italics: 'Roboto-Italic.ttf',
+                bolditalics: 'Roboto-MediumItalic.ttf'
+            }
+        }; */
+        const printer = new pdfMakePrinter({
+            Roboto: {normal: new Buffer.from(require('pdfmake/build/vfs_fonts.js').pdfMake.vfs['Roboto-Regular.ttf'], 'base64')}
+        });
+        console.log('new PRINTER made');
+        const doc = printer.createPdfKitDocument(docDefinition);
+        console.log('doc made');
+        let chunks = [];
+
+        doc.on('data', (chunk) => {
+            chunks.push(chunk);
+            console.log('chunks pushed');
+        });
+
+        doc.on('end', () => {
+            const result = Buffer.concat(chunks);
+            console.log('result buffered');
+            callback('data:application/pdf;base64,' + result.toString('base64'));
+        });
+
+        doc.end();
+
+    } catch (err) {
+        console.log('in CATCH');
+        throw (err);
+    }
+};
 
 module.exports = router;

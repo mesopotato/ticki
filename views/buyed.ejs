@@ -61,6 +61,13 @@
                     <button type="submit" class="btn btn-primary" name="submit" value="open">
                             PDF öffnen</button>
                 </form>
+
+                <form action="/client/sendPDF" method="post" id="sendIt">
+                    <label for="new_user_email">Geben Sie eine E-Mail an</label>
+                    <input type="text" class="form-control" id="new_user_email" name="email" placeholder="E Mail" required>
+                    <button type="submit" class="btn btn-primary" name="submit" value="send">
+                            PDF senden</button>
+                </form>
         </div>
     </div>
 

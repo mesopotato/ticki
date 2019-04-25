@@ -14,6 +14,10 @@ var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var appNpay = require('../models/appNpayment');
 const pdfMakePrinter = require('pdfmake');
+
+var async = require("async");
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 var fs = require('fs');
 
 router.get('/clientMainpage', function (req, res, next) {
@@ -87,6 +91,52 @@ router.post('/buyTickets', function (req, res) {
 
     res.render('buyed', {
 
+    });
+})
+
+router.post('/sendPDF', function (req, res) {
+    console.log('in buytickets');
+    //psp provider API Call here
+
+    async.waterfall([
+        function (done) {
+            generatePdf(docDefinition, (response) => {
+                done(response)
+            });
+        },
+        function (response, done) {
+            console.log('step 2')
+
+            var smtpTrans = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'dittrich.yannick@gmail.com',
+                    pass: 'Wh8sApp1993*/-'
+                }
+            });
+            var mailOptions = {
+                to: req.body.email,
+                from: 'info@silvering.ch  ',
+                subject: 'PDF  für Ticki',
+                text: 'Für Ihr Konto wurde ein PDF beantragt\n\n',
+                attachments: [{
+                    filename: 'tickets.pdf',
+                    content: new Buffer(response, 'base64'),
+                    contentType: 'application/pdf'
+                }]
+
+            };
+            console.log('step 3')
+
+            smtpTrans.sendMail(mailOptions, function (err) {
+                req.flash('success', 'Eine Email wurde an ' + user.email + ' gesendet');
+                console.log('sent')
+                res.redirect('/');
+            });
+        }
+    ], function (err) {
+        console.log('this err' + ' ' + err)
+        res.redirect('/');
     });
 })
 

@@ -24,6 +24,9 @@
         function goBack() {
             window.history.back()
         }
+        function MM_openBrWindow(theURL, winName, features) { //v2.0
+            window.open(theURL, winName, features);
+        }
     </script>
 </head>
 
@@ -54,16 +57,10 @@
 
         <div class="jumbotron" style="margin-top: 5%;">
 
-            <button type="button" class="btn btn-primary float-right" name="submit"
-                onclick="location.href='<%= pdf %>';" value="buy">PDF
-            </button>
-            <button type="button" class="btn btn-primary float-right" name="submit" onclick='window.open(yoururl, "Popup", "location,status,scrollbars,resizable,width=800, height=800");' value="buy">
-                PDF new window
-            </button>
-            
-            <a href="<%= pdf %>">
-                Open PDF
-            </a>
+                <form action="/client/openPDF" method="post" id="form_register">
+                    <button type="submit" class="btn btn-primary" name="submit" value="open">
+                            PDF öffnen</button>
+                </form>
         </div>
     </div>
 

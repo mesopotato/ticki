@@ -83,18 +83,55 @@ router.get('/buyTickets/:id', function (req, res) {
 
 router.post('/buyTickets', function (req, res) {
     console.log('in buytickets');
+    //psp provider API Call here
+
+    res.render('buyed', {
+
+    });
+})
+
+router.post('/openPDF', function (req, res) {
+    console.log('in openPDF');
     generatePdf(docDefinition, (response) => {
-        res.render('buyed', {
-            pdf: response
-        });
-        //res.send(response); // sends a base64 encoded string to client
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(response);
     });
 })
 
 //pdf
 
 const docDefinition = {
-    content: ['This will show up in the file created']
+    header: 'simple text',
+
+    footer: {
+        columns: [
+            'Left part',
+            { text: 'Right part', alignment: 'right' }
+        ]
+    },
+    content: [
+        // if you don't need styles, you can use a simple string to define a paragraph
+        'This is a standard paragraph, using default style',
+
+        // using a { text: '...' } object lets you set styling properties
+        { text: 'This paragraph will have a bigger font', fontSize: 15 },
+
+        // if you set the value of text to an array instead of a string, you'll be able
+        // to style any part individually
+        {
+            text: [
+                'This paragraph is defined as an array of elements to make it possible to ',
+                { text: 'restyle part of it and make it bigger ', fontSize: 15 },
+                'than the rest.'
+            ]
+        },
+        // basic usage
+        { qr: 'text in QR' },
+
+        // colored QR
+        { qr: 'text in QR', foreground: 'red', background: 'yellow' },
+
+    ]
 };
 
 
@@ -109,7 +146,7 @@ function generatePdf(docDefinition, callback) {
             }
         }; */
         const printer = new pdfMakePrinter({
-            Roboto: {normal: new Buffer.from(require('pdfmake/build/vfs_fonts.js').pdfMake.vfs['Roboto-Regular.ttf'], 'base64')}
+            Roboto: { normal: new Buffer.from(require('pdfmake/build/vfs_fonts.js').pdfMake.vfs['Roboto-Regular.ttf'], 'base64') }
         });
         console.log('new PRINTER made');
         const doc = printer.createPdfKitDocument(docDefinition);
@@ -122,9 +159,10 @@ function generatePdf(docDefinition, callback) {
         });
 
         doc.on('end', () => {
-            const result = Buffer.concat(chunks);
+            //const result = Buffer.concat(chunks);
             console.log('result buffered');
-            callback('data:application/pdf;base64,' + result.toString('base64'));
+            callback(Buffer.concat(chunks));
+            //callback('data:application/pdf;base64,' + result.toString('base64'));
         });
 
         doc.end();

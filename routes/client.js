@@ -121,13 +121,13 @@ router.post('/sendPDF', function (req, res) {
         };
         smtpTrans.sendMail(mailOptions, function (err) {
             console.log('in sendMail');
-            if (err){
+            if (err) {
                 req.flash('error', 'Da ist was mit :' + req.body.email + ' schiefgelaufen');
                 console.log('this err' + err);
-            }else {
+            } else {
                 req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet');
             }
-           
+
             console.log('sent')
             res.redirect('/');
         });
@@ -154,12 +154,19 @@ const docDefinition = {
             { text: 'Right part', alignment: 'right' }
         ]
     },
+    pageMargins: [40, 60, 40, 60],
+
     content: [
         // if you don't need styles, you can use a simple string to define a paragraph
         'This is a standard paragraph, using default style',
 
+        { text: 'Title', styles: 'header', fontSize: 30 },
+
         // using a { text: '...' } object lets you set styling properties
         { text: 'This paragraph will have a bigger font', fontSize: 15 },
+
+        { text: 'Text on Landscape 2', pageOrientation: 'portrait', pageBreak: 'after' },
+        { text: 'Text on Portrait 2' },
 
         // if you set the value of text to an array instead of a string, you'll be able
         // to style any part individually
@@ -173,10 +180,60 @@ const docDefinition = {
         // basic usage
         { qr: 'text in QR' },
 
-        // colored QR
-        { qr: 'text in QR', foreground: 'red', background: 'yellow' },
+        {
+            layout: 'lightHorizontalLines', // optional
+            table: {
+                // headers are automatically repeated if the table spans over multiple pages
+                // you can declare how many rows should be treated as headers
+                headerRows: 1,
+                widths: ['*', 'auto', 100, '*'],
 
-    ]
+                body: [
+                    ['First', 'Second', 'Third', 'The last one'],
+                    ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
+                    [{ text: 'Bold value' }, 'Val 2', 'Val 3', 'Val 4']
+                ]
+            }
+        },
+        {
+            columns: [
+                {
+                    // auto-sized columns have their widths based on their content
+                    width: 'auto',
+                    text: 'First column'
+                },
+                {
+                    // star-sized columns fill the remaining space
+                    // if there's more than one star-column, available width is divided equally
+                    width: '*',
+                    text: 'Second column'
+                },
+                {
+                    // fixed width
+                    width: 100,
+                    text: 'Third column'
+                },
+                {
+                    // % width
+                    width: '20%',
+                    text: 'Fourth column'
+                }
+            ],
+            // optional space between columns
+            columnGap: 10
+        },
+        'This paragraph goes below all columns and has full width'
+
+    ],
+    styles: {
+        header: {
+            fontSize: 22,
+        },
+        anotherStyle: {
+            italics: true,
+            alignment: 'right'
+        }
+    }
 };
 
 
@@ -203,10 +260,14 @@ function generatePdf(docDefinition, callback) {
         });
 
         doc.on('end', () => {
+            //followin two to send it as an attachement..
             //const result = Buffer.concat(chunks);
-            console.log('result buffered');
-            callback(Buffer.concat(chunks));
             //callback('data:application/pdf;base64,' + result.toString('base64'));
+
+            //tihis one to open in browser (also to send apparently)..
+            callback(Buffer.concat(chunks));
+
+            console.log('result buffered');
         });
 
         doc.end();

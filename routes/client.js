@@ -98,45 +98,40 @@ router.post('/sendPDF', function (req, res) {
     console.log('in buytickets');
     //psp provider API Call here
 
-    async.waterfall([
-        function (done) {
-            generatePdf(docDefinition, (response) => {
-                done(response)
-            });
-        },
-        function (response, done) {
-            console.log('step 2')
+    generatePdf(docDefinition, (response) => {
 
-            var smtpTrans = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: 'dittrich.yannick@gmail.com',
-                    pass: 'Wh8sApp1993*/-'
-                }
-            });
-            var mailOptions = {
-                to: req.body.email,
-                from: 'info@silvering.ch  ',
-                subject: 'PDF  für Ticki',
-                text: 'Für Ihr Konto wurde ein PDF beantragt\n\n',
-                attachments: [{
-                    filename: 'tickets.pdf',
-                    content: new Buffer(response, 'base64'),
-                    contentType: 'application/pdf'
-                }]
-
-            };
-            console.log('step 3')
-
-            smtpTrans.sendMail(mailOptions, function (err) {
-                req.flash('success', 'Eine Email wurde an ' + user.email + ' gesendet');
-                console.log('sent')
-                res.redirect('/');
-            });
-        }
-    ], function (err) {
-        console.log('this err' + ' ' + err)
-        res.redirect('/');
+        console.log('pdf generiert');
+        var smtpTrans = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'dittrich.yannick@gmail.com',
+                pass: 'Wh8sApp1993*/-'
+            }
+        });
+        var mailOptions = {
+            to: req.body.email,
+            from: 'info@silvering.ch  ',
+            subject: 'PDF zurücksetzen für Ticki',
+            text: 'Für Ihr Konto wurde ein PDF beantragt\n\n',
+            attachments: [{
+                filename: 'tickets.pdf',
+                content: response,
+                contentType: 'application/pdf'
+            }]
+        };
+        smtpTrans.sendMail(mailOptions, function (err) {
+            console.log('in sendMail');
+            if (err){
+                req.flash('error', 'Da ist was mit :' + req.body.email + ' schiefgelaufen');
+                console.log('this err' + err);
+            }else {
+                req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet');
+            }
+           
+            console.log('sent')
+            res.redirect('/');
+        });
+        console.log('done done');
     });
 })
 
@@ -205,7 +200,6 @@ function generatePdf(docDefinition, callback) {
 
         doc.on('data', (chunk) => {
             chunks.push(chunk);
-            console.log('chunks pushed');
         });
 
         doc.on('end', () => {

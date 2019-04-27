@@ -87,7 +87,7 @@ router.get('/buyTickets/:id', function (req, res) {
 
 
 
-router.post('/buyTickets2', function (req, res) {
+router.post('/buyTickets', function (req, res) {
     //psp provider API Call here
     console.log(req.body);
     console.log('in buytickets');
@@ -121,7 +121,7 @@ router.post('/buyTickets2', function (req, res) {
     });
 })
 
-router.post('/buyTickets', function (req, res, next) {
+router.post('/buyTickets2', function (req, res, next) {
 
     async.waterfall([
         function (done) {
@@ -143,7 +143,7 @@ router.post('/buyTickets', function (req, res, next) {
             done(dic)
         },
         function (dic, done) {
-console.log('bin inder zeweiten von den dic ist : ' + dic)
+            console.log('bin inder zeweiten von den dic ist : ' + dic)
             for (var key in dic) {
                 var ticket = key;
                 console.log('ist das der rechte weg ' + ticket)
@@ -175,16 +175,18 @@ console.log('bin inder zeweiten von den dic ist : ' + dic)
                             Ticket.order(ticket.id, uebrigAfter, function (err, out) {
                                 if (err) throw err;
                                 console.log('OUT :' + out);
-                                done(err, out);
                             });
+
 
                         }
                         console.log(ticket);
+
                     }
                 });
 
             }
-
+            console.log('my loop is finished : ' + dic);
+            done(dic);
         }
 
     ], function (err) {
@@ -235,6 +237,7 @@ function order(obj, callback) {
         });
 
     }
+    console.log('my loop is finished : ' + obj);
 
     callback(obj);
 }

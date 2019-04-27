@@ -85,14 +85,164 @@ router.get('/buyTickets/:id', function (req, res) {
     });
 });
 
-router.post('/buyTickets', function (req, res) {
-    console.log('in buytickets');
+
+
+router.post('/buyTickets2', function (req, res) {
     //psp provider API Call here
+    console.log(req.body);
+    console.log('in buytickets');
+    var ticketsNumber = cleanInt(req.body.ticketsNumber);;
+    var ticket = req.body.ticketId[0];
+    var best = cleanInt(req.body[ticket]);
 
-    res.render('buyed', {
+    var dic = {
+        [ticket]: best
+    };
 
+    for (y = 1; y < ticketsNumber; y++) {
+        var ticket = req.body.ticketId[y];
+        var bestellung = req.body[ticket];
+        dic[ticket] = bestellung;
+    }
+    console.log('hiere kommt das Dictionaly: ');
+    console.log(dic)
+
+    order(dic, function (err, response) {
+        if (err) {
+            console.log('my fresh function threw an err')
+        } else {
+            console.log('rendering now');
+            res.render('buyed', {
+
+                response: response
+
+            });
+        }
     });
 })
+
+router.post('/buyTickets', function (req, res, next) {
+
+    async.waterfall([
+        function (done) {
+            var ticketsNumber = cleanInt(req.body.ticketsNumber);;
+            var ticket = req.body.ticketId[0];
+            var best = cleanInt(req.body[ticket]);
+
+            var dic = {
+                [ticket]: best
+            };
+
+            for (y = 1; y < ticketsNumber; y++) {
+                var ticket = req.body.ticketId[y];
+                var bestellung = req.body[ticket];
+                dic[ticket] = bestellung;
+            }
+            console.log('hiere kommt das Dictionaly: ');
+            console.log(dic)
+            done(dic)
+        },
+        function (dic, done) {
+console.log('bin inder zeweiten von den dic ist : ' + dic)
+            for (var key in dic) {
+                var ticket = key;
+                console.log('ist das der rechte weg ' + ticket)
+                var bestellung = cleanInt(dic[ticket]);
+                console.log('ist das der rechte weg bestellung ' + bestellung)
+                var renen = bestellung + 4;
+                console.log('rechnugn : ' + renen);
+
+
+                Ticket.getTicketById(ticket, function (err, ticket) {
+                    if (err) {
+                        console.log('error is thrown in get ticktID');
+                        console.log(err);
+                    } else {
+                        var anzahl = cleanInt(ticket.anzahl);
+                        //var verkauft = ticket.verkauft;
+                        //var verkauft = cleanInt(ticket.verkauft);
+                        var verkauft = 10
+
+                        var uebrig = anzahl - verkauft;
+                        console.log('anzahl - verkauft iost : ' + uebrig);
+                        var uebrigAfter = verkauft + bestellung;
+                        console.log('bestellung und verkauft ist : ' + uebrigAfter);
+
+
+                        if (uebrig >= bestellung && uebrigAfter <= anzahl) {
+                            // wird hier vielleicht ein  tranaktionskonflikt möglich????????
+                            //??????????????????????????????????????????????????????????????
+                            Ticket.order(ticket.id, uebrigAfter, function (err, out) {
+                                if (err) throw err;
+                                console.log('OUT :' + out);
+                                done(err, out);
+                            });
+
+                        }
+                        console.log(ticket);
+                    }
+                });
+
+            }
+
+        }
+
+    ], function (err) {
+        console.log('this err' + ' ' + err.error)
+        //res.redirect('/');
+    });
+
+});
+
+function order(obj, callback) {
+
+    for (var key in obj) {
+        var ticket = key;
+        console.log('ist das der rechte weg ' + ticket)
+        var bestellung = cleanInt(obj[ticket]);
+        console.log('ist das der rechte weg bestellung ' + bestellung)
+        var renen = bestellung + 4;
+        console.log('rechnugn : ' + renen);
+
+
+        Ticket.getTicketById(ticket, function (err, ticket) {
+            if (err) {
+                console.log('error is thrown in get ticktID');
+                console.log(err);
+            } else {
+                var anzahl = cleanInt(ticket.anzahl);
+                //var verkauft = ticket.verkauft;
+                //var verkauft = cleanInt(ticket.verkauft);
+                var verkauft = 10
+
+                var uebrig = anzahl - verkauft;
+                console.log('anzahl - verkauft iost : ' + uebrig);
+                var uebrigAfter = verkauft + bestellung;
+                console.log('bestellung und verkauft ist : ' + uebrigAfter);
+
+
+                if (uebrig >= bestellung && uebrigAfter <= anzahl) {
+                    // wird hier vielleicht ein  tranaktionskonflikt möglich????????
+                    //??????????????????????????????????????????????????????????????
+                    Ticket.order(ticket.id, uebrigAfter, function (err, out) {
+                        if (err) throw err;
+                        console.log('OUT :' + out);
+                    });
+
+                }
+                console.log(ticket);
+            }
+        });
+
+    }
+
+    callback(obj);
+}
+
+function cleanInt(x) {
+    x = Number(x);
+    return x >= 0 ? Math.floor(x) : Math.ceil(x);
+}
 
 router.post('/sendPDF', function (req, res) {
     console.log('in buytickets');

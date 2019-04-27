@@ -82,34 +82,34 @@
                             </tr>
                         </thead>
                         <tbody>
+
                             <form action="/client/buyTickets" method="post" id="buyThat">
-                                <% i= 1; tickets.forEach(function(ticket){ %>
+                                <% y= 1; tickets.forEach(function(ticket){ %>
                                 <tr class="table-info">
                                     <th scope="row"><%= ticket.kategorie %></th>
 
                                     <td><%= ticket.preis %> CHF</td>
-                                    <td><input type="number" class="form-control" id="anzahl<%=i%>" name="anzahl<%=i%>"
+                                    <td><input type="number" class="form-control" id="anzahl<%=y%>"
                                             name="<%= ticket.id %>"style="font-size:11pt;height:30px;width:100px;">
                                     </td>
-                                </tr>
+                                </tr>                                
+                                <% y = y + 1; }) %>
+
+                                <% i= 0; tickets.forEach(function(ticket){ %>
                                 <input type="hidden" value="<%= ticket.id %>" name="ticketId" />
                                 <% i = i + 1; }) %>
-                                
+                                <input type="hidden" value="<%= i %>" name="ticketsNumber" />
+                                <input type="hidden" value="<%= event.id %>" name="eventId" />
+
                         </tbody>
                     </table>
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
                             kaufen</button>
                     </form>
-
-
                 </div>
-
-
             </div>
-
         </div>
     </div>
-
 </body>
 
 </html>

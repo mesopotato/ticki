@@ -247,6 +247,10 @@ function cleanInt(x) {
     return x >= 0 ? Math.floor(x) : Math.ceil(x);
 }
 
+
+// ideee await async
+// https://stackoverflow.com/questions/53271259/using-async-await-with-mongoose 
+
 router.post('/sendPDF', function (req, res) {
     console.log('in buytickets');
     //psp provider API Call here

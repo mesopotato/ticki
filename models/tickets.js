@@ -36,7 +36,6 @@ module.exports.getTicket = function (id, callback) {
         .exec()
         .then((ticket) => {
             console.log('callback ticket')
-            callback(ticket);
         })
         .catch((err) => {
             console.log(err);

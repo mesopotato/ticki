@@ -109,7 +109,7 @@ router.post('/buyTickets', function (req, res) {
 
     order(dic, function (err, response) {
         if (err) {
-            console.log('my fresh function threw an err')
+            console.log('my fresh function threw an err');
         } else {
             console.log('rendering now');
             res.render('buyed', {
@@ -198,6 +198,9 @@ router.post('/buyTickets2', function (req, res, next) {
 
 function order(obj, callback) {
 
+    //that shit is executing ohne zu arten wtf
+    //async muss hier helfen.. 
+    https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
     for (var key in obj) {
         var ticket = key;
         console.log('ist das der rechte weg ' + ticket)
@@ -214,8 +217,8 @@ function order(obj, callback) {
             } else {
                 var anzahl = cleanInt(ticket.anzahl);
                 //var verkauft = ticket.verkauft;
-                //var verkauft = cleanInt(ticket.verkauft);
-                var verkauft = 10
+                var verkauft = cleanInt(ticket.verkauft);
+                //var verkauft = 10
 
                 var uebrig = anzahl - verkauft;
                 console.log('anzahl - verkauft iost : ' + uebrig);
@@ -250,6 +253,8 @@ function cleanInt(x) {
 
 // ideee await async
 // https://stackoverflow.com/questions/53271259/using-async-await-with-mongoose 
+// https://stackoverflow.com/questions/52481240/how-to-run-mongodb-query-with-lock-document-for-later-update
+
 
 router.post('/sendPDF', function (req, res) {
     console.log('in buytickets');

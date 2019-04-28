@@ -200,8 +200,13 @@ function order(obj, callback) {
 
     //that shit is executing ohne zu arten wtf
     //async muss hier helfen.. 
-    https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
-    for (var key in obj) {
+  //  https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
+    
+  
+  //process array in sequence 
+  // https://lavrton.com/javascript-loops-how-to-handle-async-await-6252dd3c795/
+  for (var key in obj) {
+        
         var ticket = key;
         console.log('ist das der rechte weg ' + ticket)
         var bestellung = cleanInt(obj[ticket]);
@@ -210,7 +215,7 @@ function order(obj, callback) {
         console.log('rechnugn : ' + renen);
 
 
-        Ticket.getTicketById(ticket, function (err, ticket) {
+        Ticket.getTicket(ticket, function (err, ticket) {
             if (err) {
                 console.log('error is thrown in get ticktID');
                 console.log(err);
@@ -229,7 +234,7 @@ function order(obj, callback) {
                 if (uebrig >= bestellung && uebrigAfter <= anzahl) {
                     // wird hier vielleicht ein  tranaktionskonflikt möglich????????
                     //??????????????????????????????????????????????????????????????
-                    Ticket.order(ticket.id, uebrigAfter, function (err, out) {
+                    Ticket.orderOne(ticket.id, uebrigAfter, function (err, out) {
                         if (err) throw err;
                         console.log('OUT :' + out);
                     });

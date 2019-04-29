@@ -14,6 +14,7 @@ var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var appNpay = require('../models/appNpayment');
 const pdfMakePrinter = require('pdfmake');
+var Promise = require("bluebird");
 
 var async = require("async");
 var crypto = require('crypto');
@@ -86,7 +87,6 @@ router.get('/buyTickets/:id', function (req, res) {
 });
 
 
-
 router.post('/buyTickets', function (req, res) {
     //psp provider API Call here
     console.log(req.body);
@@ -105,149 +105,96 @@ router.post('/buyTickets', function (req, res) {
         dic[ticket] = bestellung;
     }
     console.log('hiere kommt das Dictionaly: ');
-    console.log(dic)
+    console.log(dic);
 
-    order(dic, function (err, response) {
-        if (err) {
-            console.log('my fresh function threw an err');
-        } else {
-            console.log('rendering now');
-            res.render('buyed', {
 
-                response: response
-
-            });
-        }
-    });
-})
-
-router.post('/buyTickets2', function (req, res, next) {
-
-    async.waterfall([
-        function (done) {
-            var ticketsNumber = cleanInt(req.body.ticketsNumber);;
-            var ticket = req.body.ticketId[0];
-            var best = cleanInt(req.body[ticket]);
-
-            var dic = {
-                [ticket]: best
-            };
-
-            for (y = 1; y < ticketsNumber; y++) {
-                var ticket = req.body.ticketId[y];
-                var bestellung = req.body[ticket];
-                dic[ticket] = bestellung;
+    // here is a code using promises :) 
+    function doSomething() {
+        return new Promise((resolve, reject) => {
+            console.log("It is done.");
+            // Succeed half of the time.
+            if (Math.random() > .5) {
+                resolve("SUCCESS")
+            } else {
+                reject("FAILURE")
             }
-            console.log('hiere kommt das Dictionaly: ');
-            console.log(dic)
-            done(dic)
-        },
-        function (dic, done) {
-            console.log('bin inder zeweiten von den dic ist : ' + dic)
-            for (var key in dic) {
-                var ticket = key;
-                console.log('ist das der rechte weg ' + ticket)
-                var bestellung = cleanInt(dic[ticket]);
-                console.log('ist das der rechte weg bestellung ' + bestellung)
-                var renen = bestellung + 4;
-                console.log('rechnugn : ' + renen);
+        })
+    }
+    function successCallback(result) {
+        console.log("It succeeded with " + result);
+    }
 
+    function failureCallback(error) {
+        console.log("It failed with " + error);
+    }
 
-                Ticket.getTicketById(ticket, function (err, ticket) {
-                    if (err) {
-                        console.log('error is thrown in get ticktID');
-                        console.log(err);
-                    } else {
-                        var anzahl = cleanInt(ticket.anzahl);
-                        //var verkauft = ticket.verkauft;
-                        //var verkauft = cleanInt(ticket.verkauft);
-                        var verkauft = 10
+    order(dic).then(successCallback, failureCallback);
 
-                        var uebrig = anzahl - verkauft;
-                        console.log('anzahl - verkauft iost : ' + uebrig);
-                        var uebrigAfter = verkauft + bestellung;
-                        console.log('bestellung und verkauft ist : ' + uebrigAfter);
-
-
-                        if (uebrig >= bestellung && uebrigAfter <= anzahl) {
-                            // wird hier vielleicht ein  tranaktionskonflikt möglich????????
-                            //??????????????????????????????????????????????????????????????
-                            Ticket.order(ticket.id, uebrigAfter, function (err, out) {
-                                if (err) throw err;
-                                console.log('OUT :' + out);
-                            });
-
-
-                        }
-                        console.log(ticket);
-
-                    }
-                });
-
-            }
-            console.log('my loop is finished : ' + dic);
-            done(dic);
-        }
-
-    ], function (err) {
-        console.log('this err' + ' ' + err.error)
-        //res.redirect('/');
-    });
-
+    // pretty nice hä 
 });
 
-function order(obj, callback) {
-
-    //that shit is executing ohne zu arten wtf
-    //async muss hier helfen.. 
-  //  https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
-    
-  
-  //process array in sequence 
-  // https://lavrton.com/javascript-loops-how-to-handle-async-await-6252dd3c795/
-  for (var key in obj) {
-        
-        var ticket = key;
-        console.log('ist das der rechte weg ' + ticket)
-        var bestellung = cleanInt(obj[ticket]);
-        console.log('ist das der rechte weg bestellung ' + bestellung)
-        var renen = bestellung + 4;
-        console.log('rechnugn : ' + renen);
+function order(obj) {
+    return new Promise((resolve, reject) => {
+        //that shit is executing ohne zu arten wtf
+        //async muss hier helfen.. 
+        //  https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
 
 
-        Ticket.getTicket(ticket, function (err, ticket) {
-            if (err) {
-                console.log('error is thrown in get ticktID');
-                console.log(err);
-            } else {
-                var anzahl = cleanInt(ticket.anzahl);
-                //var verkauft = ticket.verkauft;
-                var verkauft = cleanInt(ticket.verkauft);
-                //var verkauft = 10
+        //process array in sequence 
+        // https://lavrton.com/javascript-loops-how-to-handle-async-await-6252dd3c795/
+        for (var key in obj) {
 
-                var uebrig = anzahl - verkauft;
-                console.log('anzahl - verkauft iost : ' + uebrig);
-                var uebrigAfter = verkauft + bestellung;
-                console.log('bestellung und verkauft ist : ' + uebrigAfter);
+            var ticket = key;
+            console.log('ist das der rechte weg ' + ticket)
+            var bestellung = cleanInt(obj[ticket]);
+            console.log('ist das der rechte weg bestellung ' + bestellung)
+            var renen = bestellung + 4;
+            console.log('rechnugn : ' + renen);
+
+            Ticket.findWithPromise(ticket).then(function (ticket){
+                console.log('async in client ticket ist : ' + ticket);
+                resolve('SUCCESS');
+            }, 
+            function (err){
+                console.log('async in client error : '+ err);
+                reject("FAILURE");
+            });
+
+/*
+            Ticket.getTicket(ticket, function (err, ticket) {
+                if (err) {
+                    console.log('error is thrown in get ticktID');
+                    console.log(err);
+                } else {
+                    var anzahl = cleanInt(ticket.anzahl);
+                    //var verkauft = ticket.verkauft;
+                    var verkauft = cleanInt(ticket.verkauft);
+                    //var verkauft = 10
+
+                    var uebrig = anzahl - verkauft;
+                    console.log('anzahl - verkauft iost : ' + uebrig);
+                    var uebrigAfter = verkauft + bestellung;
+                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
 
 
-                if (uebrig >= bestellung && uebrigAfter <= anzahl) {
-                    // wird hier vielleicht ein  tranaktionskonflikt möglich????????
-                    //??????????????????????????????????????????????????????????????
-                    Ticket.orderOne(ticket.id, uebrigAfter, function (err, out) {
-                        if (err) throw err;
-                        console.log('OUT :' + out);
-                    });
+                    if (uebrig >= bestellung && uebrigAfter <= anzahl) {
+                        // wird hier vielleicht ein  tranaktionskonflikt möglich????????
+                        //??????????????????????????????????????????????????????????????
+                        Ticket.orderOne(ticket.id, uebrigAfter, function (err, out) {
+                            if (err) throw err;
+                            console.log('OUT :' + out);
+                        });
 
+                    }
+                    console.log(ticket);
                 }
-                console.log(ticket);
-            }
-        });
+            });
+            */
 
-    }
-    console.log('my loop is finished : ' + obj);
+        }
+        console.log('my loop is finished : ' + obj);
+    })
 
-    callback(obj);
 }
 
 function cleanInt(x) {

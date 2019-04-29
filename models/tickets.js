@@ -3,7 +3,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 const Transaction = require('mongoose-transactions')
 
 const transaction = new Transaction()
-mongoose.Promise = global.Promise;
+mongoose.Promise = require('bluebird');
 mongoose.connect('mongodb://localhost/nodeauth', { useNewUrlParser: true });
 
 var db = mongoose.connection;
@@ -40,6 +40,14 @@ module.exports.getTicket = function (id, callback) {
         .catch((err) => {
             console.log(err);
         });
+}
+
+module.exports.findWithPromise = function(id){
+    Ticket.findById(id).then(function(ticket){
+        console.log('here kommt das ticket :'+ ticket);
+    }, function(err){
+        console.log('ist in promise error : ' + err);
+    })
 }
 
 

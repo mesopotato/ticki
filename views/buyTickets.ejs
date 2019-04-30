@@ -97,6 +97,8 @@
 
                                 <% i= 0; tickets.forEach(function(ticket){ %>
                                 <input type="hidden" value="<%= ticket.id %>" name="ticketId" />
+                                <input type="hidden" value="<%= ticket %>" name="ticket" />
+                                <input type="hidden" value="<%= event %>" name="event" />
                                 <% i = i + 1; }) %>
                                 <input type="hidden" value="<%= i %>" name="ticketsNumber" />
                                 <input type="hidden" value="<%= event.id %>" name="eventId" />

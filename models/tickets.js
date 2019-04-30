@@ -56,11 +56,13 @@ module.exports.findWithPromise = function (id) {
 
 
 module.exports.getTicketsByEventId = function (eventId, callback) {
+    
     Ticket.find().where("eventId", eventId).
         exec(function (err, tickets) {
             callback(err, tickets);
         });
 }
+
 module.exports.saveTickets = function (newTicket, callback) {
     newTicket.save(callback);
 }

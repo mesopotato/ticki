@@ -15,6 +15,9 @@ var Ticket = require('../models/tickets');
 var appNpay = require('../models/appNpayment');
 const pdfMakePrinter = require('pdfmake');
 var Promise = require("bluebird");
+var bodyParser = require('body-parser');
+// create application/json parser
+var jsonParser = bodyParser.json()
 
 var async = require("async");
 var crypto = require('crypto');
@@ -87,13 +90,20 @@ router.get('/buyTickets/:id', function (req, res) {
 });
 
 
-router.post('/buyTickets', function (req, res) {
+router.post('/buyTickets', jsonParser, function (req, res) {
     //psp provider API Call here
     console.log(req.body);
     console.log('in buytickets');
     var ticketsNumber = cleanInt(req.body.ticketsNumber);;
     var ticket = req.body.ticketId[0];
     var best = cleanInt(req.body[ticket]);
+
+    var ticketObj = req.body.ticket;
+    var tickeIDreq = req.body.ticket.kategorie;
+    console.log('id REQ wäre: '+tickeIDreq);
+    console.log('object wäre :' +ticketObj[0]);
+    console.log('id wäre: '+ticketObj[0]['id']);
+    console.log('id wäre: '+ticketObj[0]['_id']);
 
     var dic = {
         [ticket]: best
@@ -123,15 +133,21 @@ router.post('/buyTickets', function (req, res) {
     function successCallback(result) {
         console.log("It succeeded with " + result);
         res.render('buyed', {
-
+            event: event,
+            tickets: tickets
         });
     }
 
     function failureCallback(error) {
         console.log("It failed with " + error);
+        req.flash('error', error);
+        res.render('buyTicket', {
+            event: event,
+            tickets: tickets
+        });
     }
 
-    order(dic).then(successCallback, failureCallback);
+    //order(dic).then(successCallback, failureCallback);
 
     // pretty nice hä 
 });

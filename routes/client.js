@@ -122,6 +122,9 @@ router.post('/buyTickets', function (req, res) {
     }
     function successCallback(result) {
         console.log("It succeeded with " + result);
+        res.render('buyed', {
+
+        });
     }
 
     function failureCallback(error) {
@@ -135,77 +138,59 @@ router.post('/buyTickets', function (req, res) {
 
 function order(obj) {
     return new Promise((resolve, reject) => {
-        //that shit is executing ohne zu arten wtf
-        //async muss hier helfen.. 
-        //  https://codereview.stackexchange.com/questions/133718/synchronous-loop-with-internal-asynchronous-calls
-
-
-        //process array in sequence 
-        // https://lavrton.com/javascript-loops-how-to-handle-async-await-6252dd3c795/
+        var dic = {};
         for (var key in obj) {
 
-            var ticket = key;
-            console.log('ist das der rechte weg ' + ticket)
-            var bestellung = cleanInt(obj[ticket]);
+            var ticketId = key;
+            console.log('ist das der rechte weg ' + ticketId)
+            var bestellung = cleanInt(obj[ticketId]);
             console.log('ist das der rechte weg bestellung ' + bestellung)
-            var renen = bestellung + 4;
-            console.log('rechnugn : ' + renen);
+     
+            Ticket.findById(ticketId).then(function (ticket) {
+                console.log('here kommt das ticket :' + ticket);
+                var anzahl = cleanInt(ticket.anzahl);
+                var verkauft = cleanInt(ticket.verkauft);
 
-            Ticket.findWithPromise(ticket).then(function (ticket){
-                console.log('async in client ticket ist : ' + ticket);
-                resolve('SUCCESS');
-            }, 
-            function (err){
-                console.log('async in client error : '+ err);
-                reject("FAILURE");
-            });
+                var uebrig = anzahl - verkauft;
+                console.log('anzahl - verkauft iost : ' + uebrig);
+                var uebrigAfter = verkauft + bestellung;
+                console.log('bestellung und verkauft ist : ' + uebrigAfter);
 
-/*
-            Ticket.getTicket(ticket, function (err, ticket) {
-                if (err) {
-                    console.log('error is thrown in get ticktID');
-                    console.log(err);
-                } else {
-                    var anzahl = cleanInt(ticket.anzahl);
-                    //var verkauft = ticket.verkauft;
-                    var verkauft = cleanInt(ticket.verkauft);
-                    //var verkauft = 10
-
-                    var uebrig = anzahl - verkauft;
-                    console.log('anzahl - verkauft iost : ' + uebrig);
-                    var uebrigAfter = verkauft + bestellung;
-                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
-
-
-                    if (uebrig >= bestellung && uebrigAfter <= anzahl) {
-                        // wird hier vielleicht ein  tranaktionskonflikt möglich????????
-                        //??????????????????????????????????????????????????????????????
-                        Ticket.orderOne(ticket.id, uebrigAfter, function (err, out) {
-                            if (err) throw err;
-                            console.log('OUT :' + out);
-                        });
-
+                if (uebrig >= bestellung && uebrigAfter <= anzahl) {
+                    var options = {
+                        new: true,
+                        runValidators: true
                     }
-                    console.log(ticket);
-                }
-            });
-            */
+                    var query = { _id: ticket.id };
+                    Ticket.findOneAndUpdate(query, { $inc: { verkauft: bestellung } }, options).then(function (newTicket) {
 
+                        dic[newTicket] = bestellung;
+                        console.log('Länge ist :' + Object.keys(dic).length);
+                        if (Object.keys(dic).length >= Object.keys(obj).length) {
+                            console.log('Länge ist :' + Object.keys(dic).length);
+                            resolve(dic);
+                        }                    
+                    },
+                        function (err) {
+                            console.log('ist in promise of update.. error : ' + err);
+                            reject(err);
+                        })
+                }else{
+                    reject('zu viele tickets bestellt');
+                }
+            }, function (err) {
+                console.log('ist in promise of find.. error : ' + err);
+                reject(err);
+            })
         }
         console.log('my loop is finished : ' + obj);
     })
-
 }
 
 function cleanInt(x) {
     x = Number(x);
     return x >= 0 ? Math.floor(x) : Math.ceil(x);
 }
-
-
-// ideee await async
-// https://stackoverflow.com/questions/53271259/using-async-await-with-mongoose 
-// https://stackoverflow.com/questions/52481240/how-to-run-mongodb-query-with-lock-document-for-later-update
 
 
 router.post('/sendPDF', function (req, res) {

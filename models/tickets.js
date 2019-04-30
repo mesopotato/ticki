@@ -42,12 +42,14 @@ module.exports.getTicket = function (id, callback) {
         });
 }
 
-module.exports.findWithPromise = function(id){
-    Ticket.findById(id).then(function(ticket){
-        console.log('here kommt das ticket :'+ ticket);
-    }, function(err){
-        console.log('ist in promise error : ' + err);
-    })
+module.exports.findWithPromise = function (id) {
+    
+        Ticket.findById(id).then(function (ticket) {
+            console.log('here kommt das ticket :' + ticket);
+        }, function (err) {
+            console.log('ist in promise error : ' + err);
+        })
+    
 }
 
 
@@ -70,7 +72,7 @@ module.exports.orderOne = function (ticketID, uebrig, callback) {
         {
             $set: { verkauft: uebrig }
         }, { upsert: true }, (err, doc) => {
-            if (err) {               
+            if (err) {
                 console.log('error updating ');
                 console.log(doc);
             } else {

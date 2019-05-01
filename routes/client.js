@@ -611,7 +611,7 @@ function docDefinition(obj) {
                                                 { qr: 'https://localhost:3000/buchen/'+eintritt.id }
                                             ]
                                         },
-                                        { text: 'Schöne Zeit', pageBreak: 'after' }
+                                        { text: 'Schöne Zeit', pageBreak: 'after'}
                                     );
                                     e = e + 1;
                                     console.log('E ist : ' + e);
@@ -619,6 +619,7 @@ function docDefinition(obj) {
                                     console.log('definition ist : ' + definition);
                                     console.log('obj ist :' + Object.keys(obj).length);
                                     if (e >= Object.keys(obj).length) {
+                                        content.pop()
                                         console.log('COntent ist : ' + content);
                                         const docDefinition111 = {
                                             header: 'Ihre Tickets',

@@ -175,7 +175,7 @@ router.post('/buyTickets', jsonParser, function (req, res) {
 
     function sendIt(docDefinition) {
         console.log('in SENDIT');
-        console.log('doc definition soll sein  .:'+ docDefinition);
+        console.log('doc definition soll sein  .:' + docDefinition);
         //psp provider API Call here
 
         generatePdf(docDefinition, (response) => {
@@ -595,27 +595,23 @@ function docDefinition(obj) {
                                 } else {
                                     console.log('alles gefunden');
                                     content.push(
-                                            { text: event.title},
-                                            {
-                                                text: event.veranstalter,
-                                                
-                                            },
-                                            {
-                                                alignment: 'justify',
-                                                
-                                                columns: [
-                                                    {
-                                                        text: 'Lokation :' + event.lokation + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.guelitg_time + '\n\n Türöffnung : ' + ticket.tueroeffnung
+                                        { text: event.title },
+                                        {
+                                            text: event.veranstalter,
 
-                                                    },
-                                                    { qr: eintritt.id }
-                                                ]
-                                            },
-                                            { text: 'Schöne Zeit', pageBreak: 'after' },
-                                            {
-                                                text: 'Hftungsblenung zurückbehaltung blable etc etc',
-                                                
-                                            }                                        
+                                        },
+                                        {
+                                            alignment: 'justify',
+
+                                            columns: [
+                                                {
+                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.guelitg_time + '\n\n Türöffnung : ' + ticket.tueroeffnung
+
+                                                },
+                                                { qr: 'https://localhost:3000/buchen/'+eintritt.id }
+                                            ]
+                                        },
+                                        { text: 'Schöne Zeit', pageBreak: 'after' }
                                     );
                                     e = e + 1;
                                     console.log('E ist : ' + e);
@@ -626,17 +622,22 @@ function docDefinition(obj) {
                                         console.log('COntent ist : ' + content);
                                         const docDefinition111 = {
                                             header: 'Ihre Tickets',
-                                        
+
                                             footer: {
                                                 columns: [
-                                                    'Left part',
+
                                                     { text: 'Right part', alignment: 'right' }
+                                                    ,
+                                                    {
+                                                        text: 'Hftungsblenung zurückbehaltung blable etc etc',
+
+                                                    }
                                                 ]
                                             },
                                             pageMargins: [40, 60, 40, 60],
-                                        
+
                                             content: content
-                                           
+
                                         };
                                         //definition.push(content);
                                         console.log('definition ist : ' + JSON.stringify(docDefinition111));

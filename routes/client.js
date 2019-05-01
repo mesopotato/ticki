@@ -605,7 +605,7 @@ function docDefinition(obj) {
 
                                             columns: [
                                                 {
-                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.guelitg_time + '\n\n Türöffnung : ' + ticket.tueroeffnung
+                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.gueltig_time + '\n\n Türöffnung : ' + ticket.tueroeffnung
 
                                                 },
                                                 { qr: 'https://localhost:3000/buchen/'+eintritt.id }

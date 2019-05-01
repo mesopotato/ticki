@@ -12,7 +12,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var Event = require('../models/event');
 var Ticket = require('../models/tickets');
-var appNpay = require('../models/appNpayment');
+var Eintritt = require('../models/eintritte');
 const pdfMakePrinter = require('pdfmake');
 var Promise = require("bluebird");
 var bodyParser = require('body-parser');
@@ -98,13 +98,6 @@ router.post('/buyTickets', jsonParser, function (req, res) {
     var ticket = req.body.ticketId[0];
     var best = cleanInt(req.body[ticket]);
 
-    var ticketObj = req.body.ticket;
-    var tickeIDreq = req.body.ticket.kategorie;
-    console.log('id REQ wäre: '+tickeIDreq);
-    console.log('object wäre :' +ticketObj[0]);
-    console.log('id wäre: '+ticketObj[0]['id']);
-    console.log('id wäre: '+ticketObj[0]['_id']);
-
     var dic = {
         [ticket]: best
     };
@@ -130,78 +123,218 @@ router.post('/buyTickets', jsonParser, function (req, res) {
             }
         })
     }
-    function successCallback(result) {
-        console.log("It succeeded with " + result);
-        res.render('buyed', {
-            event: event,
-            tickets: tickets
-        });
-    }
 
-    function failureCallback(error) {
-        console.log("It failed with " + error);
-        req.flash('error', error);
-        res.render('buyTicket', {
-            event: event,
-            tickets: tickets
-        });
-    }
-
+    checkOrder(dic).then(orderNow, failureCallback);
     //order(dic).then(successCallback, failureCallback);
 
     // pretty nice hä 
-});
 
-function order(obj) {
-    return new Promise((resolve, reject) => {
-        var dic = {};
-        for (var key in obj) {
 
-            var ticketId = key;
-            console.log('ist das der rechte weg ' + ticketId)
-            var bestellung = cleanInt(obj[ticketId]);
-            console.log('ist das der rechte weg bestellung ' + bestellung)
-     
-            Ticket.findById(ticketId).then(function (ticket) {
-                console.log('here kommt das ticket :' + ticket);
-                var anzahl = cleanInt(ticket.anzahl);
-                var verkauft = cleanInt(ticket.verkauft);
+    function orderNow(dic) {
+        console.log('übergeben wird das DIC : ' + dic);
+        order(dic).then(successCallback, failureCallback);
 
-                var uebrig = anzahl - verkauft;
-                console.log('anzahl - verkauft iost : ' + uebrig);
-                var uebrigAfter = verkauft + bestellung;
-                console.log('bestellung und verkauft ist : ' + uebrigAfter);
+    }
+    function successCallback(result) {
+        console.log("It succeeded with " + result);
+        //req.pipe(res);
 
-                if (uebrig >= bestellung && uebrigAfter <= anzahl) {
-                    var options = {
-                        new: true,
-                        runValidators: true
+        var email = req.body.email;
+        console.log('email ist : '+ email);
+
+        saveEintritte(result, email).then(sendPdfNow, failureCallback);
+
+    }
+    function sendPdfNow(result) {
+        //sendPdf(result).then(renderBuyed, failureCallback);
+
+        //function renderBuyed(result) {
+
+            res.render('buyed', {
+                result: result
+            });
+       // }
+    }
+
+    function sendPdf(obj) {
+        return new Promise((resolve, reject) => {
+
+        })
+    }
+
+    function saveEintritte(obj, email) {
+        return new Promise((resolve, reject) => {
+            console.log('in save Eintritte');
+            var dic = {};
+            var gesamt = 0;
+            for (var key in obj) {
+                gesamt = gesamt + cleanInt(obj[key]);               
+            }
+            console.log('gesamt tickets : ' + gesamt);
+            var gespeichert = 0;
+            for (var key in obj) {
+                var ticketId = key;
+                var bestellung = cleanInt(obj[ticketId]);
+                console.log(' ticketid ist :' + ticketId);
+                console.log('bestellung ist : '+ bestellung);
+                for (i = 0; i < bestellung; i++) {
+                    console.log('for loope inner i ist = '+ i);
+                    var newEintritt = new Eintritt({
+                        email: email,
+                        ticketId: ticketId
+                    })
+                    Eintritt.saveEintritt(newEintritt, function (err, eintritt) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            dic[eintritt.id] = eintritt.ticketId;
+                            console.log('save eintritt erfolgreich DIC : ' + dic);
+                            gespeichert = gespeichert + 1;
+                            console.log('gespeichert sind : ' + gespeichert);
+                            console.log('gesamt sind : '+ gesamt);
+                            if (gespeichert >= gesamt) {
+                                console.log('wird resolved!!!');
+                                resolve(dic);
+                            }
+                        }
+                    })
+                }
+            }
+        })
+    }
+
+    function failureCallback(ticket) {
+        console.log("It failed with " + ticket);
+        var uebrig = cleanInt(ticket.anzahl) - cleanInt(ticket.verkauft);
+        console.log('übreig snd :' + uebrig);
+        Event.getEventById(ticket.eventId, function (err, event) {
+            if (err) {
+                console.log('error is thrown in get eventID');
+                console.log(err);
+            } else {
+                console.log('event is: ' + event);
+                console.log('id is : ' + event.id);
+                Ticket.getTicketsByEventId(event.id, function (err, tickets) {
+                    if (err) {
+                        console.log('error is thrown in get tickt');
+                        console.log(err);
+                    } else {
+                        console.log('tickets array : ' + tickets)
+                        req.flash('error', 'die "' + ticket.kategorie + '" sind entweder <b>ausverkauft</b> oder Sie wollten <b>zu viel bestellen...</b> probieren Sie nochmals.. (übrig sind ' + uebrig + ')')
+                        res.render('buyTickets', {
+                            event: event,
+                            tickets: tickets
+                        });
                     }
-                    var query = { _id: ticket.id };
-                    Ticket.findOneAndUpdate(query, { $inc: { verkauft: bestellung } }, options).then(function (newTicket) {
+                });
+            }
+        });
 
-                        dic[newTicket] = bestellung;
+    }
+
+    function order(obj) {
+        return new Promise((resolve, reject) => {
+            console.log('in ORDER NOW');
+            console.log('das ist der übergebene schaiss : ' + obj)
+            var dic = {};
+            for (var key in obj) {
+
+                var ticketId = key;
+                console.log('ist das der rechte weg ' + ticketId)
+
+                Ticket.findById(ticketId).then(function (ticket) {
+                    var bestellung = cleanInt(obj[ticket.id]);
+                    console.log('ist das die bestellung :' + bestellung)
+                    console.log('here kommt das ticket :' + ticket);
+                    var anzahl = cleanInt(ticket.anzahl);
+                    var verkauft = cleanInt(ticket.verkauft);
+
+                    var uebrig = anzahl - verkauft;
+                    console.log('anzahl - verkauft iost : ' + uebrig);
+                    var uebrigAfter = verkauft + bestellung;
+                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
+                    if (bestellung > 0) {
+                        console.log('if bestellung ist > 0 : hier ist der wert : ' + bestellung);
+                        if (uebrig >= bestellung && uebrigAfter <= anzahl) {
+                            var options = {
+                                new: true,
+                                runValidators: true
+                            }
+                            var query = { _id: ticket.id };
+                            Ticket.findOneAndUpdate(query, { $inc: { verkauft: bestellung } }, options).then(function (newTicket) {
+
+                                dic[newTicket.id] = bestellung;
+                                console.log('Länge ist :' + Object.keys(dic).length);
+                                if (Object.keys(dic).length >= Object.keys(obj).length) {
+                                    console.log('Länge ist :' + Object.keys(dic).length);
+                                    resolve(dic);
+                                }
+                            },
+                                function (err) {
+                                    console.log('ist in promise of update.. error : ' + err);
+                                    reject(err);
+                                })
+                        } else {
+                            reject(ticket);
+                        }
+                    } else {
+                        console.log('ELSE bestellung ist = 0 : hier ist der wert : ' + bestellung);
+                        dic[ticket.id] = bestellung;
                         console.log('Länge ist :' + Object.keys(dic).length);
                         if (Object.keys(dic).length >= Object.keys(obj).length) {
                             console.log('Länge ist :' + Object.keys(dic).length);
                             resolve(dic);
-                        }                    
-                    },
-                        function (err) {
-                            console.log('ist in promise of update.. error : ' + err);
-                            reject(err);
-                        })
-                }else{
-                    reject('zu viele tickets bestellt');
-                }
-            }, function (err) {
-                console.log('ist in promise of find.. error : ' + err);
-                reject(err);
-            })
-        }
-        console.log('my loop is finished : ' + obj);
-    })
-}
+                        }
+
+                    }
+                }, function (err) {
+                    console.log('ist in promise of find.. error : ' + err);
+                    reject(err);
+                })
+            }
+            console.log('my loop is finished : ' + obj);
+        })
+    }
+
+    function checkOrder(obj) {
+        return new Promise((resolve, reject) => {
+            console.log('in CHECK ORDER');
+            var dic = {};
+            for (var key in obj) {
+                var ticketId = key;
+                console.log('ist das der rechte weg ' + ticketId)
+
+
+                Ticket.findById(ticketId).then(function (ticket) {
+                    var bestellung = cleanInt(obj[ticket.id]);
+                    console.log('ist das die bestellung :' + bestellung)
+                    console.log('here kommt das ticket :' + ticket);
+                    var anzahl = cleanInt(ticket.anzahl);
+                    var verkauft = cleanInt(ticket.verkauft);
+
+                    var uebrig = anzahl - verkauft;
+                    console.log('anzahl - verkauft iost : ' + uebrig);
+                    var uebrigAfter = verkauft + bestellung;
+                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
+
+                    if (uebrig < bestellung || uebrigAfter > anzahl) {
+                        reject(ticket);
+                    } else {
+                        dic[ticket.id] = bestellung;
+                        console.log('Länge ist :' + Object.keys(dic).length);
+                        if (Object.keys(dic).length >= Object.keys(obj).length) {
+                            console.log('Länge ist :' + Object.keys(dic).length);
+                            resolve(dic);
+                        }
+                    }
+                }, function (err) {
+                    console.log('ist in promise of find.. error : ' + err);
+                    reject(err);
+                })
+            }
+        })
+    }
+});
 
 function cleanInt(x) {
     x = Number(x);

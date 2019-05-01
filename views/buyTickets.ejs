@@ -24,6 +24,16 @@
         function goBack() {
             window.history.back()
         }
+        var check = function () {
+            if (document.getElementById('email').value ==
+                document.getElementById('email2').value) {
+                document.getElementById('message').style.color = 'green';
+                document.getElementById('message').innerHTML = 'matching';
+            } else {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').innerHTML = 'not matching';
+            }
+        }
     </script>
 </head>
 
@@ -97,14 +107,15 @@
 
                                 <% i= 0; tickets.forEach(function(ticket){ %>
                                 <input type="hidden" value="<%= ticket.id %>" name="ticketId" />
-                                <input type="hidden" value="<%= ticket %>" name="ticket" />
-                                <input type="hidden" value="<%= event %>" name="event" />
                                 <% i = i + 1; }) %>
                                 <input type="hidden" value="<%= i %>" name="ticketsNumber" />
                                 <input type="hidden" value="<%= event.id %>" name="eventId" />
 
                         </tbody>
                     </table>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="E Mail" required  onkeyup='check();'/>
+                    <input type="email" class="form-control" id="email2" name="email2" placeholder="E Mail bestätigen" required  onkeyup='check();'/>
+                    <span id='message'></span>
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
                             kaufen</button>
                     </form>

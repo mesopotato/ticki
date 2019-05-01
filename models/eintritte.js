@@ -11,12 +11,13 @@ var db = mongoose.connection;
 
 var EintrittSchema = new mongoose.Schema({
     email: { type: String, required: true },
+    abgebucht: Boolean,
     ticketId: { type: String, required: true }
 });
 
 EintrittSchema.plugin(uniqueValidator);
 
-var Eintritt = module.exports = mongoose.model('eintritt', EintrittSchema);
+var Eintritt = module.exports = mongoose.model('eintritt2', EintrittSchema);
 
 module.exports.getEintrittById = function (id, callback) {
     Eintritt.findById(id, callback);

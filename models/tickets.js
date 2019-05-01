@@ -52,9 +52,6 @@ module.exports.findWithPromise = function (id) {
     
 }
 
-
-
-
 module.exports.getTicketsByEventId = function (eventId, callback) {
     
     Ticket.find().where("eventId", eventId).

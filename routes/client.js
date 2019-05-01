@@ -140,26 +140,80 @@ router.post('/buyTickets', jsonParser, function (req, res) {
         //req.pipe(res);
 
         var email = req.body.email;
-        console.log('email ist : '+ email);
+        console.log('email ist : ' + email);
 
         saveEintritte(result, email).then(sendPdfNow, failureCallback);
 
     }
     function sendPdfNow(result) {
-        //sendPdf(result).then(renderBuyed, failureCallback);
+        console.log('in send PDF now Result übergabe ist :' + result)
+        //sendPdf(result).then(renderBuyed, notSend);
+        docDefinition(result).then(sendIt, notSend);
 
-        //function renderBuyed(result) {
+        function renderBuyed(result) {
 
             res.render('buyed', {
                 result: result
             });
-       // }
+        }
+
+        function notSend(result) {
+            //pdf konnte nicht gesendet werden
+            req.flash('error ', result)
+            res.render('buyed', {
+                result: result
+            });
+        }
     }
 
     function sendPdf(obj) {
         return new Promise((resolve, reject) => {
 
+
         })
+    }
+
+    function sendIt(docDefinition) {
+        console.log('in SENDIT');
+        console.log('doc definition soll sein  .:'+ docDefinition);
+        //psp provider API Call here
+
+        generatePdf(docDefinition, (response) => {
+
+            console.log('pdf generiert');
+            var smtpTrans = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'dittrich.yannick@gmail.com',
+                    pass: 'Wh8sApp1993*/-'
+                }
+            });
+            var mailOptions = {
+                to: req.body.email,
+                from: 'info@silvering.ch  ',
+                subject: 'PDF zurücksetzen für Ticki',
+                text: 'Für Ihr Konto wurde ein PDF beantragt\n\n',
+                attachments: [{
+                    filename: 'tickets.pdf',
+                    content: response,
+                    contentType: 'application/pdf'
+                }]
+            };
+
+            smtpTrans.sendMail(mailOptions, function (err) {
+                console.log('in sendMail');
+                if (err) {
+                    req.flash('error', 'Da ist was mit :' + req.body.email + ' schiefgelaufen');
+                    console.log('this err' + err);
+                } else {
+                    req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet');
+                }
+
+                console.log('sent')
+                res.redirect('/');
+            });
+            console.log('done done');
+        });
     }
 
     function saveEintritte(obj, email) {
@@ -168,7 +222,7 @@ router.post('/buyTickets', jsonParser, function (req, res) {
             var dic = {};
             var gesamt = 0;
             for (var key in obj) {
-                gesamt = gesamt + cleanInt(obj[key]);               
+                gesamt = gesamt + cleanInt(obj[key]);
             }
             console.log('gesamt tickets : ' + gesamt);
             var gespeichert = 0;
@@ -176,11 +230,12 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                 var ticketId = key;
                 var bestellung = cleanInt(obj[ticketId]);
                 console.log(' ticketid ist :' + ticketId);
-                console.log('bestellung ist : '+ bestellung);
+                console.log('bestellung ist : ' + bestellung);
                 for (i = 0; i < bestellung; i++) {
-                    console.log('for loope inner i ist = '+ i);
+                    console.log('for loope inner i ist = ' + i);
                     var newEintritt = new Eintritt({
                         email: email,
+                        abgebucht: false,
                         ticketId: ticketId
                     })
                     Eintritt.saveEintritt(newEintritt, function (err, eintritt) {
@@ -191,7 +246,7 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                             console.log('save eintritt erfolgreich DIC : ' + dic);
                             gespeichert = gespeichert + 1;
                             console.log('gespeichert sind : ' + gespeichert);
-                            console.log('gesamt sind : '+ gesamt);
+                            console.log('gesamt sind : ' + gesamt);
                             if (gespeichert >= gesamt) {
                                 console.log('wird resolved!!!');
                                 resolve(dic);
@@ -367,6 +422,7 @@ router.post('/sendPDF', function (req, res) {
                 contentType: 'application/pdf'
             }]
         };
+
         smtpTrans.sendMail(mailOptions, function (err) {
             console.log('in sendMail');
             if (err) {
@@ -382,19 +438,8 @@ router.post('/sendPDF', function (req, res) {
         console.log('done done');
     });
 })
-
-router.post('/openPDF', function (req, res) {
-    console.log('in openPDF');
-    generatePdf(docDefinition, (response) => {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(response);
-    });
-})
-
-//pdf
-
-const docDefinition = {
-    header: 'simple text',
+const docDefinition2222 = {
+    header: 'Ihre Tickets',
 
     footer: {
         columns: [
@@ -413,7 +458,7 @@ const docDefinition = {
         // using a { text: '...' } object lets you set styling properties
         { text: 'This paragraph will have a bigger font', fontSize: 15 },
 
-        { text: 'Text on Landscape 2', pageOrientation: 'portrait', pageBreak: 'after' },
+        { text: 'Schöne Zeit', pageBreak: 'after' },
         { text: 'Text on Portrait 2' },
 
         // if you set the value of text to an array instead of a string, you'll be able
@@ -476,13 +521,136 @@ const docDefinition = {
     styles: {
         header: {
             fontSize: 22,
+            bold: true
         },
-        anotherStyle: {
-            italics: true,
-            alignment: 'right'
+        subheader: {
+            fontSize: 16,
+            bold: true
+        },
+        quote: {
+            italics: true
+        },
+        small: {
+            fontSize: 8
         }
     }
 };
+
+router.post('/openPDF', function (req, res) {
+    console.log('in openPDF');
+    generatePdf(docDefinition, (response) => {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.send(response);
+    });
+})
+
+//pdf
+function docDefinition(obj) {
+    return new Promise((resolve, reject) => {
+        console.log('doc definition');
+        var content = [];
+        var definition = [{
+            header: 'Ihre Tickets',
+            footer: {
+                columns: [
+                    'Left part',
+                    { text: 'Right part', alignment: 'right' }
+                ]
+            },
+            pageMargins: [40, 60, 40, 60],
+            styles: {
+                header: {
+                    fontSize: 22,
+                    bold: true
+                },
+                subheader: {
+                    fontSize: 16,
+                    bold: true
+                },
+                quote: {
+                    italics: true
+                },
+                small: {
+                    fontSize: 8
+                }
+            }
+        }];
+        var e = 0;
+        console.log('obj ist :' + obj);
+        for (var key in obj) {
+            var eintrittId = key;
+            console.log('im for loop');
+            console.log('eintrittID ist: ' + eintrittId);
+            Eintritt.getEintrittById(eintrittId, function (err, eintritt) {
+                if (err) {
+                    reject(err);
+                } else {
+                    Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            Event.getEventById(ticket.eventId, function (err, event) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    console.log('alles gefunden');
+                                    content.push(
+                                            { text: event.title},
+                                            {
+                                                text: event.veranstalter,
+                                                
+                                            },
+                                            {
+                                                alignment: 'justify',
+                                                
+                                                columns: [
+                                                    {
+                                                        text: 'Lokation :' + event.lokation + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.guelitg_time + '\n\n Türöffnung : ' + ticket.tueroeffnung
+
+                                                    },
+                                                    { qr: eintritt.id }
+                                                ]
+                                            },
+                                            { text: 'Schöne Zeit', pageBreak: 'after' },
+                                            {
+                                                text: 'Hftungsblenung zurückbehaltung blable etc etc',
+                                                
+                                            }                                        
+                                    );
+                                    e = e + 1;
+                                    console.log('E ist : ' + e);
+                                    console.log('COntent ist : ' + Object.keys(content).length);
+                                    console.log('definition ist : ' + definition);
+                                    console.log('obj ist :' + Object.keys(obj).length);
+                                    if (e >= Object.keys(obj).length) {
+                                        console.log('COntent ist : ' + content);
+                                        const docDefinition111 = {
+                                            header: 'Ihre Tickets',
+                                        
+                                            footer: {
+                                                columns: [
+                                                    'Left part',
+                                                    { text: 'Right part', alignment: 'right' }
+                                                ]
+                                            },
+                                            pageMargins: [40, 60, 40, 60],
+                                        
+                                            content: content
+                                           
+                                        };
+                                        //definition.push(content);
+                                        console.log('definition ist : ' + JSON.stringify(docDefinition111));
+                                        resolve(docDefinition111);
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    })
+}
 
 
 function generatePdf(docDefinition, callback) {

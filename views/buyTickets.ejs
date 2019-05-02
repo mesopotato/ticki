@@ -65,7 +65,9 @@
         <div class="jumbotron" style="margin-top: 5%;">
 
             <div class="media">
+                <% if (event.picUrl) { %>
                 <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
+                <% } %>
                 <div class="media-body">
                     <div class="row">
                         <div class="col-6">
@@ -113,8 +115,8 @@
 
                         </tbody>
                     </table>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="E Mail" required  onkeyup='check();'/>
-                    <input type="email" class="form-control" id="email2" name="email2" placeholder="E Mail bestätigen" required  onkeyup='check();'/>
+                    <input style="width: 50%;" type="email" class="form-control" id="email" name="email" placeholder="E Mail" required  onkeyup='check();'/>
+                    <input style="width: 50%;" type="email" class="form-control" id="email2" name="email2" placeholder="E Mail bestätigen" required  onkeyup='check();'/>
                     <span id='message'></span>
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
                             kaufen</button>

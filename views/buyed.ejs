@@ -58,6 +58,7 @@
         <div class="jumbotron" style="margin-top: 5%;">
 
                 <form action="/client/openPDF" method="post" id="form_register">
+                    <input type="hidden" name="docDefinition" value="<%= docDefinition %>">
                     <button type="submit" class="btn btn-primary" name="submit" value="open">
                             PDF öffnen</button>
                 </form>

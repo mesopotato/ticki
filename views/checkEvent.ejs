@@ -71,6 +71,7 @@
                         <li class="list-group-item">Payment : <% if (infos.payment == false) { %> pauschal 0.5 CHF pro Ticket<% } else { %> 5% des Verkaufspreises <% } %></li>
                         <li class="list-group-item">App User Login : <%=infos.appLoginUser %></li>
                         <li class="list-group-item">App user Password : <%=infos.appLoginPwd %></li>
+                        <li class="list-group-item">Link für Ihre Kunden: <a href="http://localhost:3000/client/getEvent/<%=event.id%>">http://localhost:3000/client/getEvent/<%=event.id%></a></li>
                     </ul>
                     <div style="margin-top: 5%;">
                         <h4 style="margin-top: 5%; margin-bottom: 2%;"> Youtube Video</h4>

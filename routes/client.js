@@ -94,9 +94,19 @@ router.post('/buyTickets', jsonParser, function (req, res) {
     //psp provider API Call here
     console.log(req.body);
     console.log('in buytickets');
-    var ticketsNumber = cleanInt(req.body.ticketsNumber);;
-    var ticket = req.body.ticketId[0];
-    var best = cleanInt(req.body[ticket]);
+    var ticketsNumber = cleanInt(req.body.ticketsNumber);
+    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
+    if (ticketsNumber > 1) {
+        var ticket = req.body.ticketId[0];
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    } else {
+        var ticket = req.body.ticketId;
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    }
 
     var dic = {
         [ticket]: best
@@ -205,12 +215,18 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                 if (err) {
                     req.flash('error', 'Da ist was mit :' + req.body.email + ' schiefgelaufen');
                     console.log('this err' + err);
+                    res.render('buyed', {
+                        docDefinition: docDefinition
+                    });
                 } else {
                     req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet');
+                    res.render('buyed', {
+                        docDefinition: docDefinition
+                    });
                 }
 
                 console.log('sent')
-                res.redirect('/');
+
             });
             console.log('done done');
         });
@@ -538,6 +554,7 @@ const docDefinition2222 = {
 
 router.post('/openPDF', function (req, res) {
     console.log('in openPDF');
+    var docDefinition = JSON.stringify(req.body.docDefinition);
     generatePdf(docDefinition, (response) => {
         res.setHeader('Content-Type', 'application/pdf');
         res.send(response);
@@ -605,13 +622,13 @@ function docDefinition(obj) {
 
                                             columns: [
                                                 {
-                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.gueltig_time + '\n\n Türöffnung : ' + ticket.tueroeffnung+ '\n\n Preis : ' + ticket.preis
+                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.gueltig_time + '\n\n Türöffnung : ' + ticket.tueroeffnung + '\n\n Preis : ' + ticket.preis
 
                                                 },
-                                                { qr: 'https://localhost:3000/buchen/'+eintritt.id }
+                                                { qr: 'https://localhost:3000/buchen/' + eintritt.id }
                                             ]
                                         },
-                                        { text: 'Schöne Zeit', pageBreak: 'after'}
+                                        { text: 'Schöne Zeit', pageBreak: 'after' }
                                     );
                                     e = e + 1;
                                     console.log('E ist : ' + e);

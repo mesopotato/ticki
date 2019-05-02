@@ -69,8 +69,10 @@
                         <li class="list-group-item">Ort : <%=event.plz %> </li>
                     </ul>
                     <div style="margin-top: 5%;">
+                        <% if (event.youtube) { %>
                         <h4 style="margin-top: 5%; margin-bottom: 2%;"> Youtube Video</h4>
                         <%- event.youtube %>
+                        <% } %>
                     </div>
                 </div>
             </div>

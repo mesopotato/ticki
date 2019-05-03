@@ -140,6 +140,7 @@ exports.saveEintritte = function (obj, email) {
                         console.log('gesamt sind : ' + gesamt);
                         if (gespeichert >= gesamt) {
                             console.log('wird resolved!!!');
+                            console.log('dic ist in dem Moment: '+ Object.entries(dic));
                             resolve(dic);
                         }
                     }

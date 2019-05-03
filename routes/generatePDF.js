@@ -71,7 +71,7 @@ exports.docDefinition = function (obj) {
                                                 { qr: 'https://localhost:3000/buchen/' + eintritt.id }
                                             ]
                                         },
-                                        { text: 'Schöne Zeit', pageBreak: 'after' }
+                                        { text: 'Schöne Zeit ' +eintritt.email, pageBreak: 'after' }
                                     );
                                     e = e + 1;
                                     console.log('E ist : ' + e);

@@ -9,7 +9,6 @@ var expressValidator = require('express-validator');
 var LocalStrategy = require('passport-local').Strategy;
 var async = require("async");
 var crypto = require('crypto');
-var nodemailer = require('nodemailer');
 var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var Eintritt = require('../models/eintritte');
@@ -18,10 +17,12 @@ var Promise = require("bluebird");
 var bodyParser = require('body-parser');
 // create application/json parser
 var jsonParser = bodyParser.json()
+var PDF = require('../routes/generatePDF');
+var buyEintritt = require('../routes/order');
+var send = require('../routes/sendPDF');
 
 var async = require("async");
 var crypto = require('crypto');
-var nodemailer = require('nodemailer');
 var fs = require('fs');
 
 router.get('/clientMainpage', function (req, res, next) {
@@ -112,6 +113,7 @@ router.post('/buyTickets', jsonParser, function (req, res) {
         [ticket]: best
     };
 
+    //falls es mehr hat alles in ein array
     for (y = 1; y < ticketsNumber; y++) {
         var ticket = req.body.ticketId[y];
         var bestellung = req.body[ticket];
@@ -120,165 +122,19 @@ router.post('/buyTickets', jsonParser, function (req, res) {
     console.log('hiere kommt das Dictionaly: ');
     console.log(dic);
 
-
-    // here is a code using promises :) 
-    function doSomething() {
-        return new Promise((resolve, reject) => {
-            console.log("It is done.");
-            // Succeed half of the time.
-            if (Math.random() > .5) {
-                resolve("SUCCESS")
-            } else {
-                reject("FAILURE")
-            }
-        })
-    }
-
-    checkOrder(dic).then(orderNow, failureCallback);
-    //order(dic).then(successCallback, failureCallback);
-
-    // pretty nice hä 
-
+    buyEintritt.checkOrder(dic).then(orderNow, failureCallback);
 
     function orderNow(dic) {
         console.log('übergeben wird das DIC : ' + dic);
-        order(dic).then(successCallback, failureCallback);
+        buyEintritt.order(dic).then(successCallback, failureCallback);
 
     }
     function successCallback(result) {
         console.log("It succeeded with " + result);
         //req.pipe(res);
-
         var email = req.body.email;
         console.log('email ist : ' + email);
-
-        saveEintritte(result, email).then(sendPdfNow, failureCallback);
-
-    }
-    function sendPdfNow(result) {
-        console.log('in send PDF now Result übergabe ist :' + result)
-        //sendPdf(result).then(renderBuyed, notSend);
-        docDefinition(result).then(sendIt, notSend);
-
-        function renderBuyed(result) {
-
-            res.render('buyed', {
-                result: result
-            });
-        }
-
-        function notSend(result) {
-            //pdf konnte nicht gesendet werden
-            req.flash('error ', result)
-            res.render('buyed', {
-                result: result
-            });
-        }
-    }
-
-    function sendPdf(obj) {
-        return new Promise((resolve, reject) => {
-
-
-        })
-    }
-
-
-    function sendIt(docDefinition, obj) {
-        console.log('in SENDIT');
-        console.log('doc definition soll sein  .:' + docDefinition);
-        //psp provider API Call here
-
-        generatePdf(docDefinition, (response) => {
-
-            console.log('pdf generiert');
-            var smtpTrans = nodemailer.createTransport({
-                service: 'Gmail',
-                auth: {
-                    user: 'dittrich.yannick@gmail.com',
-                    pass: 'Wh8sApp1993*/-'
-                }
-            });
-            var mailOptions = {
-                to: req.body.email,
-                from: 'info@silvering.ch  ',
-                subject: 'PDF zurücksetzen für Ticki',
-                text: 'Für Ihr Konto wurde ein PDF beantragt\n\n',
-                attachments: [{
-                    filename: 'tickets.pdf',
-                    content: response,
-                    contentType: 'application/pdf'
-                }]
-            };
-
-            smtpTrans.sendMail(mailOptions, function (err) {
-                console.log('in sendMail');
-                if (err) {
-                    req.flash('error', 'Da ist was mit :' + req.body.email + ' schiefgelaufen');
-                    console.log('this err' + err);
-                    console.log('this obj' + obj);
-                    /*res.render('buyed', {
-                        response: response
-                    });*/
-                    res.setHeader('Content-Type', 'application/pdf');
-                    res.send(response);
-                } else {
-                    req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet' + obj);
-                    console.log('this obj' + obj);
-                   /* res.render('buyed', {
-                        response: response
-                    }); */
-                    res.setHeader('Content-Type', 'application/pdf');
-                    res.send(response);
-                }
-
-                console.log('sent')
-
-            });
-            console.log('done done');
-        });
-    }
-
-    function saveEintritte(obj, email) {
-        return new Promise((resolve, reject) => {
-            console.log('in save Eintritte');
-            var dic = {};
-            var gesamt = 0;
-            for (var key in obj) {
-                gesamt = gesamt + cleanInt(obj[key]);
-            }
-            console.log('gesamt tickets : ' + gesamt);
-            var gespeichert = 0;
-            for (var key in obj) {
-                var ticketId = key;
-                var bestellung = cleanInt(obj[ticketId]);
-                console.log(' ticketid ist :' + ticketId);
-                console.log('bestellung ist : ' + bestellung);
-                for (i = 0; i < bestellung; i++) {
-                    console.log('for loope inner i ist = ' + i);
-                    var newEintritt = new Eintritt({
-                        email: email,
-                        abgebucht: false,
-                        ticketId: ticketId
-                    })
-                    Eintritt.saveEintritt(newEintritt, function (err, eintritt) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            dic[eintritt.id] = eintritt.ticketId;
-                            console.log('save eintritt erfolgreich DIC : ' + dic);
-                            gespeichert = gespeichert + 1;
-                            console.log('gespeichert sind : ' + gespeichert);
-                            console.log('gesamt sind : ' + gesamt);
-                            if (gespeichert >= gesamt) {
-                                console.log('wird resolved!!!');
-                                resolve(dic);
-                            }
-                        }
-                    })
-                }
-            }
-        })
+        buyEintritt.saveEintritte(result, email).then(send.sendPdfNow, failureCallback);
     }
 
     function failureCallback(ticket) {
@@ -307,128 +163,19 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                 });
             }
         });
-
-    }
-
-    function order(obj) {
-        return new Promise((resolve, reject) => {
-            console.log('in ORDER NOW');
-            console.log('das ist der übergebene schaiss : ' + obj)
-            var dic = {};
-            for (var key in obj) {
-
-                var ticketId = key;
-                console.log('ist das der rechte weg ' + ticketId)
-
-                Ticket.findById(ticketId).then(function (ticket) {
-                    var bestellung = cleanInt(obj[ticket.id]);
-                    console.log('ist das die bestellung :' + bestellung)
-                    console.log('here kommt das ticket :' + ticket);
-                    var anzahl = cleanInt(ticket.anzahl);
-                    var verkauft = cleanInt(ticket.verkauft);
-
-                    var uebrig = anzahl - verkauft;
-                    console.log('anzahl - verkauft iost : ' + uebrig);
-                    var uebrigAfter = verkauft + bestellung;
-                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
-                    if (bestellung > 0) {
-                        console.log('if bestellung ist > 0 : hier ist der wert : ' + bestellung);
-                        if (uebrig >= bestellung && uebrigAfter <= anzahl) {
-                            var options = {
-                                new: true,
-                                runValidators: true
-                            }
-                            var query = { _id: ticket.id };
-                            Ticket.findOneAndUpdate(query, { $inc: { verkauft: bestellung } }, options).then(function (newTicket) {
-
-                                dic[newTicket.id] = bestellung;
-                                console.log('Länge ist :' + Object.keys(dic).length);
-                                if (Object.keys(dic).length >= Object.keys(obj).length) {
-                                    console.log('Länge ist :' + Object.keys(dic).length);
-                                    resolve(dic);
-                                }
-                            },
-                                function (err) {
-                                    console.log('ist in promise of update.. error : ' + err);
-                                    reject(err);
-                                })
-                        } else {
-                            reject(ticket);
-                        }
-                    } else {
-                        console.log('ELSE bestellung ist = 0 : hier ist der wert : ' + bestellung);
-                        dic[ticket.id] = bestellung;
-                        console.log('Länge ist :' + Object.keys(dic).length);
-                        if (Object.keys(dic).length >= Object.keys(obj).length) {
-                            console.log('Länge ist :' + Object.keys(dic).length);
-                            resolve(dic);
-                        }
-
-                    }
-                }, function (err) {
-                    console.log('ist in promise of find.. error : ' + err);
-                    reject(err);
-                })
-            }
-            console.log('my loop is finished : ' + obj);
-        })
-    }
-
-    function checkOrder(obj) {
-        return new Promise((resolve, reject) => {
-            console.log('in CHECK ORDER');
-            var dic = {};
-            for (var key in obj) {
-                var ticketId = key;
-                console.log('ist das der rechte weg ' + ticketId)
-
-
-                Ticket.findById(ticketId).then(function (ticket) {
-                    var bestellung = cleanInt(obj[ticket.id]);
-                    console.log('ist das die bestellung :' + bestellung)
-                    console.log('here kommt das ticket :' + ticket);
-                    var anzahl = cleanInt(ticket.anzahl);
-                    var verkauft = cleanInt(ticket.verkauft);
-
-                    var uebrig = anzahl - verkauft;
-                    console.log('anzahl - verkauft iost : ' + uebrig);
-                    var uebrigAfter = verkauft + bestellung;
-                    console.log('bestellung und verkauft ist : ' + uebrigAfter);
-
-                    if (uebrig < bestellung || uebrigAfter > anzahl) {
-                        reject(ticket);
-                    } else {
-                        dic[ticket.id] = bestellung;
-                        console.log('Länge ist :' + Object.keys(dic).length);
-                        if (Object.keys(dic).length >= Object.keys(obj).length) {
-                            console.log('Länge ist :' + Object.keys(dic).length);
-                            resolve(dic);
-                        }
-                    }
-                }, function (err) {
-                    console.log('ist in promise of find.. error : ' + err);
-                    reject(err);
-                })
-            }
-        })
     }
 });
-
-function cleanInt(x) {
-    x = Number(x);
-    return x >= 0 ? Math.floor(x) : Math.ceil(x);
-}
-
 
 router.post('/openPDF', function (req, res) {
     console.log('in openPDF');
     console.log('response ist :' + req.body.response);
     //var obj = JSON.stringify(req.body.obj);
     //console.log('obj stringify ist :' + obj);
+
     //docDefinition(obj).then(openIt, notOpened);
 
     function openIt(docDefinition, obj) {
-        generatePdf(docDefinition, (response) => {
+        PDF.generatePdf(docDefinition, (response) => {
             res.setHeader('Content-Type', 'application/pdf');
             res.send(response);
         });
@@ -447,156 +194,8 @@ router.post('/openPDF', function (req, res) {
 
 })
 
-//pdf
-function docDefinition(obj) {
-    return new Promise((resolve, reject) => {
-        console.log('doc definition');
-        var content = [];
-        var definition = [{
-            header: 'Ihre Tickets',
-            footer: {
-                columns: [
-                    'Left part',
-                    { text: 'Right part', alignment: 'right' }
-                ]
-            },
-            pageMargins: [40, 60, 40, 60],
-            styles: {
-                header: {
-                    fontSize: 22,
-                    bold: true
-                },
-                subheader: {
-                    fontSize: 16,
-                    bold: true
-                },
-                quote: {
-                    italics: true
-                },
-                small: {
-                    fontSize: 8
-                }
-            }
-        }];
-        var e = 0;
-        console.log('obj ist :' + obj);
-        for (var key in obj) {
-            var eintrittId = key;
-            console.log('im for loop');
-            console.log('eintrittID ist: ' + eintrittId);
-            Eintritt.getEintrittById(eintrittId, function (err, eintritt) {
-                if (err) {
-                    reject(err);
-                } else {
-                    Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            Event.getEventById(ticket.eventId, function (err, event) {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    console.log('alles gefunden');
-                                    content.push(
-                                        { text: event.title },
-                                        {
-                                            text: event.veranstalter,
-
-                                        },
-                                        {
-                                            alignment: 'justify',
-
-                                            columns: [
-                                                {
-                                                    text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.gueltig_time + '\n\n Türöffnung : ' + ticket.tueroeffnung + '\n\n Preis : ' + ticket.preis
-
-                                                },
-                                                { qr: 'https://localhost:3000/buchen/' + eintritt.id }
-                                            ]
-                                        },
-                                        { text: 'Schöne Zeit', pageBreak: 'after' }
-                                    );
-                                    e = e + 1;
-                                    console.log('E ist : ' + e);
-                                    console.log('COntent ist : ' + Object.keys(content).length);
-                                    console.log('definition ist : ' + definition);
-                                    console.log('obj ist :' + Object.keys(obj).length);
-                                    if (e >= Object.keys(obj).length) {
-                                        content.pop()
-                                        console.log('COntent ist : ' + content);
-                                        const docDefinition111 = {
-                                            header: 'Ihre Tickets',
-
-                                            footer: {
-                                                columns: [
-
-                                                    { text: 'Right part', alignment: 'right' }
-                                                    ,
-                                                    {
-                                                        text: 'Hftungsblenung zurückbehaltung blable etc etc',
-
-                                                    }
-                                                ]
-                                            },
-                                            pageMargins: [40, 60, 40, 60],
-
-                                            content: content
-
-                                        };
-                                        //definition.push(content);
-                                        console.log('definition ist : ' + JSON.stringify(docDefinition111));
-                                        resolve(docDefinition111, obj);
-                                    }
-                                }
-                            })
-                        }
-                    })
-                }
-            })
-        }
-    })
+function cleanInt(x) {
+    x = Number(x);
+    return x >= 0 ? Math.floor(x) : Math.ceil(x);
 }
-
-
-function generatePdf(docDefinition, callback) {
-    try {
-        /*var fontDescriptors = {
-            Roboto: {
-                normal: 'Roboto-Regular.ttf',
-                bold: 'Roboto-Medium.ttf',
-                italics: 'Roboto-Italic.ttf',
-                bolditalics: 'Roboto-MediumItalic.ttf'
-            }
-        }; */
-        const printer = new pdfMakePrinter({
-            Roboto: { normal: new Buffer.from(require('pdfmake/build/vfs_fonts.js').pdfMake.vfs['Roboto-Regular.ttf'], 'base64') }
-        });
-        console.log('new PRINTER made');
-        const doc = printer.createPdfKitDocument(docDefinition);
-        console.log('doc made');
-        let chunks = [];
-
-        doc.on('data', (chunk) => {
-            chunks.push(chunk);
-        });
-
-        doc.on('end', () => {
-            //followin two to send it as an attachement..
-            //const result = Buffer.concat(chunks);
-            //callback('data:application/pdf;base64,' + result.toString('base64'));
-
-            //tihis one to open in browser (also to send apparently)..
-            callback(Buffer.concat(chunks));
-
-            console.log('result buffered');
-        });
-
-        doc.end();
-
-    } catch (err) {
-        console.log('in CATCH');
-        throw (err);
-    }
-};
-
 module.exports = router;

@@ -252,6 +252,15 @@ router.post('/register', parser.single('image'), function (req, res, next) {
       //    .catch(err => console.log(err));
     } else {
       console.log('No File Uploaded..');
+      imageUrl = null;
+      imageId = null;
+      var newUser = new User({
+        name: newusername,
+        email: email,
+        password: pwd,
+        imageId: imageId,
+        imageUrl: imageUrl
+      });
     }
 
     //geht dnicht wenn kein bild!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

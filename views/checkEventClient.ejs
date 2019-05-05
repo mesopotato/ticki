@@ -61,6 +61,7 @@
                     <h3 class="mt-0" style="margin-bottom: 2%;"> Titel : <%= event.title %></h3>
                     <h4>Veranstalter : <%= event.veranstalter %></h4>
                     <p><b> Lokation : <%= event.lokation%></b></p>
+                    <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %>  <% } %></b></p>
                     <p>Beschreibung : </p> 
                     <p> <%= event.beschreibung%></p>
 
@@ -69,6 +70,7 @@
                         <li class="list-group-item">Ort : <%=event.plz %> </li>
                     </ul>
                     <div style="margin-top: 5%;">
+
                         <% if (event.youtube) { %>
                         <h4 style="margin-top: 5%; margin-bottom: 2%;"> Youtube Video</h4>
                         <%- event.youtube %>

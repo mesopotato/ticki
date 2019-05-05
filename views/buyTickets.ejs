@@ -78,7 +78,7 @@
                         </div>
                         <div class="col-6">
                             <!-- Content -->
-                            <p><b><%= tickets[0].gueltig_datum %></b></p>
+                            <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %>  <% } %></b></p>
                             <p>Beginn : <%= tickets[0].gueltig_time%></p>
                             <p>Türöffnung : <%= tickets[0].tueroeffnung%></p>
                         </div>

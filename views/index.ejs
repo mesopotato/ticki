@@ -13,6 +13,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script>
+    var check = function () {
+        if (document.getElementById('new_pwd_id').value ==
+            document.getElementById('new_pwd2_id').value) {
+            document.getElementById('message').style.color = 'green';
+            document.getElementById('message').innerHTML = 'matching';
+        } else {
+            document.getElementById('message').style.color = 'red';
+            document.getElementById('message').innerHTML = 'not matching';
+        }
+    }
+    
+</script>
 
 </head>
 
@@ -95,12 +108,13 @@
               </div>
               <div class="form-group">
                 <label for="new_pwd_id">Geben Sie ein Passwort an</label>
-                <input type="password" class="form-control" id="new_pwd_id" name="new_pwd" placeholder="Passwort">
+                <input   onkeyup='check();' type="password" class="form-control" id="new_pwd_id" name="new_pwd" placeholder="Passwort">
               </div>
               <div class="form-group">
                 <label for="new_pwd2_id">Bestätigen Sie das Passwort</label>
-                <input type="password" class="form-control" id="new_pwd2_id" name="new_pwd2" placeholder="Passwort">
+                <input  onkeyup='check();' type="password" class="form-control" id="new_pwd2_id" name="new_pwd2" placeholder="Passwort">
               </div>
+              <span id='message'></span>
               <div class="form-group">
                 <label for="new_pic">Profilbild</label>
                 <input type="file" class="form-control" id="new_profil_pic" name="image">

@@ -16,6 +16,7 @@ var TicketSchema = new mongoose.Schema({
     gueltig_time: String,
     tueroeffnung: String,
     anzahl: Number,
+    alter: Number,
     biswann: String,
     preis: Number,
     verkauft: Number,
@@ -24,7 +25,7 @@ var TicketSchema = new mongoose.Schema({
 
 TicketSchema.plugin(uniqueValidator);
 
-var Ticket = module.exports = mongoose.model('ticketsT2', TicketSchema);
+var Ticket = module.exports = mongoose.model('ticketsT3', TicketSchema);
 
 module.exports.getTicketById = function (id, callback) {
     Ticket.findById(id, callback);

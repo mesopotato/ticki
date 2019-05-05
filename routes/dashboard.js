@@ -45,7 +45,7 @@ router.get('/getEvent/:id', function (req, res) {
             console.log(err);
         } else {
             console.log('event is: ' + event);
-            console.log('id is : ' +event.id);
+            console.log('id is : ' + event.id);
             Ticket.getTicketsByEventId(event.id, function (err, tickets) {
                 if (err) {
                     console.log('error is thrown in get tickt');
@@ -60,9 +60,9 @@ router.get('/getEvent/:id', function (req, res) {
                             console.log('infos sind : ______')
                             console.log(infos);
                             console.log('appLoginUser : ' + infos.appLoginUser);
-                            console.log('appLoginPwd : '+ infos.appLoginPwd);
-                            console.log('app payment : '+ infos.payment);
-                            console.log('app app : '+ infos.app);
+                            console.log('appLoginPwd : ' + infos.appLoginPwd);
+                            console.log('app payment : ' + infos.payment);
+                            console.log('app app : ' + infos.app);
                             res.render('checkEvent', {
                                 user: req.user,
                                 event: event,
@@ -117,11 +117,13 @@ router.post('/neweventDescription', parser.single('new_pic'), function (req, res
             veranstalter: req.body.veranstalter,
             picUrl: image.url,
             picId: image.id,
-            beschreibung: req.body.beschreibung
+            beschreibung: req.body.beschreibung,
+            von: req.body.von,
+            bis: req.body.bis
         });
     } else {
-        var imageUrl = 'null';
-        var imageID = 'null';
+        var imageUrl = null;
+        var imageID = null;
 
         res.render('newYoutube', {
             user: req.user,
@@ -129,7 +131,9 @@ router.post('/neweventDescription', parser.single('new_pic'), function (req, res
             veranstalter: req.body.veranstalter,
             picUrl: imageUrl,
             picId: imageID,
-            beschreibung: req.body.beschreibung
+            beschreibung: req.body.beschreibung,
+            von: req.body.von,
+            bis: req.body.bis
         });
     }
 });
@@ -143,7 +147,9 @@ router.get('/neweventYoutube', function (req, res) {
         picUrl: req.body.picUrl,
         picId: req.body.picId,
         beschreibung: req.body.beschreibung,
-        youtube: req.body.youtube
+        youtube: req.body.youtube,
+        von: req.body.von,
+        bis: req.body.bis
     });
 });
 router.post('/neweventYoutube', function (req, res) {
@@ -155,7 +161,9 @@ router.post('/neweventYoutube', function (req, res) {
         picUrl: req.body.picUrl,
         picId: req.body.picId,
         beschreibung: req.body.beschreibung,
-        youtube: req.body.youtube
+        youtube: req.body.youtube,
+        von: req.body.von,
+        bis: req.body.bis
     });
 });
 
@@ -172,6 +180,8 @@ router.post('/neweventLokation', function (req, res) {
     var newEvent = new Event({
         title: req.body.title,
         veranstalter: req.body.veranstalter,
+        von: req.body.von,
+        bis: req.body.bis,
         beschreibung: req.body.beschreibung,
         picUrl: req.body.picUrl,
         picId: req.body.picId,
@@ -210,6 +220,7 @@ router.post('/saveticket', function (req, res) {
     var gueltig_time = req.body.gueltig_time;
     var tueroeffnung = req.body.tueroeffnung;
     var anzahl = req.body.anzahl;
+    var alter = req.body.alter;
     var biswann = req.body.biswann;
     var preis = req.body.preis;
     var eventId = req.body.eventId;
@@ -225,6 +236,7 @@ router.post('/saveticket', function (req, res) {
         gueltig_time: gueltig_time,
         tueroeffnung: tueroeffnung,
         anzahl: anzahl,
+        alter: alter,
         biswann: biswann,
         preis: preis,
         verkauft: 0,

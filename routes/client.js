@@ -181,9 +181,9 @@ router.post('/buyTickets', jsonParser, function (req, res) {
     function sendIt(docDefinition, obj) {
         console.log('in SENDIT');
 
-        console.log('doc definition soll sein  .:' + Object.entries(docDefinition));
-        console.log('header : ' + docDefinition.header);
-        console.log('contenr : '+ Object.entries(docDefinition.content.text));
+        //console.log('doc definition soll sein  .:' + Object.entries(docDefinition));
+        //console.log('header : ' + docDefinition.header);
+        //console.log('contenr : '+ Object.entries(docDefinition.content.text));
         //psp provider API Call here
 
         PDF.generatePdf(docDefinition, (response) => {

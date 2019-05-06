@@ -38,9 +38,15 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="../../client/clientMainpage">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../clientMainpage">Home <span class="sr-only">(current)</span></a>
                 </li>
-                
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
             </ul>
 
         </div>
@@ -56,13 +62,15 @@
             <div class="media">
                 <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
                 <div class="media-body">
-                        <button type="button" class="btn btn-primary float-right" style="margin: 2%;"  onclick="location.href='/client/buyTickets/<%= event.id %>';">Tickets
-                                kaufen</button>
+                    <button type="button" class="btn btn-primary float-right" style="margin: 2%;"
+                        onclick="location.href='/client/buyTickets/<%= event.id %>';">Tickets
+                        kaufen</button>
                     <h3 class="mt-0" style="margin-bottom: 2%;"> Titel : <%= event.title %></h3>
                     <h4>Veranstalter : <%= event.veranstalter %></h4>
                     <p><b> Lokation : <%= event.lokation%></b></p>
-                    <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %>  <% } %></b></p>
-                    <p>Beschreibung : </p> 
+                    <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %> <% } %></b>
+                    </p>
+                    <p>Beschreibung : </p>
                     <p> <%= event.beschreibung%></p>
 
                     <ul class="list-group">

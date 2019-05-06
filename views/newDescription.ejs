@@ -39,11 +39,18 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../../users/mainpage">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/../users/logout">Logout</a>
                 </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../client/clientMainpage">Zur Kundenseite <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
             </ul>
         </div>
     </nav>
@@ -68,7 +75,7 @@
                 </div>
                 <div class="form-group">
                     <label for="bis">Der Event dauert bis :</label>
-                    <input type="date" class="form-control" id="bis" name="bis" required >
+                    <input type="date" class="form-control" id="bis" name="bis" required>
                 </div>
                 <div class="form-group">
                     <label for="new_pic">Bild passend zum Event</label>
@@ -78,7 +85,7 @@
                 <input type="hidden" value="<%= veranstalter %>" name="veranstalter">
 
                 <div class="form-group">
-                   <!-- <button type="button" class="btn btn-secondary"
+                    <!-- <button type="button" class="btn btn-secondary"
                         onclick="location.href='/users/mainpage';">Zurück</button>-->
                     <button type="button" class="btn btn-secondary" onclick="goBack()">Zurück</button>
                     <input class="btn btn-success" type="submit" value="weiter" id="submit" name="submit">

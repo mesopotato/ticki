@@ -18,12 +18,35 @@
 </head>
 
 <body>
-    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#!"></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="../../users/mainpage">Home <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../client/clientMainpage">Zur Kundenseite <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
 
     <div class="container">
-<div class="jumbotron">
-    <h1>Ups, da ist was noch nich guddd</h1>
-</div>
+        <div class="jumbotron">
+            <h1>Ups, da ist was noch nich guddd</h1>
+        </div>
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -34,8 +57,7 @@
                         <div class="form-group">
                             <label for="new_user_name">Geben Sie einen Benutzernamen an</label>
                             <input type="text" class="form-control" id="new_user_name" name="newusername" <% if (a){ %>
-                                placeholder="<%=newusername%>" <% } else { %> value="<%=newusername%>" <% } %> 
-                            </div>
+                                placeholder="<%=newusername%>" <% } else { %> value="<%=newusername%>" <% } %> </div>
                                 <div class="form-group">
                             <label for="new_user_email">Geben Sie eine E-Mail an</label>
                             <input type="text" class="form-control" id="new_user_email" name="newemail" <% if (b){ %>
@@ -57,13 +79,16 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" onclick="location.href='/';">Abbrechen</button>
                         <button type="submit" class="btn btn-primary" name="submit_registration">Registrieren</button>
-                        
-                    </div><p><%= newusername %></p><p><%= pwd %> </p><p><%= a %></p>
+
+                    </div>
+                    <p><%= newusername %></p>
+                    <p><%= pwd %> </p>
+                    <p><%= a %></p>
                     <p><%= b %></p>
                     <p><%= y %></p>
                     <p><%= z %></p>
                     <p><%= errors[0] %></p>
-                    
+
 
                 </form>
             </div>

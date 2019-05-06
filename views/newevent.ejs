@@ -18,25 +18,32 @@
 </head>
 
 <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-                    data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand" href="#!"><%= user.name %></a>
-        
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-                    <ul class="navbar-nav mr-auto mt-2 mt-md-0">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/../users/logout">Logout</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+            data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#!"><%= user.name %></a>
+        <img src="<%= user.imageUrl %>" style="float: right;" />
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="../../users/mainpage">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/../users/logout">Logout</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../client/clientMainpage">Zur Kundenseite <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
 
     <div class="container">
         <div class="jumbotron">
@@ -51,8 +58,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="titleid">Geben Sie einen Titel an</label>
-                            <input type="text" class="form-control" id="titleid" name="title"
-                                placeholder="Titel" <% if (title) { %> value="<%= title%>" <% } %> >
+                            <input type="text" class="form-control" id="titleid" name="title" placeholder="Titel"
+                                <% if (title) { %> value="<%= title%>" <% } %>>
                         </div>
                         <div class="form-group">
                             <label for="vernastalterid">Geben Sie einen Veranstalter an</label>
@@ -62,7 +69,8 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="location.href='/users/mainpage';">Abbrechen</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="location.href='/users/mainpage';">Abbrechen</button>
                         <button type="submit" class="btn btn-primary" name="submit_registration">Weiter</button>
 
                     </div>

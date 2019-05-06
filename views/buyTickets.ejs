@@ -48,7 +48,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="../client/clientMainpage">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../clientMainpage">Home <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
+                            class="sr-only">(current)</span></a>
                 </li>
 
             </ul>
@@ -78,7 +84,8 @@
                         </div>
                         <div class="col-6">
                             <!-- Content -->
-                            <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %>  <% } %></b></p>
+                            <p><b> Datum : <%= event.von%> <% if (event.von != event.bis) { %> - <%= event.bis %>
+                                    <% } %></b></p>
                             <p>Beginn : <%= tickets[0].gueltig_time%></p>
                             <p>Türöffnung : <%= tickets[0].tueroeffnung%></p>
                         </div>
@@ -102,9 +109,9 @@
 
                                     <td><%= ticket.preis %> CHF</td>
                                     <td><input type="number" class="form-control" id="anzahl<%=y%>"
-                                            name="<%= ticket.id %>"style="font-size:11pt;height:30px;width:100px;">
+                                            name="<%= ticket.id %>" style="font-size:11pt;height:30px;width:100px;">
                                     </td>
-                                </tr>                                
+                                </tr>
                                 <% y = y + 1; }) %>
 
                                 <% i= 0; tickets.forEach(function(ticket){ %>
@@ -115,11 +122,13 @@
 
                         </tbody>
                     </table>
-                    <input style="width: 50%;" type="email" class="form-control" id="email" name="email" placeholder="E Mail" required  onkeyup='check();'/>
-                    <input style="width: 50%;" type="email" class="form-control" id="email2" name="email2" placeholder="E Mail bestätigen" required  onkeyup='check();'/>
+                    <input style="width: 50%;" type="email" class="form-control" id="email" name="email"
+                        placeholder="E Mail" required onkeyup='check();' />
+                    <input style="width: 50%;" type="email" class="form-control" id="email2" name="email2"
+                        placeholder="E Mail bestätigen" required onkeyup='check();' />
                     <span id='message'></span>
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
-                            kaufen</button>
+                        kaufen</button>
                     </form>
                 </div>
             </div>

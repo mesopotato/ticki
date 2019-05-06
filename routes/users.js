@@ -159,6 +159,11 @@ router.post('/forgot', function (req, res, next) {
       console.log('step 3')
 
       smtpTrans.sendMail(mailOptions, function (err) {
+        if (err){
+          console.log('send ist schiefgelaufen :' +err );
+          req.flash('error', 'Da ist etwas schiefgelaufen ');
+          res.redirect('/');
+        }
         req.flash('success', 'Eine Email wurde an ' + user.email + ' gesendet');
         console.log('sent')
         res.redirect('/');

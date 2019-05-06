@@ -53,17 +53,21 @@
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#!"><%= user.name %></a>
-
+        <a class="navbar-brand" href="#!"></a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/../users/logout">Logout</a>
+                    <a class="nav-link" href="../clientMainpage">Home <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
+
         </div>
     </nav>
     <div class="container">
@@ -79,12 +83,13 @@
                     <label for="formGroupExampleInput">App login definieren? </label><br><br>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons" id="radioB">
                         <label class="btn btn-secondary active">
-                            <input type="radio" autocomplete="off" name="halo" value="on" id="retweet" onclick='show2();' checked>
+                            <input type="radio" autocomplete="off" name="halo" value="on" id="retweet"
+                                onclick='show2();' checked>
                             yep
                         </label>
                         <label class="btn btn-secondary">
-                            <input type="radio" name="halo" id="option2" autocomplete="off" value="off" 
-                                onclick='show1();' > nein
+                            <input type="radio" name="halo" id="option2" autocomplete="off" value="off"
+                                onclick='show1();'> nein
                         </label>
                     </div><br>
                 </div>

@@ -41,7 +41,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="../client/clientMainpage">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../clientMainpage">Home <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
+                            class="sr-only">(current)</span></a>
                 </li>
 
             </ul>
@@ -57,14 +63,14 @@
 
         <div class="jumbotron" style="margin-top: 5%;">
 
-                <form action="/client/openPDF" method="post" id="form_register">
-                    
-                    <input type="hidden" name="response" value="<%= response %>">
-                    <button type="submit" class="btn btn-primary" name="submit" value="open">
-                            PDF öffnen</button>
-                </form>
+            <form action="/client/openPDF" method="post" id="form_register">
 
-                <button type="button" class="btn btn-secondary" style="margin: 2%;" onclick="goBack()">Nochmal</button>
+                <input type="hidden" name="response" value="<%= response %>">
+                <button type="submit" class="btn btn-primary" name="submit" value="open">
+                    PDF öffnen</button>
+            </form>
+
+            <button type="button" class="btn btn-secondary" style="margin: 2%;" onclick="goBack()">Nochmal</button>
 
         </div>
     </div>

@@ -26,23 +26,30 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" href="#!"><%= user.name %></a>
-
+        <img src="<%= user.imageUrl %>" style="float: right;" />
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../../users/mainpage">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/../users/logout">Logout</a>
                 </li>
             </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../client/clientMainpage">Zur Kundenseite <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
         </div>
     </nav>
 
     <div class="container">
-            <% if (messages) { %>
-                <%- messages() %>
-                <% } %>
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
         <div class="jumbotron" style="margin-top: 5%;">
             <h1><%= title %></h1>
             <h4> <%= veranstalter %></h4>

@@ -42,22 +42,28 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" href="#!"></a>
-        
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
                     <a class="nav-link" href="#!">Home <span class="sr-only">(current)</span></a>
                 </li>
-                
             </ul>
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
+                            class="sr-only">(current)</span></a>
+                </li>
+
+            </ul>
+
         </div>
     </nav>
     <div class="container">
-        
-            <% if (messages) { %>
-            <%- messages() %>
-            <% } %>
-     
+
+        <% if (messages) { %>
+        <%- messages() %>
+        <% } %>
+
         <div class="jumbotron">
             <h2 style="margin-bottom: 2%;"> Events</h2>
             <% events.forEach(function(event){ %>

@@ -13,6 +13,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="node_modules/splash-screen/dist/splash-screen-audio-wave.min.css">
+<script src="node_modules/splash-screen/dist/splash-screen-audio-wave.min.js"></script>
+ 
+<script>
+    const theme = window['splash-screen-audio-wave'];
+ 
+    //enable with no arg.
+    theme.enable();
+    
+    //destory the splash
+    theme.destory();
+</script> 
     <style>
         a.custom-card,
         a.custom-card:hover {

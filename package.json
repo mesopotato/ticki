@@ -33,6 +33,7 @@
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
-    "pdfmake": "^0.1.54"
+    "pdfmake": "^0.1.54",
+    "splash-screen": "^4.0.1"
   }
 }

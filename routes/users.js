@@ -65,6 +65,7 @@ function ensureAuthenticated(req, res, next) {
   }
   res.redirect('/');
 }
+
 router.get('/index', function (req, res, next) {
   res.render('index');
 });

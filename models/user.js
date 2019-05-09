@@ -59,6 +59,7 @@ module.exports.comparePassword = function (candidatePassword, hash, callback) {
         callback(null, isMatch);
     });
 }
+
 module.exports.createUser = function (newUser, callback) {
         console.log('saving user');
         newUser.save(callback);

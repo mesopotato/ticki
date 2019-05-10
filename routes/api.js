@@ -48,14 +48,8 @@ router.get('/login/:name&:password', function (request, response) {
 
                                 }
                             })
-
                         }
-
-
                     });
-
-
-
                 } else {
                     console.log('!user in Local pwd');
                     response.send({
@@ -68,57 +62,7 @@ router.get('/login/:name&:password', function (request, response) {
 
 });
 
-router.post('/login', (req, res) =>
-    passport.authenticate('local', {
-        successRedirect: 'https://auth.expo.io/@mesopotato/tickiApp',
-        failureFlash: 'Benutzername oder Passwort ist falsch :(',
-        failureRedirect: 'https://auth.expo.io/@mesopotato/tickiApps'
-    })
-        (req, res)
-);
-
-function ensureAuthenticated(req, res, next) {
-    //hier eigene db abfrage
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    //was wenn nicht mehr authenticated??
-    res.redirect('/');
-}
-
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-    Info.getAppNpayById(id, function (err, user) {
-        done(err, user);
-    });
-});
-
-passport.use(new LocalStrategy(
-    function (name, password, done) {
-        console.log('!user in Local Strategy');
-        Info.findOne({ 'appLoginUser': name }, function (err, user) {
-            if (err) { return done(err); }
-            if (!user) {
-                console.log('!user in Local user');
-                return done(null, false, { message: 'Email oder Benutzername ungültig' });
-            }
-            Info.comparePassword(password, user.appLoginPwd, function (err, isMatch) {
-                if (err) return done(err);
-                if (isMatch) {
-                    return done(null, user);
-                } else {
-                    console.log('!user in Local pwd');
-                    return done(null, false, { message: 'Passwort ungültig' });
-                }
-            });
-        });
-    }
-));
-
-
+/*
 router.get('/getEvents', ensureAuthenticated, function (req, res) {
     Event.getEvents(function (err, events) {
         if (err) {
@@ -130,7 +74,7 @@ router.get('/getEvents', ensureAuthenticated, function (req, res) {
         });
     });
 
-});
+});*/
 
 router.get('/logout', function (req, res) {
     req.logout();

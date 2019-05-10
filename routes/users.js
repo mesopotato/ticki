@@ -92,6 +92,8 @@ passport.deserializeUser(function (id, done) {
 passport.use(new LocalStrategy(
   function (name, password, done) {
     console.log('!user in Local Strategy');
+    console.log('name ist : '+ name);
+    console.log('password ist : ' + password);
     User.findOne({ $or: [{ 'email': name }, { 'name': name }] }, function (err, user) {
       if (err) { return done(err); }
       if (!user) {
@@ -101,6 +103,7 @@ passport.use(new LocalStrategy(
       User.comparePassword(password, user.password, function (err, isMatch) {
         if (err) return done(err);
         if (isMatch) {
+          console.log('isMatch')
           return done(null, user);
         } else {
           console.log('!user in Local pwd');

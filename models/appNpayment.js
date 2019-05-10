@@ -27,10 +27,15 @@ module.exports.getAppNpayByEventId = function (eventId, callback) {
 
 module.exports.comparePassword = function (candidatePassword, dbPassword, callback) {
     console.log('candiatate Password : ' + candidatePassword);
-    console.log(' hash : ' + dbPassword);
+    console.log(' bdPssword : ' + dbPassword);
+    var isMatch = false;
     if (candidatePassword == dbPassword){
-        callback(isMatch)
+        isMatch = true;
+        console.log('pwd matches and isMatch is true')
+    }else {
+        isMatch = false;
     }
+    callback(isMatch);
 }
 
 module.exports.saveAppNpayment = function (newLogin, callback) {

@@ -18,6 +18,13 @@ module.exports.getTokenById = function (id, callback) {
     Token.findById(id, callback);
 }
 
+module.exports.getToken = function (token, callback) {
+    Token.find().where("token", token).
+    exec(function (err, token) {
+        callback(err, token);
+    });
+}
+
 module.exports.getTokensByEventId = function (eventId, callback) {
     Token.find().where("eventId", eventId).
     exec(function (err, tokens) {

@@ -27,7 +27,7 @@ router.get('/login/:name&:password', function (request, response) {
             Info.comparePassword(password, user.appLoginPwd, function (isMatch) {
                 if (isMatch) {
                     //token generienen , abspeichern und zurücksenden.. 
-                    crypto.randomBytes(20, function (err, buf) {
+                    crypto.randomBytes(50, function (err, buf) {
                         if (err) {
                             console.log('error in tokenCryptoerstellung')
                         } else {
@@ -41,7 +41,7 @@ router.get('/login/:name&:password', function (request, response) {
                                 if (err) {
                                     console.log('token konnte nicht gespeichert werden.. try another time')
                                 } else {
-
+                                    console.log('token wurde erfolgreich gespeichert' + token);
                                     response.send({
                                         token: token
                                     })

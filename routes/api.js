@@ -8,6 +8,7 @@ var async = require("async");
 var Info = require('../models/appNpayment');
 var crypto = require('crypto');
 var Event = require('../models/event');
+var Ticket = require('../models/tickets');
 var Token = require('../models/tokens');
 
 //example
@@ -42,10 +43,25 @@ router.get('/login/:name&:password', function (request, response) {
                                     console.log('token konnte nicht gespeichert werden.. try another time')
                                 } else {
                                     console.log('token wurde erfolgreich gespeichert' + token);
-                                    response.send({
-                                        token: token
-                                    })
 
+                                    //nun noch die infos holen.. 
+                                    Event.getEventById(token.eventId, function (err, event) {
+                                        if (err) {
+                                            console.log('event findOne ist im err..' + err);
+                                        } else {
+                                            Ticket.getTicketsByEventId(token.eventId, function (err, tickets) {
+                                                if (err) {
+                                                    console.log('getTicketsByEventID ist im err...' + err);
+                                                } else {
+                                                    response.send({
+                                                        token: token,
+                                                        event: event,
+                                                        tickets: tickets
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
                                 }
                             })
                         }

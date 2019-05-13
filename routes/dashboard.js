@@ -240,6 +240,7 @@ router.post('/saveticket', function (req, res) {
         biswann: biswann,
         preis: preis,
         verkauft: 0,
+        abbgebucht: 0,
         eventId: eventId
     });
 

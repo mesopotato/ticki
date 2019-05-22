@@ -56,7 +56,8 @@ router.get('/login/:name&:password', function (request, response) {
                                                     response.send({
                                                         token: token,
                                                         event: event,
-                                                        tickets: tickets
+                                                        tickets: tickets,
+                                                        user: 'OK'
                                                     })
                                                 }
                                             })

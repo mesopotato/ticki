@@ -10,8 +10,52 @@ var crypto = require('crypto');
 var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var Token = require('../models/tokens');
+var Eintritt = require('../models/eintritte');
 
-//example
+router.get('/buchen/:eintrittID&:token', function (request, response){
+    const eintrittID = request.params.eintrittID;
+    const token = request.params.token;
+    Token.getToken(token, function (err, newToken){
+        if (err){
+            response.send({
+                status: 'noToken'
+            })
+        }else {
+            if (newToken.token = token){
+                //token ist bewilligt nun kann gebucht werden
+                Eintritt.findOne(eintrittID, function(err, eintritt){
+                    if (err){
+                        response.send({
+                            status: 'noTicket'
+                        })
+                    }else {
+                        if (eintritt.abbgebucht == false){
+                            //noch gueltig 
+                            var options = {
+                                new: true,
+                                runValidators: true
+                            }
+                            var query = { _id: eintritt.id };
+                            Eintritt.findOneAndUpdate(query, { $inc: { abbgebucht: true } }, options).then(function (newEintritt) {
+                                if (newEintritt.abbgebucht == true){
+                                    //erfolgreich abbgebucht
+                                    response.send({
+                                        status: 'OK'
+                                    })
+                                }
+                            });        
+                        }else {
+                            response.send({
+                                status: 'noTicket'
+                            })
+                        }
+                    }
+                })
+            }
+        }
+    })
+})
+//login
 router.get('/login/:name&:password', function (request, response) {
     const name = request.params.name
     const password = request.params.password

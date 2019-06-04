@@ -81,9 +81,6 @@ router.get('/buchen/:eintrittID&:token', function (request, response){
             }
         }
       });
-    Token.getToken(token, function (err, newToken){
-      
-    })
 })
 //login
 router.get('/login/:name&:password', function (request, response) {

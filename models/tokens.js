@@ -6,7 +6,7 @@ mongoose.connect('mongodb://localhost/nodeauth', { useNewUrlParser: true });
 var db = mongoose.connection;
 
 var TokenSchema = new mongoose.Schema({
-    token: { type: String, required: true, unique: true },
+    token: { type: String, required: true},
     eventId : { type: String, required: true }
 });
 

@@ -12,47 +12,77 @@ var Ticket = require('../models/tickets');
 var Token = require('../models/tokens');
 var Eintritt = require('../models/eintritte');
 
+//eintritt abbuchen  auf invalid
 router.get('/buchen/:eintrittID&:token', function (request, response){
+    
     const eintrittID = request.params.eintrittID;
     const token = request.params.token;
-    Token.getToken(token, function (err, newToken){
+    console.log('eintrittID ist '+ eintrittID + ' token ist : '+ token);
+    Token.findOne({ 'token': token }, function (err, newToken) {
         if (err){
+            console.log('noToken ');
             response.send({
                 status: 'noToken'
             })
+            return handleError(err);
         }else {
-            if (newToken.token = token){
+            console.log('elese newToken.token ist : ' +newToken.token +' und token ist : ' +token);
+            if (newToken.token == token){
+                console.log('token und newtoken ist gleich');
                 //token ist bewilligt nun kann gebucht werden
-                Eintritt.findOne(eintrittID, function(err, eintritt){
+                Eintritt.getEintrittById(eintrittID, function(err, eintritt){
                     if (err){
+                        console.log('in err of getEintrittbyID ');
                         response.send({
                             status: 'noTicket'
                         })
+                        return handleError(err);
                     }else {
-                        if (eintritt.abbgebucht == false){
+                        console.log('eintritt.abbgebucht ist: ' + eintritt.abgebucht);
+                        if (eintritt.abgebucht == false){
                             //noch gueltig 
                             var options = {
                                 new: true,
                                 runValidators: true
                             }
                             var query = { _id: eintritt.id };
-                            Eintritt.findOneAndUpdate(query, { $inc: { abbgebucht: true } }, options).then(function (newEintritt) {
-                                if (newEintritt.abbgebucht == true){
-                                    //erfolgreich abbgebucht
-                                    response.send({
-                                        status: 'OK'
+                            Eintritt.findOneAndUpdate(query, { $set: { abgebucht: true } }, options).then(function (newEintritt) {
+                                console.log('in findone and update nun muss abbgebucht true sein : '+ newEintritt.abgebucht);
+                                if (newEintritt.abgebucht == true){
+                                    var query = { _id: eintritt.ticketId };
+                                    var options = {
+                                        new: true,
+                                        runValidators: true
+                                    }
+                                    Ticket.findOneAndUpdate(query, {$inc: {abbgebucht : 1 }}, options).then(function (newTicket){
+                                        response.send({
+                                            status: 'OK',
+                                            abbgebucht : newTicket.abbgebucht
+                                        })
                                     })
+                                    //erfolgreich abbgebucht
+                                    
                                 }
+
                             });        
                         }else {
+                            console.log('eintritt.abbgebucht war true');
                             response.send({
                                 status: 'noTicket'
                             })
                         }
                     }
                 })
+            }else {
+                console.log('token und new token sind nicht gleich.. newToken ist : ' + newToken);
+                console.log('newToken.id ist : ' + newToken._id)
+                console.log('newToken.token ist : ' + newToken.token)
+                console.log('newToken.eventID ist :' + newToken.eventId)
             }
         }
+      });
+    Token.getToken(token, function (err, newToken){
+      
     })
 })
 //login

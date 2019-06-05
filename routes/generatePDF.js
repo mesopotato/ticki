@@ -68,7 +68,7 @@ exports.docDefinition = function (obj) {
                                                     text: 'Lokation :' + event.lokation + '\n\n Ticket : ' + ticket.kategorie + '\n\n Datum : ' + ticket.gueltig_datum + '\n\n Beginn : ' + ticket.gueltig_time + '\n\n Türöffnung : ' + ticket.tueroeffnung + '\n\n Preis : ' + ticket.preis
 
                                                 },
-                                                { qr: 'https://192.168.1.149:3000/buchen/' + eintritt.id }
+                                                { qr: 'https://192.168.1.149:3000/api/buchen/' + eintritt.id }
                                             ]
                                         },
                                         { text: 'Schöne Zeit ' +eintritt.email, pageBreak: 'after' }

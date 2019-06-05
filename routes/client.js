@@ -168,12 +168,16 @@ router.post('/buyTickets', jsonParser, function (req, res) {
     function sendPdfNow(result) {
         console.log('in send PDF now Result übergabe ist :' + result)
         PDF.docDefinition(result).then(sendIt, notSend);
+        // res.render('buyed', {
+        //     response: result
+        // });
+
 
         function notSend(result) {
             //pdf konnte nicht gesendet werden
             req.flash('error ', result)
             res.render('buyed', {
-                result: result
+                response: result
             });
         }
     }
@@ -219,17 +223,19 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                     });*/
                     res.setHeader('Content-Type', 'application/pdf');
                     res.send(response);
+                    return handleError(err);
                 } else {
-                    req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet' + obj);
+                    req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet ' + obj);
 
-                    /* SUcess TEXT:
-                     Erfolgreich: Vielen Dank für Ihre Steuerdeklaration. Sie erhalten in den nächsten Minuten eine Bestätigung per E-mail mit dem PDF mit den von Ihnen gemachten Angaben. Klicken Sie auf den PDF-Knopf, um das PDF mit Ihren Angaben zu sehen.
-                    console.log('this obj' + obj);
-                    /*res.render('buyed', {
+                    // SUcess TEXT:
+                    //Erfolgreich: Vielen Dank für Ihre Steuerdeklaration. Sie erhalten in den nächsten Minuten eine Bestätigung per E-mail mit dem PDF mit den von Ihnen gemachten Angaben. Klicken Sie auf den PDF-Knopf, um das PDF mit Ihren Angaben zu sehen.
+                    // console.log('this obj' + obj);
+                    res.render('buyed', {
                          response: response
-                     }); */
-                    res.setHeader('Content-Type', 'application/pdf');
-                    res.send(response);
+                      }); 
+
+                    // res.setHeader('Content-Type', 'application/pdf');
+                    // res.send(response);
                 }
 
                 console.log('sent')
@@ -242,13 +248,16 @@ router.post('/buyTickets', jsonParser, function (req, res) {
 
 router.post('/openPDF', function (req, res) {
     console.log('in openPDF');
-    console.log('response ist :' + req.body.response);
+    console.log('response ist :' + req.body.response[0]);
+    var obj = req.body.response;
     //var obj = JSON.stringify(req.body.obj);
     //console.log('obj stringify ist :' + obj);
+    var b = new Buffer(req.body.response, 'base64')
+    var s = b.toString();
 
-    //docDefinition(obj).then(openIt, notOpened);
-
-    function openIt(docDefinition, obj) {
+    //PDF.docDefinition(req.body.response).then(openIt, notOpened);
+    openIt(s);
+    function openIt(docDefinition) {
         PDF.generatePdf(docDefinition, (response) => {
             res.setHeader('Content-Type', 'application/pdf');
             res.send(response);
@@ -259,7 +268,7 @@ router.post('/openPDF', function (req, res) {
         //pdf konnte nicht gesendet werden
         req.flash('error ', result)
         res.render('buyed', {
-            result: result
+            response: result
         });
     }
 

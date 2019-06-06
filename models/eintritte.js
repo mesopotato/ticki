@@ -17,7 +17,7 @@ var EintrittSchema = new mongoose.Schema({
 
 EintrittSchema.plugin(uniqueValidator);
 
-var Eintritt = module.exports = mongoose.model('eintritt2', EintrittSchema);
+var Eintritt = module.exports = mongoose.model('eintritte99', EintrittSchema);
 
 module.exports.getEintrittById = function (id, callback) {
     Eintritt.findById(id, callback);
@@ -31,6 +31,13 @@ module.exports.findWithPromise = function (id) {
         console.log('ist in promise error : ' + err);
     })
 
+}
+module.exports.getEintritteByEmail = function (email, callback) {
+    
+    Eintritt.find().where("email", email).
+        exec(function (err, eintritte) {
+            callback(err, eintritte);
+        });
 }
 
 module.exports.getEintritteByTicketId = function (ticketId, callback) {

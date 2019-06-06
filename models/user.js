@@ -37,7 +37,7 @@ UserSchema.pre('save', function (next) {
 
 UserSchema.plugin(uniqueValidator);
 
-var User = module.exports = mongoose.model('usersT33', UserSchema);
+var User = module.exports = mongoose.model('users99', UserSchema);
 
 module.exports.getUserById = function (id, callback) {
     User.findById(id, callback);

@@ -23,7 +23,7 @@ var EventSchema = new mongoose.Schema({
 
 EventSchema.plugin(uniqueValidator);
 
-var Event = module.exports = mongoose.model('eventst3', EventSchema);
+var Event = module.exports = mongoose.model('events99', EventSchema);
 
 module.exports.getEventById = function (id, callback) {
     Event.findById(id, callback);

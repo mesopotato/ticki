@@ -12,7 +12,7 @@ var TokenSchema = new mongoose.Schema({
 
 TokenSchema.plugin(uniqueValidator);
 
-var Token = module.exports = mongoose.model('tokens', TokenSchema);
+var Token = module.exports = mongoose.model('tokens99', TokenSchema);
 
 module.exports.getTokenById = function (id, callback) {
     Token.findById(id, callback);

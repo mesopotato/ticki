@@ -26,7 +26,7 @@ var TicketSchema = new mongoose.Schema({
 
 TicketSchema.plugin(uniqueValidator);
 
-var Ticket = module.exports = mongoose.model('ticketsT4', TicketSchema);
+var Ticket = module.exports = mongoose.model('tickets99', TicketSchema);
 
 module.exports.getTicketById = function (id, callback) {
     Ticket.findById(id, callback);

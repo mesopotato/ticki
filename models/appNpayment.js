@@ -15,7 +15,7 @@ var PaymentSchema = new mongoose.Schema({
 
 PaymentSchema.plugin(uniqueValidator);
 
-var appNpay = module.exports = mongoose.model('appnpaymentsts', PaymentSchema);
+var appNpay = module.exports = mongoose.model('appnpayments99', PaymentSchema);
 
 module.exports.getAppNpayById = function (id, callback) {
     appNpay.findById(id, callback);

@@ -225,14 +225,61 @@ router.post('/buyTickets', jsonParser, function (req, res) {
                     res.send(response);
                     return handleError(err);
                 } else {
+
+
                     req.flash('success', 'Eine Email wurde an ' + req.body.email + ' gesendet ' + obj);
 
-                    // SUcess TEXT:
+                    // Sucess TEXT:
                     //Erfolgreich: Vielen Dank für Ihre Steuerdeklaration. Sie erhalten in den nächsten Minuten eine Bestätigung per E-mail mit dem PDF mit den von Ihnen gemachten Angaben. Klicken Sie auf den PDF-Knopf, um das PDF mit Ihren Angaben zu sehen.
                     // console.log('this obj' + obj);
-                    res.render('buyed', {
-                         response: response
-                      }); 
+                    Eintritt.getEintritteByEmail(req.body.email, function (err, eintritte) {
+                        if (err) {
+                            console.log('keine eintritte gefunden')
+                            return handleError(err);
+                        } else {
+                            console.log('eintritte sidn: ')
+                            console.log(eintritte);
+                            var bestellung = [];
+                            var i = 0;
+                            for (eintritt in eintritte) {
+
+                                console.log(eintritte[eintritt].ticketId);
+
+                                console.log('in for loop');
+                                Ticket.findById(eintritte[eintritt].ticketId, function (err, ticket) {
+                                    if (err) {
+                                        console.log('kein ticket gefunden')
+                                        return handleError(err);
+                                    } else {
+                                        console.log(ticket);
+                                        Event.getEventById(ticket.eventId, function (err, event) {
+                                            if (err) {
+                                                console.log('keine events gefunden')
+                                                return handleError(err);
+                                            } else {
+
+                                                bestellung.push({ event: event, ticket: ticket, eintritt: eintritte[eintritt] })
+                                                //if (i = eintritte.length) {
+                                                i = i + 1;
+                                                if (bestellung.length >= Object.keys(eintritte).length) {
+                                                    console.log(bestellung);
+
+                                                    res.render('buyed', {
+                                                        bestellung: bestellung
+                                                    });
+                                                }
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            // eintritte.forEach(function (eintritt) {
+
+                            // });
+
+                        }
+                    })
+
 
                     // res.setHeader('Content-Type', 'application/pdf');
                     // res.send(response);
@@ -254,6 +301,12 @@ router.post('/openPDF', function (req, res) {
     //console.log('obj stringify ist :' + obj);
     var b = new Buffer(req.body.response, 'base64')
     var s = b.toString();
+
+    var b = new Buffer(req.body.response
+    );
+    // If we don't use toString(), JavaScript assumes we want to convert the object to utf8.
+    // We can make it convert to other formats by passing the encoding type to toString().
+    var s = b.toString('base64');
 
     //PDF.docDefinition(req.body.response).then(openIt, notOpened);
     openIt(s);

@@ -63,9 +63,41 @@
 
         <div class="jumbotron" style="margin-top: 5%;">
 
+            <table class="table" style="margin-top: 5%;">
+                <thead>
+                    <tr>
+                        <th>Kategorie</th>
+                        <th>Preis</th>
+                        <th>Anzahl Tickets</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <form action="/client/openEintritt" method="post" id="openThat">
+                        <% y= 1; bestellung.forEach(function(best){ %>
+                        <tr class="table-info">
+                            <th scope="row"><%= best.ticket.kategorie %></th>
+
+                            <td><%= best.ticket.preis %> CHF</td>
+                            <td><input type="number" class="form-control" id="anzahl<%=y%>"
+                                    name="<%= best.ticket.id %>" style="font-size:11pt;height:30px;width:100px;">
+                            </td>
+                        </tr>
+                        <% y = y + 1; }) %>
+
+                        <% i= 0; bestellung.forEach(function(best){ %>
+                        <input type="hidden" value="<%= best.ticket.id %>" name="ticketId" />
+                        <input type="hidden" value="<%= i %>" name="ticketsNumber" />
+                        <input type="hidden" value="<%= best.event.id %>" name="eventId" />
+                        <% i = i + 1; }) %>
+                        
+
+                </tbody>
+            </table>
+
             <form action="/client/openPDF" method="post" id="form_register">
 
-                <input type="hidden" name="response" value="<%= response %>">
+                <input type="hidden" name="response" value="<%= bestellung %>">
                 <button type="submit" class="btn btn-primary" name="submit" value="open">
                     PDF öffnen</button>
             </form>

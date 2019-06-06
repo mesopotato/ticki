@@ -13,7 +13,7 @@
     "body-parser": "^1.19.0",
     "cloudinary": "^1.14.0",
     "connect-flash": "*",
-    "cookie-parser": "~1.4.3",
+    "cookie-parser": "^1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.5.7",
     "express": "~4.16.0",

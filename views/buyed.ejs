@@ -79,8 +79,8 @@
                             <th scope="row"><%= best.ticket.kategorie %></th>
 
                             <td><%= best.ticket.preis %> CHF</td>
-                            <td><input type="number" class="form-control" id="anzahl<%=y%>"
-                                    name="<%= best.ticket.id %>" style="font-size:11pt;height:30px;width:100px;">
+                            <td><button type="submit" class="btn btn-primary" name="submit" value="open">
+                                PDF öffnen</button>
                             </td>
                         </tr>
                         <% y = y + 1; }) %>
@@ -97,9 +97,8 @@
 
             <form action="/client/openPDF" method="post" id="form_register">
 
-                <input type="hidden" name="response" value="<%= bestellung %>">
-                <button type="submit" class="btn btn-primary" name="submit" value="open">
-                    PDF öffnen</button>
+               
+                
             </form>
 
             <button type="button" class="btn btn-secondary" style="margin: 2%;" onclick="goBack()">Nochmal</button>

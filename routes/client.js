@@ -12,6 +12,7 @@ var crypto = require('crypto');
 var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var Eintritt = require('../models/eintritte');
+var Client = require('../models/client');
 const pdfMakePrinter = require('pdfmake');
 var Promise = require("bluebird");
 var bodyParser = require('body-parser');
@@ -89,9 +90,51 @@ router.get('/buyTickets/:id', function (req, res) {
         }
     });
 });
+function ensureAuthenticated(req, res, next) {
+    //passport function 
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    console.log(req.body);
+    console.log('in buytickets');
+    var ticketsNumber = cleanInt(req.body.ticketsNumber);
+    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
+    if (ticketsNumber > 1) {
+        var ticket = req.body.ticketId[0];
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    } else {
+        var ticket = req.body.ticketId;
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    }
 
+    var dic = {
+        [ticket]: best
+    };
 
-router.post('/buyTickets', jsonParser, function (req, res) {
+    //falls es mehr hat alles in ein array
+    for (y = 1; y < ticketsNumber; y++) {
+        var ticket = req.body.ticketId[y];
+        var bestellung = req.body[ticket];
+        dic[ticket] = bestellung;
+    }
+    console.log('hiere kommt das Dictionaly: ');
+    console.log(dic);
+    res.cookie(cookie_name , dic).send('Cookie is set');
+    res.redirect('client/clientRegister');
+}
+
+router.get('/clientRegister', function (req, res, next) {
+    console.log('get clientRegister');
+    res.render('clientRegister', {
+        events: events
+    });
+});
+
+router.post('/buyTickets', ensureAuthenticated, jsonParser, function (req, res) {
     //psp provider API Call here
     console.log(req.body);
     console.log('in buytickets');
@@ -334,4 +377,49 @@ function cleanInt(x) {
     x = Number(x);
     return x >= 0 ? Math.floor(x) : Math.ceil(x);
 }
+
+
+router.post('/clientLogin', (req, res) =>
+    passport.authenticate('local', {
+        successRedirect: '/client/buyTickets',
+        failureFlash: 'Benutzername oder Passwort ist falsch :(',
+        failureRedirect: '/clientRegister'
+    })
+        (req, res)
+);
+
+passport.serializeUser(function (client, done) {
+    done(null, client.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    Client.getClientById(id, function (err, client) {
+        done(err, client);
+    });
+});
+
+passport.use(new LocalStrategy(
+    function (name, password, done) {
+        console.log('!client in Local Strategy');
+        console.log('name ist : ' + name);
+        console.log('password ist : ' + password);
+        Client.findOne({ $or: [{ 'email': name }, { 'name': name }] }, function (err, client) {
+            if (err) { return done(err); }
+            if (!client) {
+                console.log('!client in Local user');
+                return done(null, false, { message: 'Email oder Benutzername ungültig' });
+            }
+            Client.comparePassword(password, client.password, function (err, isMatch) {
+                if (err) return done(err);
+                if (isMatch) {
+                    console.log('isMatch')
+                    return done(null, client);
+                } else {
+                    console.log('!client in Local pwd');
+                    return done(null, false, { message: 'Passwort ungültig' });
+                }
+            });
+        });
+    }
+));
 module.exports = router;

@@ -17,7 +17,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var path = require('path')
 var db = mongoose.connection;
-
+var cookieParser = require('cookie-parser');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dashboardRouter = require('./routes/dashboard');
@@ -27,6 +27,8 @@ var api = require('./routes/api');
 var app = express();
 
 app.use(bodyParser.urlencoded({extended : false}));
+app.use(cookieParser());
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

@@ -123,14 +123,20 @@ function ensureAuthenticated(req, res, next) {
     }
     console.log('hiere kommt das Dictionaly: ');
     console.log(dic);
-    res.cookie(cookie_name , dic).send('Cookie is set');
-    res.redirect('client/clientRegister');
+   // res.cookie('dic' , dic, {maxAge : 9999});
+   req.session.dic = dic;
+    res.redirect('clientRegister/');
 }
 
-router.get('/clientRegister', function (req, res, next) {
+router.get('/clientRegister/', function (req, res, next) {
+   // var dic = req.params.dic;
+   //console.log(req.body.ticketId)
+    //var dic = dic1.json();
+    //console.log(dic.toString());
+    //res.cookie('dic' , dic, {maxAge : 9999});
+    console.log(req.session.dic);
     console.log('get clientRegister');
     res.render('clientRegister', {
-        events: events
     });
 });
 

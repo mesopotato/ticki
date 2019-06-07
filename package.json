@@ -18,7 +18,7 @@
     "ejs": "~2.5.7",
     "express": "~4.16.0",
     "express-messages": "*",
-    "express-session": "*",
+    "express-session": "^1.16.1",
     "express-validator": "*",
     "http-errors": "*",
     "jade": "~1.11.0",

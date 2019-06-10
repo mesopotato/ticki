@@ -12,6 +12,7 @@ exports.checkOrder = function (obj) {
             console.log('ist das der rechte weg ' + ticketId)
 
 
+            
             Ticket.findById(ticketId).then(function (ticket) {
                 var bestellung = cleanInt(obj[ticket.id]);
                 console.log('ist das die bestellung :' + bestellung)

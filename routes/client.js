@@ -26,6 +26,23 @@ var async = require("async");
 var crypto = require('crypto');
 var fs = require('fs');
 
+
+const cloudinary = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+
+cloudinary.config({
+    cloud_name: 'dzcxfnvyu',
+    api_key: '771478566264235',
+    api_secret: '9VxATR7G6tjNLkqmEDGE5rQUoV8'
+});
+const storage = cloudinaryStorage({
+    cloudinary: cloudinary,
+    folder: "demo",
+    allowedFormats: ["jpg", "png"],
+    transformation: [{ width: 80, height: 80, crop: "limit" }]
+});
+const parser = multer({ storage: storage });
+
 router.get('/clientMainpage', function (req, res, next) {
     console.log('get mainpage');
     var e = Event.getEvents(function (err, events) {
@@ -37,6 +54,46 @@ router.get('/clientMainpage', function (req, res, next) {
             events: events
         });
     });
+});
+
+// render tickets after login out of the session :)
+router.get('/buyTickets', function (req, res) {
+    console.log('render tickets after login out of the session dic');
+    console.log(req.session.dic);
+    var bestellung = [];
+    for (var key in req.session.dic){
+        var ticketID = key;
+        var anzahl = req.session.dic[ticketID]
+        Ticket.findById(ticketID, function (err, ticket) {
+            if (err) {
+                console.log('kein ticket gefunden')
+                return handleError(err);
+            } else {
+                console.log('consoele logge das ticket');
+                console.log(ticket);
+                Event.getEventById(ticket.eventId, function (err, event) {
+                    if (err) {
+                        console.log('keine events gefunden')
+                        return handleError(err);
+                    } else {
+
+                        bestellung.push({ event: event, ticket: ticket, anzahl: anzahl })
+                        //if (i = eintritte.length) {
+                        i = i + 1;
+                        if (bestellung.length >= Object.keys(req.session.dic).length) {
+                            console.log('consoele logge die bestellung');
+                            console.log(bestellung);
+
+                            res.render('buyTicketsAfterLogin', {
+                                bestellung: bestellung
+                            });
+                        }
+                    }
+                })
+            }
+        })
+
+    }
 });
 
 //get the event for the client
@@ -65,7 +122,7 @@ router.get('/getEvent/:id', function (req, res) {
     });
 });
 
-//get the event for the client
+//get the event for the client.....
 router.get('/buyTickets/:id', function (req, res) {
     console.log('is in get event');
     Event.getEventById(req.params.id, function (err, event) {
@@ -88,55 +145,6 @@ router.get('/buyTickets/:id', function (req, res) {
                 }
             });
         }
-    });
-});
-function ensureAuthenticated(req, res, next) {
-    //passport function 
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    console.log(req.body);
-    console.log('in buytickets');
-    var ticketsNumber = cleanInt(req.body.ticketsNumber);
-    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
-    if (ticketsNumber > 1) {
-        var ticket = req.body.ticketId[0];
-        console.log('TicketID ist :' + ticket);
-        var best = cleanInt(req.body[ticket]);
-        console.log('BEstellung beträtg :' + best);
-    } else {
-        var ticket = req.body.ticketId;
-        console.log('TicketID ist :' + ticket);
-        var best = cleanInt(req.body[ticket]);
-        console.log('BEstellung beträtg :' + best);
-    }
-
-    var dic = {
-        [ticket]: best
-    };
-
-    //falls es mehr hat alles in ein array
-    for (y = 1; y < ticketsNumber; y++) {
-        var ticket = req.body.ticketId[y];
-        var bestellung = req.body[ticket];
-        dic[ticket] = bestellung;
-    }
-    console.log('hiere kommt das Dictionaly: ');
-    console.log(dic);
-   // res.cookie('dic' , dic, {maxAge : 9999});
-   req.session.dic = dic;
-    res.redirect('clientRegister/');
-}
-
-router.get('/clientRegister/', function (req, res, next) {
-   // var dic = req.params.dic;
-   //console.log(req.body.ticketId)
-    //var dic = dic1.json();
-    //console.log(dic.toString());
-    //res.cookie('dic' , dic, {maxAge : 9999});
-    console.log(req.session.dic);
-    console.log('get clientRegister');
-    res.render('clientRegister', {
     });
 });
 
@@ -385,14 +393,93 @@ function cleanInt(x) {
 }
 
 
-router.post('/clientLogin', (req, res) =>
-    passport.authenticate('local', {
-        successRedirect: '/client/buyTickets',
-        failureFlash: 'Benutzername oder Passwort ist falsch :(',
-        failureRedirect: '/clientRegister'
-    })
-        (req, res)
-);
+
+
+// LOGIN_ LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN 
+function ensureAuthenticated(req, res, next) {
+    //passport function 
+    if (req.session.passport.client != undefined) {
+        console.log('req.isAuthenticated is TRUE')
+        return next();
+    }
+    console.log(req.body);
+    console.log('in ensureAuth');
+    var ticketsNumber = cleanInt(req.body.ticketsNumber);
+    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
+    if (ticketsNumber > 1) {
+        var ticket = req.body.ticketId[0];
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    } else {
+        var ticket = req.body.ticketId;
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    }
+
+    var dic = {
+        [ticket]: best
+    };
+
+    //falls es mehr hat alles in ein array
+    for (y = 1; y < ticketsNumber; y++) {
+        var ticket = req.body.ticketId[y];
+        var bestellung = req.body[ticket];
+        dic[ticket] = bestellung;
+    }
+    console.log('hiere kommt das Dictionaly: ');
+    console.log(dic);
+    // res.cookie('dic' , dic, {maxAge : 9999});
+    req.session.dic = dic;
+    req.session.lastUrl = '../client/buyTickets';
+    res.redirect('../client/clientRegister');
+}
+
+router.get('/clientRegister/', function (req, res, next) {
+    console.log(req.session.dic);
+    console.log('get clientRegister');
+    res.render('clientRegister', {
+    });
+});
+
+// router.post('/clientLogin', (req, res) =>
+//     passport.authenticate('local', {
+//         successRedirect: req.session.lastUrl,
+//         failureFlash: 'Benutzername oder Passwort ist falsch :(',
+//         failureRedirect: '../client/clientRegister'
+//     })
+//         (req, res)
+// );
+
+router.post('/clientLogin', function (req, res, next) {
+    console.log('in clientLogin');
+    passport.authenticate('local', function (err, client, info) {
+        if (err) {
+            console.log('err nache authenticate');
+            return next(err);
+        }
+        if (!client) {
+            console.log('no client');
+            return res.redirect('/clientRegister');
+        }
+        req.logIn(client, function (err) {
+            console.log('in req.login');
+            if (err) { return next(err); }
+            console.log('last session UTL ist ');
+            console.log(req.session.lastUrl);
+
+            if (req.session.lastUrl) {
+                return res.redirect(req.session.lastUrl);
+            } else {
+                console.log('also redirect Client Mainpage');
+                return res.redirect('../client/clientMainpage')
+            }
+
+
+        });
+    })(req, res, next);
+});
 
 passport.serializeUser(function (client, done) {
     done(null, client.id);
@@ -428,4 +515,349 @@ passport.use(new LocalStrategy(
         });
     }
 ));
+
+
+/* GET users listing. */
+router.post('/register', parser.single('image'), function (req, res, next) {
+
+    console.log('POST///');
+
+    var newusername = req.body.newusername;
+    var email = req.body.newemail;
+    var pwd = req.body.new_pwd;
+    var pwd2 = req.body.new_pwd2;
+
+
+    //form validation 
+    req.checkBody('newusername', 'Geben Sie einen Benutzernamen an').notEmpty();
+    req.checkBody('newemail', 'Geben Sie eine gültige E-Mail an').isEmail();
+    // req.checkBody('new_pwd', 'Passwort ist zu kurz nehmen Sie mind 6 Zeichen...').isLength({ min: 6 });
+    req.checkBody('new_pwd', 'Geben Sie ein Passwort an').notEmpty();
+    req.checkBody('new_pwd2', 'Passwörter stimmen nicht überein').equals(req.body.new_pwd);
+
+    //check Errors
+    var errors = req.validationErrors();
+
+    if (errors) {
+        var y = false;
+        var z = false;
+        var a = false;
+        var b = false;
+        for (var i = 0; i < errors.length; i++) {
+            console.log(errors[i]);
+            if (errors[i].param === 'newusername') {
+                console.log('if new username');
+                newusername = errors[i].msg; a = true;
+            }
+            if (errors[i].param === 'newemail') {
+                console.log('if new username');
+                email = errors[i].msg; b = true;
+            }
+            if (errors[i].param === 'new_pwd') {
+                console.log('if new username');
+                pwd = errors[i].msg; y = true;
+            }
+            if (errors[i].param === 'new_pwd2') {
+                console.log('if new username');
+                pwd2 = errors[i].msg; z = true;
+            }
+        }
+        res.render('registerClient', {
+            errors: errors,
+            newusername: newusername,
+            email: email,
+            pwd: pwd,
+            pwd2: pwd2,
+            y: y,
+            z: z,
+            a: a,
+            b: b
+        })
+    } else {
+        if (req.file) {
+            console.log('Uploading File...');
+            console.log(req.file) // to see what is returned to you
+            console.log('POST///reqfile');
+            const image = {};
+            image.url = req.file.url;
+            image.id = req.file.public_id;
+            var newClient = new Client({
+                name: newusername,
+                email: email,
+                password: pwd,
+                imageId: image.id,
+                imageUrl: image.url
+            });
+            // Image.create(image) // save image information in database
+            //    .then(newImage => res.json(newImage))
+            //    .catch(err => console.log(err));
+        } else {
+            console.log('No File Uploaded..');
+            imageUrl = null;
+            imageId = null;
+            var newClient = new Client({
+                name: newusername,
+                email: email,
+                password: pwd,
+                imageId: imageId,
+                imageUrl: imageUrl
+            });
+        }
+
+
+
+
+        //geht dnicht wenn kein bild!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        Client.createClient(newClient, function (err, client) {
+            if (err) {
+                if (err.errors.name) {
+                    req.flash('error', 'Der Benutzername existiert bereits');
+                } else if (err.errors.email) {
+                    req.flash('error', 'Mit dieser Email wurde bereits ein Konto registriert, loggen Sie sich mit dieser Email ein oder setzen Sie das Psswort zurück');
+                } else {
+                    req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
+                }
+                res.location('/clientRegister');
+                res.redirect('/clientRegister');
+            } else {
+                console.log('POST///uaser created');
+
+                //user.imageId = image.id;
+                //user.imageUrl = image.url;
+                console.log('image :' + client.imageId);
+                console.log('image :' + client.imageUrl);
+
+                client.save(function (err) {
+                    if (err) {
+                        console.log('usr not saved ')
+                        return res.redirect('back');
+                    } else {
+                        console.log('saved also einloggen')
+                        req.logIn(client, function (err) {
+                            //done(err, user);
+                            if (err) { return next(err); }
+                            req.flash('success', 'Erfolgreich registriert');
+                            if (req.session.lastUrl) {
+                                var url = req.session.lastUrl;
+                            } else {
+                                var url = '/client/clientMainpage';
+                            }
+                            return res.redirect(url)
+                        });
+
+                        //res.location('/users/mainpage');
+                        //res.redirect('/users/mainpage');
+                    }
+                });
+
+            }
+        });
+    }
+    console.log(req.body)
+    console.log(req.file);
+    //  req.body.email
+});
+
+req.login =
+req.logIn = function(user, options, done) {
+  if (!this._passport) throw new Error('passport.initialize() middleware not in use');
+  
+  if (!done && typeof options === 'function') {
+    done = options;
+    options = {};
+  }
+  options = options || {};
+  var property = this._passport.instance._userProperty || 'client';
+  var session = (options.session === undefined) ? true : options.session;
+  
+  this[property] = user;
+  if (session) {
+    var self = this;
+    this._passport.instance.serializeUser(user, function(err, obj) {
+      if (err) { self[property] = null; return done(err); }
+      self._passport.session.client = obj;
+      done();
+    });
+  } else {
+    done && done();
+  }
+}
+
+// RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGINRESET_LOGINRESET_LOGIN RESET_LOGIN 
+router.post('/forgot', function (req, res, next) {
+    async.waterfall([
+        function (done) {
+            crypto.randomBytes(20, function (err, buf) {
+                var token = buf.toString('hex');
+                done(err, token);
+            });
+        },
+        function (token, done) {
+            Client.findOne({ email: req.body.email }, function (err, client) {
+                if (!client) {
+                    //   console.log('error', 'No account with that email address exists.');
+                    req.flash('error', 'Es wurde kein Konto gefunden. Überprüfen Sie Ihre Eingaben');
+                    return res.redirect('/');
+                }
+                console.log('step 1')
+                client.resetPasswordToken = token;
+                client.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+                client.save(function (err) {
+                    done(err, token, client);
+                });
+            });
+        },
+        function (token, client, done) {
+            console.log('step 2')
+
+
+            var smtpTrans = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    client: 'dittrich.yannick@gmail.com',
+                    pass: 'Wh8sApp1993*/-'
+                }
+            });
+            var mailOptions = {
+
+                to: client.email,
+                from: 'info@silvering.ch  ',
+                subject: 'Password zurücksetzen für Ticki',
+                text: 'Für Ihr Konto wurde eine ZUrücksetzung des Passworts angefragt\n\n' +
+                    'Klicken Sie auf folgenden Link um Ihr Passwort zu ändern:\n\n' +
+                    'http://' + req.headers.host + '/users/reset/' + token + '\n\n' +
+                    'Wenn Sie das Passwort nicht zurücksetzen wollen, können Sie diese Email ignorieren\n'
+
+            };
+            console.log('step 3')
+
+            smtpTrans.sendMail(mailOptions, function (err) {
+                if (err) {
+                    console.log('send ist schiefgelaufen :' + err);
+                    req.flash('error', 'Da ist etwas schiefgelaufen ');
+                    res.redirect('/');
+                }
+                req.flash('success', 'Eine Email wurde an ' + client.email + ' gesendet');
+                console.log('sent')
+                res.redirect('/clientRegister');
+            });
+        }
+    ], function (err) {
+        console.log('this err' + ' ' + err)
+        res.redirect('/clientRegister');
+    });
+});
+
+router.get('/forgot', function (req, res) {
+    res.render('forgot', {
+        client: req.client
+    });
+});
+
+router.get('/reset/:token', function (req, res) {
+    Client.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, client) {
+        console.log(client);
+        if (!client) {
+            req.flash('error', 'Passwort reset token ist ungültig oder ist abgelaufen. Fordern Sie erneut eine Email an');
+            return res.redirect('/clientRegister');
+        }
+        var y = false;
+        var z = false;
+        pwd = 'Geben Sie ein Passwort ein';
+        pwd2 = 'Bestätigen Sie das Passwort';
+        res.render('reset', {
+            Client: req.cient,
+            token: req.params.token,
+            pwd: pwd,
+            pwd2: pwd2,
+            y: y,
+            z: z
+        });
+    });
+});
+
+router.post('/reset/:token', function (req, res) {
+    console.log('post kommt an');
+    req.checkBody('new_pwd', 'Geben Sie ein Passwort an').notEmpty();
+    req.checkBody('new_pwd', 'Passwort ist zu kurz nehmen Sie mind 6 Zeichen...').isLength({ min: 6 });
+    req.checkBody('new_pwd2', 'Passwörter stimmen nicht überein').equals(req.body.new_pwd);
+
+    //check Errors
+    var errors = req.validationErrors();
+
+    if (errors) {
+        var y = false;
+        var z = false;
+        for (var i = 0; i < errors.length; i++) {
+            switch (errors[i].param) {
+                case 'new_pwd': pwd = errors[i].msg; y = true;
+                case 'new_pwd2': pwd2 = errors[i].msg; z = true;
+            }
+        }
+        res.render('reset', {
+            token: req.params.token,
+            pwd: pwd,
+            pwd2: pwd2,
+            y: y,
+            z: z
+        })
+    } else {
+
+        async.waterfall([
+            function (done) {
+                Client.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function (err, client, next) {
+                    if (!client) {
+                        console.log('no user ')
+                        req.flash('error', 'Passwort reset token ist ungültig oder ist abgelaufen. Fordern Sie erneut eine Email an');
+                        return res.redirect('back');
+                    }
+                    client.password = req.body.new_pwd;
+                    client.resetPasswordToken = undefined;
+                    user.resetPasswordExpires = undefined;
+                    console.log('passwort' + client.password + 'and the user is' + client)
+
+                    client.save(function (err) {
+                        if (err) {
+                            console.log('usr not saved ')
+                            return res.redirect('back');
+                        } else {
+                            console.log('saved also einloggen')
+                            req.logIn(client, function (err) {
+                                done(err, client);
+                            });
+
+                        }
+                    });
+                });
+            },
+
+            function (client, done) {
+                // console.log('got this far 4')
+                var smtpTrans = nodemailer.createTransport({
+                    service: 'Gmail',
+                    auth: {
+                        user: 'dittrich.yannick@gmail.com',
+                        pass: 'Wh8sApp1993*/-'
+                    }
+                });
+                var mailOptions = {
+                    to: client.email,
+                    from: 'info@silvering.ch',
+                    subject: 'Ihr Passwort wurde geändert',
+                    text: 'Guten Tag,\n\n' +
+                        ' - Dies ist eine Bestätigung, dass Ihr Passwort für das Konto' + client.email + ' gerade geändert wurde.\n'
+                };
+                smtpTrans.sendMail(mailOptions, function (err) {
+                    // req.flash('success', 'Success! Your password has been changed.');
+                    console.log('sent confirmation');
+                    done(err);
+                });
+            }
+        ], function (err) {
+            req.flash('success', 'Ihr Passwort wurde erfolgreich zurückgesetzt :)');
+            res.redirect('/clientRegister');
+        });
+    }
+});
 module.exports = router;

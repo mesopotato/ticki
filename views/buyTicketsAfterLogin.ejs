@@ -41,7 +41,7 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="../clientMainpage"><% if (this.user) { %> <%= user.name %> <% } %> <% if (this.client) { %> <%= client.name %> <% } %> <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../clientMainpage"><% if (this.user) { %> <%= user.name %> <% } %> <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mt-2 mt-md-0">
@@ -59,7 +59,7 @@
         <% if (messages) { %>
         <%- messages() %>
         <% } %>
-        <h1 style="margin-top: 5%;"> Tickets bestätigen für <%= client.name %> </h1>
+        <h1 style="margin-top: 5%;"> Tickets bestätigen für <%= user.name %>  </h1>
 
         <div class="jumbotron" style="margin-top: 5%;">
 

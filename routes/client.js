@@ -82,12 +82,16 @@ router.get('/buyTickets', function (req, res) {
 
                         bestellung.push({ event: event, ticket: ticket, anzahl: anzahl })
                         //if (i = eintritte.length) {
-                        i = i + 1;
+                        //i = i + 1;
                         if (bestellung.length >= Object.keys(req.session.dic).length) {
                             console.log('consoele logge die bestellung');
                             console.log(bestellung);
 
+                            console.log('was ist in diesem REQ????????')
+                            console.log(req);
+
                             res.render('buyTicketsAfterLogin', {
+                                user: req.client,
                                 bestellung: bestellung
                             });
                         }
@@ -401,7 +405,7 @@ function cleanInt(x) {
 // LOGIN_ LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN 
 function ensureAuthenticated(req, res, next) {
     //passport function 
-    if (isAuthenticated()) {
+    if (req.isAuthenticated()) {
         console.log('req.isAuthenticated is TRUE')
         return next();
     }
@@ -439,14 +443,6 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('../client/clientRegister');
 }
 
-isAuthenticated = function () {
-    var property = 'client';
-    if (this._passport && this._passport.instance._userProperty) {
-        property = this._passport.instance._userProperty;
-    }
-
-    return (this[property]) ? true : false;
-};
 
 router.get('/clientRegister/', function (req, res, next) {
     console.log(req.session.dic);
@@ -466,7 +462,7 @@ router.get('/clientRegister/', function (req, res, next) {
 
 router.post('/clientLogin', function (req, res, next) {
     console.log('in clientLogin');
-    passport.authenticate('local', function (err, client, info) {
+    passport.authenticate('client-signup', function (err, client, info) {
         if (err) {
             console.log('err nache authenticate');
             return next(err);
@@ -503,7 +499,7 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-passport.use(new LocalStrategy(
+passport.use('client-signup', new LocalStrategy(
     function (name, password, done) {
         console.log('!client in Local Strategy');
         console.log('name ist : ' + name);
@@ -527,7 +523,6 @@ passport.use(new LocalStrategy(
         });
     }
 ));
-
 
 /* GET users listing. */
 router.post('/register', parser.single('image'), function (req, res, next) {
@@ -645,7 +640,7 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                         return res.redirect('back');
                     } else {
                         console.log('saved also einloggen')
-                        logIn(client, function (err) {
+                        req.logIn(client, function (err) {
                             //done(err, user);
                             if (err) { return next(err); }
                             req.flash('success', 'Erfolgreich registriert');
@@ -656,45 +651,17 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                             }
                             return res.redirect(url)
                         });
-
                         //res.location('/users/mainpage');
                         //res.redirect('/users/mainpage');
                     }
                 });
-
             }
         });
     }
-    console.log(req.body)
-    console.log(req.file);
+    // console.log(req.body)
+    // console.log(req.file);
     //  req.body.email
 });
-
-logIn = function (user, options, done) {
-        console.log('loggin in ____________- session:');
-        console.log(req.session);
-        if (!this._passport) throw new Error('passport.initialize() middleware not in use');
-
-        if (!done && typeof options === 'function') {
-            done = options;
-            options = {};
-        }
-        options = options || {};
-        var property = this._passport.instance._userProperty || 'client';
-        var session = (options.session === undefined) ? true : options.session;
-
-        this[property] = user;
-        if (session) {
-            var self = this;
-            this._passport.instance.serializeUser(user, function (err, obj) {
-                if (err) { self[property] = null; return done(err); }
-                self._passport.session.client = obj;
-                done();
-            });
-        } else {
-            done && done();
-        }
-    }
 
 // RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGINRESET_LOGINRESET_LOGIN RESET_LOGIN 
 router.post('/forgot', function (req, res, next) {

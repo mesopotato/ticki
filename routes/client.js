@@ -26,6 +26,9 @@ var async = require("async");
 var crypto = require('crypto');
 var fs = require('fs');
 
+var http = require('http')
+    , req = http.IncomingMessage.prototype;
+
 
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
@@ -61,7 +64,7 @@ router.get('/buyTickets', function (req, res) {
     console.log('render tickets after login out of the session dic');
     console.log(req.session.dic);
     var bestellung = [];
-    for (var key in req.session.dic){
+    for (var key in req.session.dic) {
         var ticketID = key;
         var anzahl = req.session.dic[ticketID]
         Ticket.findById(ticketID, function (err, ticket) {
@@ -398,7 +401,7 @@ function cleanInt(x) {
 // LOGIN_ LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN 
 function ensureAuthenticated(req, res, next) {
     //passport function 
-    if (req.session.passport.client != undefined) {
+    if (isAuthenticated()) {
         console.log('req.isAuthenticated is TRUE')
         return next();
     }
@@ -436,6 +439,15 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('../client/clientRegister');
 }
 
+isAuthenticated = function () {
+    var property = 'client';
+    if (this._passport && this._passport.instance._userProperty) {
+        property = this._passport.instance._userProperty;
+    }
+
+    return (this[property]) ? true : false;
+};
+
 router.get('/clientRegister/', function (req, res, next) {
     console.log(req.session.dic);
     console.log('get clientRegister');
@@ -461,10 +473,10 @@ router.post('/clientLogin', function (req, res, next) {
         }
         if (!client) {
             console.log('no client');
-            return res.redirect('/clientRegister');
+            return res.redirect('../client/clientRegister');
         }
         req.logIn(client, function (err) {
-            console.log('in req.login');
+            console.log('in req.login callback');
             if (err) { return next(err); }
             console.log('last session UTL ist ');
             console.log(req.session.lastUrl);
@@ -617,8 +629,8 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                 } else {
                     req.flash('error', 'es ist etwas schiefgelaufen, warten Sie einen Moment und probieren Sie es erneut');
                 }
-                res.location('/clientRegister');
-                res.redirect('/clientRegister');
+                res.location('../client/clientRegister');
+                res.redirect('../client/clientRegister');
             } else {
                 console.log('POST///uaser created');
 
@@ -633,7 +645,7 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                         return res.redirect('back');
                     } else {
                         console.log('saved also einloggen')
-                        req.logIn(client, function (err) {
+                        logIn(client, function (err) {
                             //done(err, user);
                             if (err) { return next(err); }
                             req.flash('success', 'Erfolgreich registriert');
@@ -658,30 +670,31 @@ router.post('/register', parser.single('image'), function (req, res, next) {
     //  req.body.email
 });
 
-req.login =
-req.logIn = function(user, options, done) {
-  if (!this._passport) throw new Error('passport.initialize() middleware not in use');
-  
-  if (!done && typeof options === 'function') {
-    done = options;
-    options = {};
-  }
-  options = options || {};
-  var property = this._passport.instance._userProperty || 'client';
-  var session = (options.session === undefined) ? true : options.session;
-  
-  this[property] = user;
-  if (session) {
-    var self = this;
-    this._passport.instance.serializeUser(user, function(err, obj) {
-      if (err) { self[property] = null; return done(err); }
-      self._passport.session.client = obj;
-      done();
-    });
-  } else {
-    done && done();
-  }
-}
+logIn = function (user, options, done) {
+        console.log('loggin in ____________- session:');
+        console.log(req.session);
+        if (!this._passport) throw new Error('passport.initialize() middleware not in use');
+
+        if (!done && typeof options === 'function') {
+            done = options;
+            options = {};
+        }
+        options = options || {};
+        var property = this._passport.instance._userProperty || 'client';
+        var session = (options.session === undefined) ? true : options.session;
+
+        this[property] = user;
+        if (session) {
+            var self = this;
+            this._passport.instance.serializeUser(user, function (err, obj) {
+                if (err) { self[property] = null; return done(err); }
+                self._passport.session.client = obj;
+                done();
+            });
+        } else {
+            done && done();
+        }
+    }
 
 // RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGINRESET_LOGINRESET_LOGIN RESET_LOGIN 
 router.post('/forgot', function (req, res, next) {

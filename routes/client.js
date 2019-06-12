@@ -59,7 +59,7 @@ router.get('/clientMainpage', function (req, res, next) {
     });
 });
 
-// render tickets after login out of the session :)
+// render tickets after login .. rendering out of the session :)
 router.get('/buyTickets', function (req, res) {
     console.log('render tickets after login out of the session dic');
     console.log(req.session.dic);
@@ -91,11 +91,16 @@ router.get('/buyTickets', function (req, res) {
                             console.log(req);
                             var id = req.sessionID
                             
-                            console.log('was ist in diesem REQ??????????????????????????????????')
-                            console.log(req.session)
+                            
+                           // console.log(req.session)
+
+                            console.log('was ist in diesem req.user??????????????????????????????????')
+                            console.log(req.user);
+                            console.log('was ist in diesem REQ.client??????????????????????????????????')
+                            console.log(req.client);
 
                             res.render('buyTicketsAfterLogin', {
-                                user: req.client,
+                                user: req.user,
                                 bestellung: bestellung
                             });
                         }
@@ -409,8 +414,14 @@ function cleanInt(x) {
 // LOGIN_ LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN 
 function ensureAuthenticated(req, res, next) {
     //passport function 
+    
+
     if (req.isAuthenticated()) {
         console.log('req.isAuthenticated is TRUE')
+        console.log(this._passport)
+        console.log('userPropert : : : . . : : : : : : : ')
+
+        console.log(this._passport.instance._userPropert)
         return next();
     }
     console.log(req.body);
@@ -656,6 +667,13 @@ router.post('/register', parser.single('image'), function (req, res, next) {
     // console.log(req.file);
     //  req.body.email
 });
+
+router.get('/logout', function (req, res) {
+    req.logout();
+    req.flash('success', 'Sie sind ausgeloggt');
+    res.redirect('../client/clientRegister');
+    //res.send('respond with a resource');
+  });
 
 // RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGINRESET_LOGINRESET_LOGIN RESET_LOGIN 
 router.post('/forgot', function (req, res, next) {

@@ -62,6 +62,11 @@ router.get('/mainpage', ensureAuthenticated, function (req, res, next) {
 function ensureAuthenticated(req, res, next) {
   //passport function 
   if (req.isAuthenticated()) {
+    console.log('req.isAuthenticated is TRUE')
+        console.log(this._passport)
+        console.log('userPropert : : : . . : : : : : : : ')
+
+        console.log(this._passport.instance._userPropert)
     return next();
   }
   res.redirect('/');
@@ -91,7 +96,7 @@ passport.serializeUser(function (userObject, done) {
     userGroup = "client";
   }
 
-  let sessionConstructor = new SessionConstructor(userObject.id, userGroup, '');
+  let sessionConstructor = new SessionConstructor(userObject.id, userGroup, {name: userObject.name, email: userObject.email});
   done(null,sessionConstructor);
 });
 

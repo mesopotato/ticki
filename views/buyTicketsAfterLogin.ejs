@@ -37,7 +37,7 @@
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#!"></a>
+        <a class="navbar-brand" href="#!"> <%= user.name %></a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
@@ -48,6 +48,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
                             class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/../client/logout">Logout</a>
                 </li>
 
             </ul>

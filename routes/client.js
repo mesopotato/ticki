@@ -89,6 +89,10 @@ router.get('/buyTickets', function (req, res) {
 
                             console.log('was ist in diesem REQ????????')
                             console.log(req);
+                            var id = req.sessionID
+                            
+                            console.log('was ist in diesem REQ??????????????????????????????????')
+                            console.log(req.session)
 
                             res.render('buyTicketsAfterLogin', {
                                 user: req.client,
@@ -487,16 +491,6 @@ router.post('/clientLogin', function (req, res, next) {
 
         });
     })(req, res, next);
-});
-
-passport.serializeUser(function (client, done) {
-    done(null, client.id);
-});
-
-passport.deserializeUser(function (id, done) {
-    Client.getClientById(id, function (err, client) {
-        done(err, client);
-    });
 });
 
 passport.use('client-signup', new LocalStrategy(

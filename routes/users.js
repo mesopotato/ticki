@@ -12,6 +12,7 @@ var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 //db model user which we made 
 var User = require('../models/user');
+var Client = require('../models/client');
 var Event = require('../models/event');
 
 const cloudinary = require("cloudinary");
@@ -79,15 +80,36 @@ router.post('/login', (req, res) =>
     (req, res)
 );
 
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
+passport.serializeUser(function (userObject, done) {
+  // userObject could be a Model1 or a Model2... or Model3, Model4, etc.
+  let userGroup = "user";
+  let userPrototype =  Object.getPrototypeOf(userObject);
+
+  if (userPrototype === User.prototype) {
+    userGroup = "user";
+  } else if (userPrototype === Client.prototype) {
+    userGroup = "client";
+  }
+
+  let sessionConstructor = new SessionConstructor(userObject.id, userGroup, '');
+  done(null,sessionConstructor);
 });
 
-passport.deserializeUser(function (id, done) {
-  User.getUserById(id, function (err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(function (sessionConstructor, done) {
+
+  if (sessionConstructor.userGroup == 'user') {
+    User.getUserById(sessionConstructor.userId, function (err, user) {
+      console.log('in serialize USER__________________________________________USER');
+      done(err, user);
+    });
+  } else if (sessionConstructor.userGroup == 'client') {
+    Client.getClientById(sessionConstructor.userId, function (err, user) {
+      console.log('in serialize Client__________________________________________Client');
+      done(err, user);
+    });
+  } 
 });
+
 
 passport.use(new LocalStrategy(
   function (name, password, done) {
@@ -426,5 +448,11 @@ router.post('/reset/:token', function (req, res) {
     });
   }
 });
+
+function SessionConstructor(userId, userGroup, details) {
+  this.userId = userId;
+  this.userGroup = userGroup;
+  this.details = details;
+}
 
 module.exports = router;

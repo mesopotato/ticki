@@ -61,13 +61,19 @@ router.get('/mainpage', ensureAuthenticated, function (req, res, next) {
 
 function ensureAuthenticated(req, res, next) {
   //passport function 
+  console.log('req.session.user ist: ');
+  console.log(req.session.user);
   if (req.isAuthenticated()) {
     console.log('req.isAuthenticated is TRUE')
+    if (req.session.user){
+      return next();
+    }
+    
         // console.log(this._passport)
         // console.log('userPropert : : : . . : : : : : : : ')
 
         // console.log(this._passport.instance._userPropert)
-    return next();
+    
   }
   res.redirect('/');
 }
@@ -77,6 +83,7 @@ router.get('/index', function (req, res, next) {
 });
 
 // assign req.user to req.session.user OR req.session.client to distinguish the roles..
+
 function isLoggedIn(req, res, next) {
   if (req.session.user !== undefined) {
     next();
@@ -85,14 +92,28 @@ function isLoggedIn(req, res, next) {
   }
 } 
 
-router.post('/login', (req, res) =>
-  passport.authenticate('local', {
-    successRedirect: '/users/mainpage',
-    failureFlash: 'Benutzername oder Passwort ist falsch :(',
-    failureRedirect: '/'
-  })
-    (req, res)
-);
+// router.post('/login', (req, res) =>
+//   passport.authenticate('local', {
+//     successRedirect: '/users/mainpage',
+//     failureFlash: 'Benutzername oder Passwort ist falsch :(',
+//     failureRedirect: '/'
+//   })
+//     (req, res)
+// );
+
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/'); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      console.log('loggin in with user :')
+      console.log(req.user)
+      req.session.user = req.user;
+      return res.redirect('/users/mainpage');
+    });
+  })(req, res, next);
+});
 
 passport.serializeUser(function (userObject, done) {
   // userObject could be a Model1 or a Model2... or Model3, Model4, etc.
@@ -337,6 +358,7 @@ router.post('/register', parser.single('image'), function (req, res, next) {
             req.logIn(user, function (err) {
               //done(err, user);
               if (err) { return next(err); }
+
               req.flash('success', 'Erfolgreich registriert');
               return res.redirect('/users/mainpage')
             });

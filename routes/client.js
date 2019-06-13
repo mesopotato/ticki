@@ -46,7 +46,7 @@ const storage = cloudinaryStorage({
 });
 const parser = multer({ storage: storage });
 
-router.get('/clientMainpage', ensureAuthenticated, function (req, res, next) {
+router.get('/clientMainpage',  function (req, res, next) {
     console.log('get mainpage');
     var e = Event.getEvents(function (err, events) {
         if (err) {
@@ -416,28 +416,14 @@ function ensureAuthenticated(req, res, next) {
     //passport function 
     console.log('auth USER : /////////////////////////// ')
     console.log(req.user);
-    var id = req.sessionID
-    console.log(req.sessionStore.sessions[id]);
-    if (req.sessionStore.sessions[id]){
-        var session = req.sessionStore.sessions[id];
-
-        for (var key in session){
-            console.log(key);
-        }
-    }
-    
-    console.log('________________________________________-')
-    console.log(req.sessionStore.sessions[id]._passport);
-    console.log('-PASSPORT');
-    console.log(req._passport);
+   
     if (req.isAuthenticated()) {
-
+        
         console.log('req.isAuthenticated is TRUE')
-        console.log(this._passport)
-        console.log('userPropert : : : . . : : : : : : : ')
-
-        //console.log(this._passport.instance._userPropert)
-        return next();
+        if (req.session.client){
+            return next();
+        }
+         //console.log(this._passport.instance._userPropert)       
     }
 
     //console.log(req.body);
@@ -507,6 +493,7 @@ router.post('/clientLogin', function (req, res, next) {
             if (err) { return next(err); }
             console.log('last session UTL ist ');
             console.log(req.session.lastUrl);
+            req.session.client = req.user;
 
             if (req.session.lastUrl) {
                 return res.redirect(req.session.lastUrl);

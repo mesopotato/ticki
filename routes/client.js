@@ -46,7 +46,7 @@ const storage = cloudinaryStorage({
 });
 const parser = multer({ storage: storage });
 
-router.get('/clientMainpage', function (req, res, next) {
+router.get('/clientMainpage', ensureAuthenticated, function (req, res, next) {
     console.log('get mainpage');
     var e = Event.getEvents(function (err, events) {
         if (err) {
@@ -89,7 +89,7 @@ router.get('/buyTickets', function (req, res) {
 
                             console.log('was ist in diesem REQ????????')
                             console.log(req);
-                            var id = req.sessionID
+                            
                             
                             
                            // console.log(req.session)
@@ -414,17 +414,33 @@ function cleanInt(x) {
 // LOGIN_ LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN LOGIN 
 function ensureAuthenticated(req, res, next) {
     //passport function 
-    
+    console.log('auth USER : /////////////////////////// ')
+    console.log(req.user);
+    var id = req.sessionID
+    console.log(req.sessionStore.sessions[id]);
+    if (req.sessionStore.sessions[id]){
+        var session = req.sessionStore.sessions[id];
 
+        for (var key in session){
+            console.log(key);
+        }
+    }
+    
+    console.log('________________________________________-')
+    console.log(req.sessionStore.sessions[id]._passport);
+    console.log('-PASSPORT');
+    console.log(req._passport);
     if (req.isAuthenticated()) {
+
         console.log('req.isAuthenticated is TRUE')
         console.log(this._passport)
         console.log('userPropert : : : . . : : : : : : : ')
 
-        console.log(this._passport.instance._userPropert)
+        //console.log(this._passport.instance._userPropert)
         return next();
     }
-    console.log(req.body);
+
+    //console.log(req.body);
     console.log('in ensureAuth');
     var ticketsNumber = cleanInt(req.body.ticketsNumber);
     console.log('Anzahl ticket kategorien : ' + ticketsNumber);

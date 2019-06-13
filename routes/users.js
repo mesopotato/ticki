@@ -63,10 +63,10 @@ function ensureAuthenticated(req, res, next) {
   //passport function 
   if (req.isAuthenticated()) {
     console.log('req.isAuthenticated is TRUE')
-        console.log(this._passport)
-        console.log('userPropert : : : . . : : : : : : : ')
+        // console.log(this._passport)
+        // console.log('userPropert : : : . . : : : : : : : ')
 
-        console.log(this._passport.instance._userPropert)
+        // console.log(this._passport.instance._userPropert)
     return next();
   }
   res.redirect('/');
@@ -75,6 +75,15 @@ function ensureAuthenticated(req, res, next) {
 router.get('/index', function (req, res, next) {
   res.render('index');
 });
+
+// assign req.user to req.session.user OR req.session.client to distinguish the roles..
+function isLoggedIn(req, res, next) {
+  if (req.session.user !== undefined) {
+    next();
+  } else {
+    res.redirect("/login");
+  }
+} 
 
 router.post('/login', (req, res) =>
   passport.authenticate('local', {

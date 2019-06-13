@@ -87,17 +87,17 @@ router.get('/buyTickets', function (req, res) {
                             console.log('consoele logge die bestellung');
                             console.log(bestellung);
 
-                            console.log('was ist in diesem REQ????????')
-                            console.log(req);
+                        //     console.log('was ist in diesem REQ????????')
+                        //     console.log(req);
                             
                             
                             
-                           // console.log(req.session)
+                        //    // console.log(req.session)
 
-                            console.log('was ist in diesem req.user??????????????????????????????????')
-                            console.log(req.user);
-                            console.log('was ist in diesem REQ.client??????????????????????????????????')
-                            console.log(req.client);
+                        //     console.log('was ist in diesem req.user??????????????????????????????????')
+                        //     console.log(req.user);
+                        //     console.log('was ist in diesem REQ.client??????????????????????????????????')
+                        //     console.log(req.client);
 
                             res.render('buyTicketsAfterLogin', {
                                 user: req.user,
@@ -163,7 +163,7 @@ router.get('/buyTickets/:id', function (req, res) {
         }
     });
 });
-
+//hmm sendin after the payment but reserving before should be possible .. then storin under the orders.. 
 router.post('/buyTickets', ensureAuthenticated, jsonParser, function (req, res) {
     //psp provider API Call here
     console.log(req.body);

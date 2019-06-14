@@ -10,10 +10,9 @@ var db = mongoose.connection;
 
 
 var OrderSchema = new mongoose.Schema({
-    clientId: { type: String, required: true },
+    clientId: String, 
     bezahlt: Boolean,
-    ticketId: { type: String, required: true }, 
-    anzahl: Number
+    reservation: Date 
 });
 
 OrderSchema.plugin(uniqueValidator);
@@ -49,6 +48,6 @@ module.exports.getOrdersByTicketId = function (ticketId, callback) {
         });
 }
 
-module.exports.saveEintritt = function (newOrder, callback) {
+module.exports.saveOrder = function (newOrder, callback) {
     newOrder.save(callback);
 }

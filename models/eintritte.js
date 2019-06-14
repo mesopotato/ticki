@@ -12,7 +12,8 @@ var db = mongoose.connection;
 var EintrittSchema = new mongoose.Schema({
     email: { type: String, required: true },
     abgebucht: Boolean,
-    ticketId: { type: String, required: true }
+    ticketId: { type: String, required: true },
+    orderId: { type: String, required: true }
 });
 
 EintrittSchema.plugin(uniqueValidator);
@@ -33,7 +34,7 @@ module.exports.findWithPromise = function (id) {
 
 }
 module.exports.getEintritteByEmail = function (email, callback) {
-    
+
     Eintritt.find().where("email", email).
         exec(function (err, eintritte) {
             callback(err, eintritte);

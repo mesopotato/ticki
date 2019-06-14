@@ -46,7 +46,7 @@ const storage = cloudinaryStorage({
 });
 const parser = multer({ storage: storage });
 
-router.get('/clientMainpage',  function (req, res, next) {
+router.get('/clientMainpage', function (req, res, next) {
     console.log('get mainpage');
     var e = Event.getEvents(function (err, events) {
         if (err) {
@@ -87,17 +87,17 @@ router.get('/buyTickets', function (req, res) {
                             console.log('consoele logge die bestellung');
                             console.log(bestellung);
 
-                        //     console.log('was ist in diesem REQ????????')
-                        //     console.log(req);
-                            
-                            
-                            
-                        //    // console.log(req.session)
+                            //     console.log('was ist in diesem REQ????????')
+                            //     console.log(req);
 
-                        //     console.log('was ist in diesem req.user??????????????????????????????????')
-                        //     console.log(req.user);
-                        //     console.log('was ist in diesem REQ.client??????????????????????????????????')
-                        //     console.log(req.client);
+
+
+                            //    // console.log(req.session)
+
+                            //     console.log('was ist in diesem req.user??????????????????????????????????')
+                            //     console.log(req.user);
+                            //     console.log('was ist in diesem REQ.client??????????????????????????????????')
+                            //     console.log(req.client);
 
                             res.render('buyTicketsAfterLogin', {
                                 user: req.user,
@@ -139,7 +139,7 @@ router.get('/getEvent/:id', function (req, res) {
 });
 
 //get the event for the client.....
-router.get('/buyTickets/:id', function (req, res) {
+router.get('/buyTickets/:id', ensureAuthenticated, function (req, res) {
     console.log('is in get event');
     Event.getEventById(req.params.id, function (err, event) {
         if (err) {
@@ -155,6 +155,7 @@ router.get('/buyTickets/:id', function (req, res) {
                 } else {
                     console.log('tickets array : ' + tickets)
                     res.render('buyTickets', {
+                        user: req.user,
                         event: event,
                         tickets: tickets
                     });
@@ -163,6 +164,121 @@ router.get('/buyTickets/:id', function (req, res) {
         }
     });
 });
+router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res) {
+    console.log(req.body);
+    console.log('in buytickets');
+    var ticketsNumber = cleanInt(req.body.ticketsNumber);
+    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
+    if (ticketsNumber > 1) {
+        var ticket = req.body.ticketId[0];
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    } else {
+        var ticket = req.body.ticketId;
+        console.log('TicketID ist :' + ticket);
+        var best = cleanInt(req.body[ticket]);
+        console.log('BEstellung beträtg :' + best);
+    }
+
+    var dic = {
+        [ticket]: best
+    };
+
+    //falls es mehr hat alles in ein array
+    for (y = 1; y < ticketsNumber; y++) {
+        var ticket = req.body.ticketId[y];
+        var bestellung = req.body[ticket];
+        dic[ticket] = bestellung;
+    }
+    console.log('hiere kommt das Dictionaly: ');
+    console.log(dic);
+
+    buyEintritt.checkOrder(dic).then(orderNow, failureCallback);
+
+    function orderNow(dic) {
+        console.log('übergeben wird das DIC : ' + dic);
+        buyEintritt.order(dic).then(successCallback, failureCallback);
+
+    }
+    function successCallback(result) {
+        console.log("It succeeded with " + result);
+        //req.pipe(res);
+        var email = req.body.email;
+        console.log('email ist : ' + email);
+        buyEintritt.saveEintritte(result, req.user).then(renderBasket, failureCallback);
+    }
+
+    function renderBasket(array) {
+
+        for (var key in array) {
+            var eintrittId = key;
+            var eintritt = obj[eintrittId];
+            Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+                if (err) {
+                    console.log('error is thrown in get tickt');
+                    console.log(err);
+                }
+                Event.getEventById(ticket.eventId, function (err, event) {
+                    if (err) {
+                        console.log('error is thrown in get event');
+                        console.log(err);
+                    }
+                    Order.getOrderById(eintritt.orderId, function (err) {
+                        if (err) {
+                            console.log('error is thrown in get order');
+                            console.log(err);
+                        }
+                        // render when the array is through.. 
+                        //and send an object with only the data that we need.. push push
+                        if () {
+                            res.render('basket', {
+                                events: events,
+                                tickets: tickets,
+                                eintritte: eintritte
+                            })
+                        }
+
+                    })
+                })
+            })
+        }
+
+
+    }
+
+    function failureCallback(ticket) {
+        console.log("It failed with " + ticket);
+        var uebrig = cleanInt(ticket.anzahl) - cleanInt(ticket.verkauft);
+        console.log('übreig snd :' + uebrig);
+        Event.getEventById(ticket.eventId, function (err, event) {
+            if (err) {
+                console.log('error is thrown in get eventID');
+                console.log(err);
+            } else {
+                console.log('event is: ' + event);
+                console.log('id is : ' + event.id);
+                Ticket.getTicketsByEventId(event.id, function (err, tickets) {
+                    if (err) {
+                        console.log('error is thrown in get tickt');
+                        console.log(err);
+                    } else {
+                        console.log('tickets array : ' + tickets)
+                        req.flash('error', 'die "' + ticket.kategorie + '" sind entweder <b>ausverkauft</b> oder Sie wollten <b>zu viel bestellen...</b> probieren Sie nochmals.. (übrig sind ' + uebrig + ')')
+                        res.render('buyTickets', {
+                            event: event,
+                            tickets: tickets
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+
+})
+
+
 //hmm sendin after the payment but reserving before should be possible .. then storin under the orders.. 
 router.post('/buyTickets', ensureAuthenticated, jsonParser, function (req, res) {
     //psp provider API Call here
@@ -238,6 +354,9 @@ router.post('/buyTickets', ensureAuthenticated, jsonParser, function (req, res) 
         });
     }
 
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //result hat jetzt in order/saveEintritte ganze eintrittobjekte drinn nich nur die Ticketid.. 
+    // da muss eine annpassung gemacht werden
     function sendPdfNow(result) {
         console.log('in send PDF now Result übergabe ist :' + result)
         PDF.docDefinition(result).then(sendIt, notSend);
@@ -416,14 +535,14 @@ function ensureAuthenticated(req, res, next) {
     //passport function 
     console.log('auth USER : /////////////////////////// ')
     console.log(req.user);
-   
+
     if (req.isAuthenticated()) {
-        
+
         console.log('req.isAuthenticated is TRUE')
-        if (req.session.client){
+        if (req.session.client) {
             return next();
         }
-         //console.log(this._passport.instance._userPropert)       
+        //console.log(this._passport.instance._userPropert)       
     }
 
     //console.log(req.body);
@@ -676,7 +795,7 @@ router.get('/logout', function (req, res) {
     req.flash('success', 'Sie sind ausgeloggt');
     res.redirect('../client/clientRegister');
     //res.send('respond with a resource');
-  });
+});
 
 // RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGIN RESET_LOGINRESET_LOGINRESET_LOGIN RESET_LOGIN 
 router.post('/forgot', function (req, res, next) {

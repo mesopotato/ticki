@@ -210,6 +210,34 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
     }
 
     function renderBasket(array) {
+        var bestellungen = [];
+        var firstEintritt = array[0].key;
+        Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+            if (err) {
+                console.log('error is thrown in get tickt');
+                console.log(err);
+            }
+            Event.getEventById(ticket.eventId, function (err, event) {
+                if (err) {
+                    console.log('error is thrown in get event');
+                    console.log(err);
+                }
+                Order.getOrderById(eintritt.orderId, function (err) {
+                    if (err) {
+                        console.log('error is thrown in get order');
+                        console.log(err);
+                    }
+                    bestellungen.push({
+                        head: {
+                            eventTitle: event.title,
+                            veranstalter: event.veranstalter,
+                            lokation: event.lokation,
+                            orderExpires: order.reservation
+                        }
+                    })
+                })
+            })
+        })
 
         for (var key in array) {
             var eintrittId = key;
@@ -219,32 +247,23 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     console.log('error is thrown in get tickt');
                     console.log(err);
                 }
-                Event.getEventById(ticket.eventId, function (err, event) {
-                    if (err) {
-                        console.log('error is thrown in get event');
-                        console.log(err);
+                bestellungen.push({
+                    bestellung: {
+                        eintrittId: eintrittId,
+                        ticketKategorie: ticket.kategorie,
+                        datum: ticket.gueltig_datum,
+                        preis: ticket.preis,
                     }
-                    Order.getOrderById(eintritt.orderId, function (err) {
-                        if (err) {
-                            console.log('error is thrown in get order');
-                            console.log(err);
-                        }
-                        // render when the array is through.. 
-                        //and send an object with only the data that we need.. push push
-                        if () {
-                            res.render('basket', {
-                                events: events,
-                                tickets: tickets,
-                                eintritte: eintritte
-                            })
-                        }
-
-                    })
                 })
+                // render when the array is through.. 
+                //and send an object with only the data that we need.. push push
+                if (Object.keys(bestellungen).length > Object.keys(array).length) {
+                    res.render('basket', {
+                        bestellungen: bestellungen
+                    })
+                }
             })
         }
-
-
     }
 
     function failureCallback(ticket) {
@@ -575,8 +594,8 @@ function ensureAuthenticated(req, res, next) {
     console.log(dic);
     // res.cookie('dic' , dic, {maxAge : 9999});
     req.session.dic = dic;
-    req.session.lastUrl = '../client/buyTickets';
-    res.redirect('../client/clientRegister');
+    req.session.lastUrl = '../client/buyTickets/' + req.parms.id;
+    res.redirect('../clientRegister');
 }
 
 

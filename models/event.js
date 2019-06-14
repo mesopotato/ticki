@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
-
+var Ticket = require('../models/tickets');
 mongoose.connect('mongodb://localhost/nodeauth', { useNewUrlParser: true });
 
 var db = mongoose.connection;

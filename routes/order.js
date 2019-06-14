@@ -125,7 +125,8 @@ exports.saveEintritte = function (obj, client) {
             var dic = {};
             var gesamt = 0;
             for (var key in obj) {
-                gesamt = gesamt + cleanInt(obj[key]);
+                ges
+                amt = gesamt + cleanInt(obj[key]);
             }
             console.log('gesamt tickets : ' + gesamt);
             var gespeichert = 0;
@@ -137,7 +138,6 @@ exports.saveEintritte = function (obj, client) {
                 for (i = 0; i < bestellung; i++) {
                     console.log('for loope inner i ist = ' + i);
                     var newEintritt = new Eintritt({
-                        email: email,
                         abgebucht: false,
                         ticketId: ticketId,
                         orderId: order.id

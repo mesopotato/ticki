@@ -102,7 +102,7 @@
                         </thead>
                         <tbody>
 
-                            <form action="/client/buyTickets" method="post" id="buyThat">
+                            <form action="/client/addToBasket" method="post" id="buyThat">
                                 <% y= 1; tickets.forEach(function(ticket){ %>
                                 <tr class="table-info">
                                     <th scope="row"><%= ticket.kategorie %></th>
@@ -128,7 +128,7 @@
                         placeholder="E Mail bestätigen" required onkeyup='check();' />
                     <span id='message'></span>
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
-                        kaufen</button>
+                        zum Warenkorb hinzufügen</button>
                     </form>
                 </div>
             </div>

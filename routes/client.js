@@ -13,6 +13,7 @@ var Event = require('../models/event');
 var Ticket = require('../models/tickets');
 var Eintritt = require('../models/eintritte');
 var Client = require('../models/client');
+var Order = require('../models/order');
 const pdfMakePrinter = require('pdfmake');
 var Promise = require("bluebird");
 var bodyParser = require('body-parser');
@@ -164,6 +165,7 @@ router.get('/buyTickets/:id', ensureAuthenticated, function (req, res) {
         }
     });
 });
+//first adding of basket after selecting the tickets 
 router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res) {
     console.log(req.body);
     console.log('in add to basket');
@@ -211,22 +213,34 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 
     function renderBasket(array) {
         var bestellungen = [];
-        var firstEintritt = array[0].key;
-        Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+        console.log('HERE IS THE ARRAY___')
+        console.log(Object.keys(array));
+        var keys = Object.keys(array);
+
+        var firstEintritt = array[keys[0]];
+        console.log('HERE IS THE ticketID')
+        console.log(firstEintritt.ticketId);
+        Ticket.getTicketById(firstEintritt.ticketId, function (err, ticket) {
             if (err) {
                 console.log('error is thrown in get tickt');
                 console.log(err);
             }
+            console.log('no err thrown in getTicketById the ticket is :');
+            console.log(ticket);
             Event.getEventById(ticket.eventId, function (err, event) {
                 if (err) {
                     console.log('error is thrown in get event');
                     console.log(err);
                 }
-                Order.getOrderById(eintritt.orderId, function (err) {
+                console.log('no err thrown in getEventById the event is :');
+                console.log(event);
+                Order.getOrderById(firstEintritt.orderId, function (err, order) {
                     if (err) {
                         console.log('error is thrown in get order');
                         console.log(err);
                     }
+                    console.log('no err thrown in getOrderById the order is :');
+                    console.log(ticket);
                     bestellungen.push({
                         head: {
                             eventTitle: event.title,
@@ -235,36 +249,45 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             orderExpires: order.reservation
                         }
                     })
+                    console.log('before for loop');
+                    for (var key in array) {
+                        var i = 0;
+                        console.log('in for loop');
+                        var eintrittId = key;
+                        var eintritt = array[eintrittId];
+                        Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+                            if (err) {
+                                console.log('error is thrown in get tickt');
+                                console.log(err);
+                            }
+                            bestellungen.push({
+                                bestellung: {
+                                   
+                                    eintrittId: eintrittId,
+                                    ticketKategorie: ticket.kategorie,
+                                    datum: ticket.gueltig_datum,
+                                    preis: ticket.preis,
+                                }
+                            })
+                            i = i+ 1
+                            console.log('bestellungen lenght is : ' + Object.keys(bestellungen).length);
+                            console.log('array lenght is : ' + Object.keys(array).length);
+                            console.log('i ist :' + i);
+                            // render when the array is through.. 
+                            //and send an object with only the data that we need.. push push
+                            if (i>= Object.keys(array).length) {
+                                res.render('firstBasket', {
+                                    client: req.user,
+                                    bestellungen: bestellungen
+                                })
+                            }
+                        })
+                    }
+
                 })
             })
         })
 
-        for (var key in array) {
-            var eintrittId = key;
-            var eintritt = obj[eintrittId];
-            Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
-                if (err) {
-                    console.log('error is thrown in get tickt');
-                    console.log(err);
-                }
-                bestellungen.push({
-                    bestellung: {
-                        eintrittId: eintrittId,
-                        ticketKategorie: ticket.kategorie,
-                        datum: ticket.gueltig_datum,
-                        preis: ticket.preis,
-                    }
-                })
-                // render when the array is through.. 
-                //and send an object with only the data that we need.. push push
-                if (Object.keys(bestellungen).length > Object.keys(array).length) {
-                    res.render('firstBasket', {
-                        client: req.user, 
-                        bestellungen: bestellungen
-                    })
-                }
-            })
-        }
     }
 
     function failureCallback(ticket) {
@@ -294,8 +317,6 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
             }
         });
     }
-
-
 })
 
 
@@ -486,13 +507,9 @@ router.post('/buyTickets', ensureAuthenticated, jsonParser, function (req, res) 
                                 })
                             }
                             // eintritte.forEach(function (eintritt) {
-
                             // });
-
                         }
                     })
-
-
                     // res.setHeader('Content-Type', 'application/pdf');
                     // res.send(response);
                 }
@@ -567,7 +584,7 @@ function ensureAuthenticated(req, res, next) {
 
     //console.log(req.body);
     console.log('in ensureAuth');
-    if (req.body.ticketsNumber){
+    if (req.body.ticketsNumber) {
         var ticketsNumber = cleanInt(req.body.ticketsNumber);
         console.log('Anzahl ticket kategorien : ' + ticketsNumber);
         if (ticketsNumber > 1) {
@@ -581,11 +598,11 @@ function ensureAuthenticated(req, res, next) {
             var best = cleanInt(req.body[ticket]);
             console.log('BEstellung beträtg :' + best);
         }
-    
+
         var dic = {
             [ticket]: best
         };
-    
+
         //falls es mehr hat alles in ein array
         for (y = 1; y < ticketsNumber; y++) {
             var ticket = req.body.ticketId[y];
@@ -598,8 +615,8 @@ function ensureAuthenticated(req, res, next) {
         req.session.dic = dic;
 
     }
-   
-    req.session.lastUrl = '../client'+req.url;
+
+    req.session.lastUrl = '../client' + req.url;
     res.redirect('../clientRegister');
 }
 
@@ -642,8 +659,8 @@ router.post('/clientLogin', function (req, res, next) {
             if (req.session.lastUrl) {
                 redirectUrl = req.session.lastUrl;
                 req.session.lastUrl = null;
-                
-            } 
+
+            }
             console.log(redirectUrl);
             return res.redirect(redirectUrl);
 
@@ -798,7 +815,7 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                             req.session.client = req.user;
                             req.flash('success', 'Erfolgreich registriert');
                             if (req.session.lastUrl) {
-                                var url =  req.session.lastUrl;
+                                var url = req.session.lastUrl;
                             } else {
                                 var url = '/client/clientMainpage';
                             }

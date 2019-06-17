@@ -20,7 +20,7 @@ OrderSchema.plugin(uniqueValidator);
 var Order = module.exports = mongoose.model('order99', OrderSchema);
 
 module.exports.getOrderById = function (id, callback) {
-    Eintritt.findById(id, callback);
+    Order.findById(id, callback);
 }
 
 module.exports.findWithPromise = function (id) {
@@ -42,7 +42,7 @@ module.exports.getOrdersByClientId = function (clientId, callback) {
 
 module.exports.getOrdersByTicketId = function (ticketId, callback) {
 
-    Orders.find().where("ticketId", ticketId).
+    Order.find().where("ticketId", ticketId).
         exec(function (err, orders) {
             callback(err, orders);
         });

@@ -166,7 +166,7 @@ router.get('/buyTickets/:id', ensureAuthenticated, function (req, res) {
 });
 router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res) {
     console.log(req.body);
-    console.log('in buytickets');
+    console.log('in add to basket');
     var ticketsNumber = cleanInt(req.body.ticketsNumber);
     console.log('Anzahl ticket kategorien : ' + ticketsNumber);
     if (ticketsNumber > 1) {
@@ -258,7 +258,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                 // render when the array is through.. 
                 //and send an object with only the data that we need.. push push
                 if (Object.keys(bestellungen).length > Object.keys(array).length) {
-                    res.render('basket', {
+                    res.render('firstBasket', {
+                        client: req.user, 
                         bestellungen: bestellungen
                     })
                 }
@@ -566,35 +567,39 @@ function ensureAuthenticated(req, res, next) {
 
     //console.log(req.body);
     console.log('in ensureAuth');
-    var ticketsNumber = cleanInt(req.body.ticketsNumber);
-    console.log('Anzahl ticket kategorien : ' + ticketsNumber);
-    if (ticketsNumber > 1) {
-        var ticket = req.body.ticketId[0];
-        console.log('TicketID ist :' + ticket);
-        var best = cleanInt(req.body[ticket]);
-        console.log('BEstellung beträtg :' + best);
-    } else {
-        var ticket = req.body.ticketId;
-        console.log('TicketID ist :' + ticket);
-        var best = cleanInt(req.body[ticket]);
-        console.log('BEstellung beträtg :' + best);
-    }
+    if (req.body.ticketsNumber){
+        var ticketsNumber = cleanInt(req.body.ticketsNumber);
+        console.log('Anzahl ticket kategorien : ' + ticketsNumber);
+        if (ticketsNumber > 1) {
+            var ticket = req.body.ticketId[0];
+            console.log('TicketID ist :' + ticket);
+            var best = cleanInt(req.body[ticket]);
+            console.log('BEstellung beträtg :' + best);
+        } else {
+            var ticket = req.body.ticketId;
+            console.log('TicketID ist :' + ticket);
+            var best = cleanInt(req.body[ticket]);
+            console.log('BEstellung beträtg :' + best);
+        }
+    
+        var dic = {
+            [ticket]: best
+        };
+    
+        //falls es mehr hat alles in ein array
+        for (y = 1; y < ticketsNumber; y++) {
+            var ticket = req.body.ticketId[y];
+            var bestellung = req.body[ticket];
+            dic[ticket] = bestellung;
+        }
+        console.log('hiere kommt das Dictionaly: ');
+        console.log(dic);
+        // res.cookie('dic' , dic, {maxAge : 9999});
+        req.session.dic = dic;
 
-    var dic = {
-        [ticket]: best
-    };
-
-    //falls es mehr hat alles in ein array
-    for (y = 1; y < ticketsNumber; y++) {
-        var ticket = req.body.ticketId[y];
-        var bestellung = req.body[ticket];
-        dic[ticket] = bestellung;
     }
-    console.log('hiere kommt das Dictionaly: ');
-    console.log(dic);
-    // res.cookie('dic' , dic, {maxAge : 9999});
-    req.session.dic = dic;
-    req.session.lastUrl = '../client/buyTickets/' + req.parms.id;
+   
+    req.session.lastUrl = '../client'+req.url;
     res.redirect('../clientRegister');
 }
 
@@ -632,14 +637,15 @@ router.post('/clientLogin', function (req, res, next) {
             console.log('last session UTL ist ');
             console.log(req.session.lastUrl);
             req.session.client = req.user;
+            var redirectUrl = '../client/clientMainpage';
 
             if (req.session.lastUrl) {
-                return res.redirect(req.session.lastUrl);
-            } else {
-                console.log('also redirect Client Mainpage');
-                return res.redirect('../client/clientMainpage')
-            }
-
+                redirectUrl = req.session.lastUrl;
+                req.session.lastUrl = null;
+                
+            } 
+            console.log(redirectUrl);
+            return res.redirect(redirectUrl);
 
         });
     })(req, res, next);
@@ -789,9 +795,10 @@ router.post('/register', parser.single('image'), function (req, res, next) {
                         req.logIn(client, function (err) {
                             //done(err, user);
                             if (err) { return next(err); }
+                            req.session.client = req.user;
                             req.flash('success', 'Erfolgreich registriert');
                             if (req.session.lastUrl) {
-                                var url = req.session.lastUrl;
+                                var url =  req.session.lastUrl;
                             } else {
                                 var url = '/client/clientMainpage';
                             }

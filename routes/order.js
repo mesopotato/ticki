@@ -125,8 +125,7 @@ exports.saveEintritte = function (obj, client) {
             var dic = {};
             var gesamt = 0;
             for (var key in obj) {
-                ges
-                amt = gesamt + cleanInt(obj[key]);
+                gesamt = gesamt + cleanInt(obj[key]);
             }
             console.log('gesamt tickets : ' + gesamt);
             var gespeichert = 0;

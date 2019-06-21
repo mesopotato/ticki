@@ -14,17 +14,39 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="node_modules/splash-screen/dist/splash-screen-audio-wave.min.css">
-<script src="node_modules/splash-screen/dist/splash-screen-audio-wave.min.js"></script>
- 
-<script>
-    const theme = window['splash-screen-audio-wave'];
- 
-    //enable with no arg.
-    theme.enable();
-    
-    //destory the splash
-    theme.destory();
-</script> 
+    <script src="node_modules/splash-screen/dist/splash-screen-audio-wave.min.js"></script>
+
+    <script>
+        const theme = window['splash-screen-audio-wave'];
+
+        //enable with no arg.
+        theme.enable();
+
+        //destory the splash
+        theme.destory();
+        var d = new Date();
+        var n = d.toLocaleTimeString();
+        alert("The time is: \n" + n);
+        (function () {
+            function checkTime(i) {
+                return (i < 10) ? "0" + i : i;
+            }
+
+            function startTime() {
+                var today = new Date(),
+                    h = checkTime(today.getHours()),
+                    m = checkTime(today.getMinutes()),
+                    s = checkTime(today.getSeconds());
+                   // var  time = h + ":" + m + ":" + s;
+                //document.getElementById('time').innerHTML ="<p></p>";
+                document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
+                t = setTimeout(function () {
+                    startTime()
+                }, 500);
+            }
+            startTime();
+        })();
+    </script>
     <style>
         a.custom-card,
         a.custom-card:hover {
@@ -57,7 +79,8 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#!"><% if (this.user) { %> <%= user.name %> <% } %> <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="#!"><% if (this.user) { %> <%= user.name %> <% } %> <span
+                            class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/../client/logout">Logout</a>
@@ -80,7 +103,11 @@
         <% } %>
 
         <div class="jumbotron">
+
+
             <h2 style="margin-bottom: 2%;"> Events</h2>
+            <div id="time"><%= new Date() %> </div>
+
             <% events.forEach(function(event){ %>
 
             <a class="custom-card" href="/client/getEvent/<%= event.id %>">

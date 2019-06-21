@@ -2,7 +2,7 @@
 <html lang="de">
 
 <head>
-    <title>mainpage</title>
+    <title>basket</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="../../stylesheets/bootstrap.min.css">
@@ -34,6 +34,32 @@
                 document.getElementById('message').innerHTML = 'not matching';
             }
         }
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+        (function () {
+            function checkTime(i) {
+                return (i < 10) ? "0" + i : i;
+            }
+
+            function startTime() {
+                var today = new Date(),
+                    h = checkTime(today.getHours()),
+                    m = checkTime(today.getMinutes()),
+                    s = checkTime(today.getSeconds());
+                    
+                document.getElementById('time').innerHTML =h + ":" + m + ":" + s;;
+                t = setTimeout(function () {
+                    startTime()
+                }, 500);
+            }
+            startTime();
+        })();
+        
     </script>
 </head>
 
@@ -48,7 +74,8 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav mr-auto mt-2 mt-md-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="../clientMainpage"><% if (this.user) { %> <%= user.name %> <% } %> <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="../clientMainpage"><% if (this.user) { %> <%= user.name %> <% } %> <span
+                            class="sr-only">(current)</span></a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mt-2 mt-md-0">
@@ -56,6 +83,10 @@
                     <a class="nav-link" href="../../users/mainpage">Tickets verkaufen <span
                             class="sr-only">(current)</span></a>
                 </li>
+                <li class="nav-item">
+
+                </li>
+
 
             </ul>
 
@@ -66,26 +97,25 @@
         <% if (messages) { %>
         <%- messages() %>
         <% } %>
-        <h1 style="margin-top: 5%;"> Warenkorb</h1>
+        <h1 style="margin-top: 5%;"> Überblick</h1>
 
         <div class="jumbotron" style="margin-top: 5%;">
 
             <div class="media">
-                <% if (event.picUrl) { %>
-                <img class="d-flex align-self-start mr-3" src="<%= event.picUrl %>" alt="Ihr Veranstaltungsbild">
-                <% } %>
+                <div id="time"></div>
+
                 <div class="media-body">
                     <div class="row">
                         <div class="col-6">
                             <!-- Content -->
-                            <h3 class="mt-0" style="margin-bottom: 2%;"><%= bestellungen.head.eventTitle %></h3>
-                            <h4>Veranstalter : <%= bestellungen.head.veranstalter %></h4>
-                            <p><b> Lokation : <%= bestellungen.head.lokation%></b></p>
+                            <h3 class="mt-0" style="margin-bottom: 2%;"><%= bestellungen[0].head.eventTitle %></h3>
+                            <h4>Veranstalter : <%= bestellungen[0].head.veranstalter %></h4>
+                            <p><b> Lokation : <%= bestellungen[0].head.lokation%></b></p>
                         </div>
                         <div class="col-6">
                             <!-- Content -->
-                            <p><b> Reserviert : <%= bestellungen.head.expires%></b></p>
-                            
+                            <p><b> Reserviert : <%= bestellungen[0].head.orderExpires%> <div id="time"></div></b></p>
+
                         </div>
                     </div>
 
@@ -95,37 +125,28 @@
                             <tr>
                                 <th>Kategorie</th>
                                 <th>Preis</th>
-                                
+
                             </tr>
                         </thead>
                         <tbody>
 
                             <form action="/client/addToBasket" method="post" id="buyThat">
-                                <% y= 1; bestellungen.bestellung.forEach(function(best){ %>
+                                <% for (y= 1; y <= bestellungen[0].head.anzahl; y++ ) { %>
                                 <tr class="table-info">
-                                    <th scope="row"><%= best.ticketKategorie %></th>
+                                    <th scope="row"><%= bestellungen[y].bestellung.ticketKategorie %></th>
 
-                                    <td><%= best.preis %> CHF</td>
-                                    
+                                    <td><%= bestellungen[y].bestellung.preis %> CHF</td>
+
                                 </tr>
-                                <% y = y + 1; }) %>
+                                <% }    %>
 
-                                <% i= 0; bestellungen.bestellung.forEach(function(best){ %>
-                        eintrittId: eintrittId,
-                                <input type="hidden" value="<%= best.eintrittId %>" name="ticketId" />
-                                <% i = i + 1; }) %>
-                                <input type="hidden" value="<%= i %>" name="ticketsNumber" />
-                                
+
 
                         </tbody>
                     </table>
-                    <input style="width: 50%;" type="email" class="form-control" id="email" name="email"
-                        placeholder="E Mail" required onkeyup='check();' />
-                    <input style="width: 50%;" type="email" class="form-control" id="email2" name="email2"
-                        placeholder="E Mail bestätigen" required onkeyup='check();' />
-                    <span id='message'></span>
+
                     <button type="submit" class="btn btn-primary float-right" name="submit" value="buy">Tickets
-                    kaufen </button>
+                        kaufen </button>
                     </form>
                 </div>
             </div>

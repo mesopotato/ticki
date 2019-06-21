@@ -32,13 +32,16 @@ module.exports.findWithPromise = function (id) {
     })
 
 }
-module.exports.getEintritteByEmail = function (email, callback) {
 
-    Eintritt.find().where("email", email).
+
+module.exports.getEintritteByOrder = function (orderId, callback) {
+
+    Eintritt.find().where("orderId", orderId).
         exec(function (err, eintritte) {
             callback(err, eintritte);
         });
 }
+
 
 module.exports.getEintritteByTicketId = function (ticketId, callback) {
 

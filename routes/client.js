@@ -27,6 +27,8 @@ var async = require("async");
 var crypto = require('crypto');
 var fs = require('fs');
 
+
+
 var http = require('http')
     , req = http.IncomingMessage.prototype;
 
@@ -240,13 +242,14 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                         console.log(err);
                     }
                     console.log('no err thrown in getOrderById the order is :');
-                    console.log(ticket);
+                    console.log(order);
                     bestellungen.push({
                         head: {
                             eventTitle: event.title,
                             veranstalter: event.veranstalter,
                             lokation: event.lokation,
-                            orderExpires: order.reservation
+                            orderExpires: order.reservation, 
+                            anzahl: Object.keys(array).length
                         }
                     })
                     console.log('before for loop');
@@ -276,6 +279,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             // render when the array is through.. 
                             //and send an object with only the data that we need.. push push
                             if (i>= Object.keys(array).length) {
+                                console.log('here kommte das bestellungs ARRAY');
+                                console.log(bestellungen);
                                 res.render('firstBasket', {
                                     client: req.user,
                                     bestellungen: bestellungen

@@ -288,11 +288,9 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             }
                         })
                     }
-
                 })
             })
         })
-
     }
 
     function failureCallback(ticket) {
@@ -322,6 +320,35 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
             }
         });
     }
+})
+
+router.post('/renderBasket', ensureAuthenticated, function(req, res){
+
+    Order.getOrdersByClientId(req.user.id, function(err, orders){
+        if (err){
+            console.log('error is thrown in get orders array');
+            console.log(err);
+        }
+        console.log('orders are :');
+        console.log(orders);
+        for (var key in orders){
+            Eitritt.getEintritteByOrder(key.orderId, function(err, eintritte){
+                if (err){
+                    console.log(err);
+                }
+                for (var key in eintritte){
+                    Ticket.getTicketById(key.ticketId, function(err, ticket){
+                        if (err){
+                            console.log(err);
+                        }
+                        
+                    })
+                }
+            })
+        }
+
+    })
+
 })
 
 

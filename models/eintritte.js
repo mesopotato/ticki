@@ -33,7 +33,6 @@ module.exports.findWithPromise = function (id) {
 
 }
 
-
 module.exports.getEintritteByOrder = function (orderId, callback) {
 
     Eintritt.find().where("orderId", orderId).

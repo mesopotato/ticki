@@ -37,7 +37,7 @@
                     h = checkTime(today.getHours()),
                     m = checkTime(today.getMinutes()),
                     s = checkTime(today.getSeconds());
-                   // var  time = h + ":" + m + ":" + s;
+                // var  time = h + ":" + m + ":" + s;
                 //document.getElementById('time').innerHTML ="<p></p>";
                 document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
                 t = setTimeout(function () {
@@ -46,6 +46,8 @@
             }
             startTime();
         })();
+
+        
     </script>
     <style>
         a.custom-card,
@@ -107,6 +109,22 @@
 
             <h2 style="margin-bottom: 2%;"> Events</h2>
             <div id="time"><%= new Date() %> </div>
+            <div id="countdown">
+                <% setInterval(function(){ %>
+                <% var now = new Date().getTime(); %>
+                <% var expiration = new Date().getTime() - 10; %>
+                <% var distance = expiration - now; %>
+                <% var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); %>
+                <% var seconds = Math.floor((distance % (1000 * 60)) / 1000); %>
+                <% if (distance > 0 ) { %>
+                <% console.log(minutes + ':' + seconds) %>
+                <p>This isn't showing</p>
+                <% } else { %>
+                <% console.log('expired') %>
+                <p>This isn't showing</p>
+                <% }; %>
+                <% }, 1000); %>
+            </div>
 
             <% events.forEach(function(event){ %>
 

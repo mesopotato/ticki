@@ -47,7 +47,20 @@
             startTime();
         })();
 
-        
+        function renderDOM(minutes, seconds) {
+
+            var template = new EJS({
+                text: ` 
+                        <ul>
+                          <li id="my_element">hallihalo</li>
+                        </ul>
+                    `
+            })
+            var html = template.render({ seconds: seconds })
+            document.getElementById('render').innerHTML = html
+        }
+
+
     </script>
     <style>
         a.custom-card,
@@ -116,15 +129,20 @@
                 <% var distance = expiration - now; %>
                 <% var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); %>
                 <% var seconds = Math.floor((distance % (1000 * 60)) / 1000); %>
+
                 <% if (distance > 0 ) { %>
                 <% console.log(minutes + ':' + seconds) %>
-                <p>This isn't showing</p>
+                <% renderDOM(minutes, seconds); %>
+                <p id="my_element">This isn't showing</p>
                 <% } else { %>
                 <% console.log('expired') %>
+                <% renderDOM(minutes, seconds); %>
                 <p>This isn't showing</p>
                 <% }; %>
                 <% }, 1000); %>
+                
             </div>
+            <div id="render"></div>
 
             <% events.forEach(function(event){ %>
 

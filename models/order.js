@@ -12,12 +12,13 @@ var db = mongoose.connection;
 var OrderSchema = new mongoose.Schema({
     clientId: String, 
     bezahlt: Boolean,
-    reservation: Date 
+    reservation: Date,
+    eventId : String 
 });
 
 OrderSchema.plugin(uniqueValidator);
 
-var Order = module.exports = mongoose.model('order99', OrderSchema);
+var Order = module.exports = mongoose.model('order999', OrderSchema);
 
 module.exports.getOrderById = function (id, callback) {
     Order.findById(id, callback);

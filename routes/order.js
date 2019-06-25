@@ -112,54 +112,68 @@ exports.order = function (obj) {
 exports.saveEintritte = function (obj, client) {
     return new Promise((resolve, reject) => {
         console.log('in save Eintritte');
-        var expires = Date.now() + 3600000; // 1 hour
-        var newOrder = new Order({
-            clientId: client.id,
-            bezahlt: false,
-            reservation: expires
-        })
-        Order.saveOrder(newOrder, function (err, order) {
-            if (err) {
-                reject(err);
+        var expires = Date.now() + 3600000 + 3600000; // 1 hour
+        var k = Object.keys(obj);
+        var firstTicketID = obj[[0]];
+        console.log('firstTicketID:')
+        console.log(firstTicketID);
+        Ticket.findById(firstTicketID, function (err, ticket){
+            if (err){
+                console.log('in err of find ticket by  id ');
+                console.log(err);
             }
-            var dic = {};
-            var gesamt = 0;
-            for (var key in obj) {
-                gesamt = gesamt + cleanInt(obj[key]);
-            }
-            console.log('gesamt tickets : ' + gesamt);
-            var gespeichert = 0;
-            for (var key in obj) {
-                var ticketId = key;
-                var bestellung = cleanInt(obj[ticketId]);
-                console.log(' ticketid ist :' + ticketId);
-                console.log('bestellung ist : ' + bestellung);
-                for (i = 0; i < bestellung; i++) {
-                    console.log('for loope inner i ist = ' + i);
-                    var newEintritt = new Eintritt({
-                        abgebucht: false,
-                        ticketId: ticketId,
-                        orderId: order.id
-                    })
-                    Eintritt.saveEintritt(newEintritt, function (err, eintritt) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            dic[eintritt.id] = eintritt
-                            console.log('save eintritt erfolgreich DIC : ' + dic);
-                            gespeichert = gespeichert + 1;
-                            console.log('gespeichert sind : ' + gespeichert);
-                            console.log('gesamt sind : ' + gesamt);
-                            if (gespeichert >= gesamt) {
-                                console.log('wird resolved!!!');
-                                console.log('dic ist in dem Moment: ' + Object.entries(dic));
-                                resolve(dic);
-                            }
-                        }
-                    })
+            console.log('ticket ist:')
+            console.log(ticket);
+            var newOrder = new Order({
+                clientId: client.id,
+                bezahlt: false,
+                reservation: expires, 
+                eventId: ticket.eventId
+            })
+            Order.saveOrder(newOrder, function (err, order) {
+                if (err) {
+                    reject(err);
                 }
-            }
+                var dic = {};
+                var gesamt = 0;
+                for (var key in obj) {
+                    gesamt = gesamt + cleanInt(obj[key]);
+                }
+                console.log('gesamt tickets : ' + gesamt);
+                var gespeichert = 0;
+                for (var key in obj) {
+                    var ticketId = key;
+                    var bestellung = cleanInt(obj[ticketId]);
+                    console.log(' ticketid ist :' + ticketId);
+                    console.log('bestellung ist : ' + bestellung);
+                    for (i = 0; i < bestellung; i++) {
+                        console.log('for loope inner i ist = ' + i);
+                        var newEintritt = new Eintritt({
+                            abgebucht: false,
+                            ticketId: ticketId,
+                            orderId: order.id
+                        })
+                        Eintritt.saveEintritt(newEintritt, function (err, eintritt) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                dic[eintritt.id] = eintritt
+                                console.log('save eintritt erfolgreich DIC : ' + dic);
+                                gespeichert = gespeichert + 1;
+                                console.log('gespeichert sind : ' + gespeichert);
+                                console.log('gesamt sind : ' + gesamt);
+                                if (gespeichert >= gesamt) {
+                                    console.log('wird resolved!!!');
+                                    console.log('dic ist in dem Moment: ' + Object.entries(dic));
+                                    resolve(dic);
+                                }
+                            }
+                        })
+                    }
+                }
+            })
         })
+        
 
     })
 }

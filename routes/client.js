@@ -251,14 +251,6 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     expiresIn.setMinutes ( added.getMinutes() + 30 );
                     console.log('expires iN');
                     console.log(expiresIn);
-                    var now = Date.now();
-
-                    
-                    var left = Math.abs(expiresIn.getTime() - now.getTime());
-                    var diffMin = Math.ceil(left / (1000 * 60)); 
-
-                    console.log('left');
-                    console.log(diffMin);
 
                     var s = added.getSeconds();
                     var m = added.getMinutes();
@@ -272,22 +264,16 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     var hE = expiresIn.getHours();
                     var dE = expiresIn.getDate();
                     var monthE = expiresIn.getMonth();
-                    var yE = expiresIn.getFullYear();
+                    var yE = expiresIn.getFullYear();       
 
-                    var leftMinutes = left.getMinutes();
-                    var leftSeconds = left.getSeconds();
-
-                    var addedTime = h + ' : ' + m + ' : ' + s + ' , ' + d + ' : ' + month + ' : ' + y;
-                    var expireTime = hE + ' : ' + mE + ' : ' + sE + ' , ' + dE + ' : ' + monthE + ' : ' + yE;
-
-                    var leftTime = leftMinutes + ' : ' + leftSeconds;
+                    var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
+                    var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;               
 
                     bestellungen.push({
                         head: {
                             eventTitle: event.title,
                             veranstalter: event.veranstalter,
                             lokation: event.lokation,
-                            orderExpires: leftTime,
                             orderAdded: addedTime,
                             expireTime: expireTime,
                             anzahl: Object.keys(array).length
@@ -304,7 +290,7 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                                 console.log('error is thrown in get tickt');
                                 console.log(err);
                             }
-                            bestellungen.push({
+                            bestellungen.head.push({
                                 bestellung: {
 
                                     eintrittId: eintrittId,
@@ -321,6 +307,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             //and send an object with only the data that we need.. push push
                             if (i >= Object.keys(array).length) {
                                 console.log('here kommte das bestellungs ARRAY');
+                                console.local('------------------------------------------------------------');
+                                console.local('------------------------------------------------------------');
                                 console.log(bestellungen);
                                 res.render('firstBasket', {
                                     client: req.user,
@@ -364,7 +352,9 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 })
 
 router.post('/renderBasket', ensureAuthenticated, function(req, res){
-
+    var bestellungen = [];
+    var i = 0;
+    var y = 0;
     Order.getOrdersByClientId(req.user.id, function(err, orders){
         if (err){
             console.log('error is thrown in get orders array');
@@ -372,20 +362,76 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
         }
         console.log('orders are :');
         console.log(orders);
+
         for (var key in orders){
-            Eitritt.getEintritteByOrder(key.orderId, function(err, eintritte){
-                if (err){
-                    console.log(err);
-                }
-                for (var key in eintritte){
-                    Ticket.getTicketById(key.ticketId, function(err, ticket){
-                        if (err){
-                            console.log(err);
-                        }
-                        
-                    })
-                }
+            Event.findById(key.eventId, function (err, event){
+                var added = order.reservation;
+                var expiresIn = new Date (added);
+                expiresIn.setMinutes ( added.getMinutes() + 30 );
+                console.log('expires iN');
+                console.log(expiresIn);
+
+                var s = added.getSeconds();
+                var m = added.getMinutes();
+                var h = added.getHours();
+                var d = added.getDate();
+                var month = added.getMonth();
+                var y = added.getFullYear();
+
+                var sE = expiresIn.getSeconds();
+                var mE = expiresIn.getMinutes();
+                var hE = expiresIn.getHours();
+                var dE = expiresIn.getDate();
+                var monthE = expiresIn.getMonth();
+                var yE = expiresIn.getFullYear();       
+
+                var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
+                var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE; 
+                bestellungen.push({
+                    head: {
+                        eventTitle: event.title,
+                        veranstalter: event.veranstalter,
+                        lokation: event.lokation,
+                        orderAdded: addedTime,
+                        expireTime: expireTime,
+                    }
+                })
+                y = y + 1;
+
+                Eitritt.getEintritteByOrder(key.orderId, function(err, eintritte){
+                    if (err){
+                        console.log(err);
+                    }
+                    
+                    for (var key in eintritte){
+                        Ticket.getTicketById(key.ticketId, function(err, ticket){
+                            if (err){
+                                console.log(err);
+                            }
+                            bestellungen.push({
+                                bestellung: {
+    
+                                    eintrittId: eintrittId,
+                                    ticketKategorie: ticket.kategorie,
+                                    datum: ticket.gueltig_datum,
+                                    preis: ticket.preis,
+                                }
+                            })
+                            i = i + 1
+                            if (i >= Object.keys(orders).length && y >= Object.keys(eintritte).length) {
+                                console.log('here kommte das bestellungs ARRAY');
+                                console.log(bestellungen);
+                                res.render('firstBasket', {
+                                    client: req.user,
+                                    bestellungen: bestellungen
+                                })
+                            }
+                            
+                        })
+                    }
+                })        
             })
+            
         }
 
     })
@@ -647,9 +693,9 @@ function ensureAuthenticated(req, res, next) {
     console.log(req.user);
 
     if (req.isAuthenticated()) {
-
         console.log('req.isAuthenticated is TRUE')
         if (req.session.client) {
+            console.log('req.session is TRUE');
             return next();
         }
         //console.log(this._passport.instance._userPropert)       

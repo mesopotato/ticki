@@ -112,9 +112,13 @@ exports.order = function (obj) {
 exports.saveEintritte = function (obj, client) {
     return new Promise((resolve, reject) => {
         console.log('in save Eintritte');
+        console.log('OBJ iist:');
+        console.log(obj);
         var expires = Date.now() + 3600000 + 3600000; // 1 hour
+
         var k = Object.keys(obj);
-        var firstTicketID = obj[[0]];
+        var firstTicketID = k[0];
+
         console.log('firstTicketID:')
         console.log(firstTicketID);
         Ticket.findById(firstTicketID, function (err, ticket){

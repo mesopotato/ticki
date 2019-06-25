@@ -270,16 +270,19 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;               
 
                     bestellungen.push({
-                        head: {
+                        head: [{
                             eventTitle: event.title,
                             veranstalter: event.veranstalter,
                             lokation: event.lokation,
                             orderAdded: addedTime,
                             expireTime: expireTime,
                             anzahl: Object.keys(array).length
-                        }
+                        }]
                     })
                     console.log('before for loop');
+                    console.log('bestellungen : ))))))))))');
+                    console.log(bestellungen);
+                    console.log(bestellungen[0].head)
                     for (var key in array) {
                         var i = 0;
                         console.log('in for loop');
@@ -290,7 +293,7 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                                 console.log('error is thrown in get tickt');
                                 console.log(err);
                             }
-                            bestellungen.head.push({
+                            bestellungen[0].head.push({
                                 bestellung: {
 
                                     eintrittId: eintrittId,
@@ -307,8 +310,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             //and send an object with only the data that we need.. push push
                             if (i >= Object.keys(array).length) {
                                 console.log('here kommte das bestellungs ARRAY');
-                                console.local('------------------------------------------------------------');
-                                console.local('------------------------------------------------------------');
+                                console.log('------------------------------------------------------------');
+                                console.log('------------------------------------------------------------');
                                 console.log(bestellungen);
                                 res.render('firstBasket', {
                                     client: req.user,

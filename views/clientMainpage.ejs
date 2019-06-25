@@ -132,11 +132,11 @@
 
                 <% if (distance > 0 ) { %>
                 <% console.log(minutes + ':' + seconds) %>
-                <% renderDOM(minutes, seconds); %>
+                
                 <p id="my_element">This isn't showing</p>
                 <% } else { %>
                 <% console.log('expired') %>
-                <% renderDOM(minutes, seconds); %>
+               
                 <p>This isn't showing</p>
                 <% }; %>
                 <% }, 1000); %>

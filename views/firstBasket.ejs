@@ -114,8 +114,9 @@
                         </div>
                         <div class="col-6">
                             <!-- Content -->
-                            <p><b> Reserviert : <%= bestellungen[0].head.orderExpires%> <div id="time"></div></b></p>
-
+                            <p> Reserviert um : <%= bestellungen[0].head.orderAdded%></p>
+                            <p><b> Läuft ab um : <%= bestellungen[0].head.expireTime%></b></p>
+                            <p> Ungefär in : <%= bestellungen[0].head.orderExpires%></p>
                         </div>
                     </div>
 

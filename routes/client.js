@@ -243,12 +243,53 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     }
                     console.log('no err thrown in getOrderById the order is :');
                     console.log(order);
+                    console.log(order.reservation);
+                    console.log('MINUTES?');
+                    console.log(order.reservation.getMinutes());
+                    var added = order.reservation;
+                    var expiresIn = new Date (added);
+                    expiresIn.setMinutes ( added.getMinutes() + 30 );
+                    console.log('expires iN');
+                    console.log(expiresIn);
+                    var now = Date.now();
+
+                    
+                    var left = Math.abs(expiresIn.getTime() - now.getTime());
+                    var diffMin = Math.ceil(left / (1000 * 60)); 
+
+                    console.log('left');
+                    console.log(diffMin);
+
+                    var s = added.getSeconds();
+                    var m = added.getMinutes();
+                    var h = added.getHours();
+                    var d = added.getDate();
+                    var month = added.getMonth();
+                    var y = added.getFullYear();
+
+                    var sE = expiresIn.getSeconds();
+                    var mE = expiresIn.getMinutes();
+                    var hE = expiresIn.getHours();
+                    var dE = expiresIn.getDate();
+                    var monthE = expiresIn.getMonth();
+                    var yE = expiresIn.getFullYear();
+
+                    var leftMinutes = left.getMinutes();
+                    var leftSeconds = left.getSeconds();
+
+                    var addedTime = h + ' : ' + m + ' : ' + s + ' , ' + d + ' : ' + month + ' : ' + y;
+                    var expireTime = hE + ' : ' + mE + ' : ' + sE + ' , ' + dE + ' : ' + monthE + ' : ' + yE;
+
+                    var leftTime = leftMinutes + ' : ' + leftSeconds;
+
                     bestellungen.push({
                         head: {
                             eventTitle: event.title,
                             veranstalter: event.veranstalter,
                             lokation: event.lokation,
-                            orderExpires: order.reservation, 
+                            orderExpires: leftTime,
+                            orderAdded: addedTime,
+                            expireTime: expireTime,
                             anzahl: Object.keys(array).length
                         }
                     })
@@ -265,20 +306,20 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                             }
                             bestellungen.push({
                                 bestellung: {
-                                   
+
                                     eintrittId: eintrittId,
                                     ticketKategorie: ticket.kategorie,
                                     datum: ticket.gueltig_datum,
                                     preis: ticket.preis,
                                 }
                             })
-                            i = i+ 1
+                            i = i + 1
                             console.log('bestellungen lenght is : ' + Object.keys(bestellungen).length);
                             console.log('array lenght is : ' + Object.keys(array).length);
                             console.log('i ist :' + i);
                             // render when the array is through.. 
                             //and send an object with only the data that we need.. push push
-                            if (i>= Object.keys(array).length) {
+                            if (i >= Object.keys(array).length) {
                                 console.log('here kommte das bestellungs ARRAY');
                                 console.log(bestellungen);
                                 res.render('firstBasket', {

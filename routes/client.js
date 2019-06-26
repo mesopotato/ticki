@@ -268,7 +268,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 
                     var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
                     var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;               
-
+                    console.log('ANZAHL in ANZAHL');
+                    console.log(Object.keys(array).length)
                     bestellungen.push({
                         head: [{
                             eventTitle: event.title,
@@ -313,6 +314,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                                 console.log('------------------------------------------------------------');
                                 console.log('------------------------------------------------------------');
                                 console.log(bestellungen);
+                                console.log(bestellungen[0].head[0].eventTitle)
+                                console.log(bestellungen[0].head[1].bestellung.datum);
                                 res.render('firstBasket', {
                                     client: req.user,
                                     bestellungen: bestellungen
@@ -367,8 +370,16 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
         console.log(orders);
 
         for (var key in orders){
+            console.log('key1');
+            console.log(key);
+            console.log('keyeventID');
+            console.log(key.eventId);
             Event.findById(key.eventId, function (err, event){
-                var added = order.reservation;
+                console.log('key2');
+                console.log(key);
+                var added = key.reservation;
+                console.log('reservation??');
+                console.log(key.reservation);
                 var expiresIn = new Date (added);
                 expiresIn.setMinutes ( added.getMinutes() + 30 );
                 console.log('expires iN');
@@ -401,7 +412,7 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
                 })
                 y = y + 1;
 
-                Eitritt.getEintritteByOrder(key.orderId, function(err, eintritte){
+                Eitritt.getEintritteByOrder(key.id, function(err, eintritte){
                     if (err){
                         console.log(err);
                     }
@@ -411,7 +422,7 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
                             if (err){
                                 console.log(err);
                             }
-                            bestellungen.push({
+                            bestellungen[y-1].head.push({
                                 bestellung: {
     
                                     eintrittId: eintrittId,

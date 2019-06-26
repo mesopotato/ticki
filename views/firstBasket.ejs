@@ -108,14 +108,14 @@
                     <div class="row">
                         <div class="col-6">
                             <!-- Content -->
-                            <h3 class="mt-0" style="margin-bottom: 2%;"><%= bestellungen[0].head.eventTitle %></h3>
-                            <h4>Veranstalter : <%= bestellungen[0].head.veranstalter %></h4>
-                            <p><b> Lokation : <%= bestellungen[0].head.lokation%></b></p>
+                            <h3 class="mt-0" style="margin-bottom: 2%;"><%= bestellungen[0].head[0].eventTitle %></h3>
+                            <h4>Veranstalter : <%= bestellungen[0].head[0].veranstalter %></h4>
+                            <p><b> Lokation : <%= bestellungen[0].head[0].lokation%></b></p>
                         </div>
                         <div class="col-6">
                             <!-- Content -->
-                            <p> Reserviert um : <%= bestellungen[0].head.orderAdded%></p>
-                            <p><b> Läuft ab um  : <%= bestellungen[0].head.expireTime%></b></p>
+                            <p> Reserviert um : <%= bestellungen[0].head[0].orderAdded%></p>
+                            <p><b> Läuft ab um  : <%= bestellungen[0].head[0].expireTime%></b></p>
                             
                         </div>
                     </div>
@@ -131,12 +131,12 @@
                         </thead>
                         <tbody>
 
-                            <form action="/client/addToBasket" method="post" id="buyThat">
-                                <% for (y= 1; y <= bestellungen[0].head.anzahl; y++ ) { %>
+                            <form action="/client/renderBasket" method="post" id="buyThat">
+                                <% for (y= 1; y <= bestellungen[0].head[0].anzahl; y++ ) { %>
                                 <tr class="table-info">
-                                    <th scope="row"><%= bestellungen[y].bestellung.ticketKategorie %></th>
+                                    <th scope="row"><%= bestellungen[0].head[y].bestellung.ticketKategorie %></th>
 
-                                    <td><%= bestellungen[y].bestellung.preis %> CHF</td>
+                                    <td><%= bestellungen[0].head[y].bestellung.preis %> CHF</td>
 
                                 </tr>
                                 <% }    %>

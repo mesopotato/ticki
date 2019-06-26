@@ -33,11 +33,11 @@ module.exports.findWithPromise = function (id) {
 
 }
 
-module.exports.getEintritteByOrder = function (orderId, callback) {
+module.exports.getEintritteByOrder = function (orderId , callback) {
 
     Eintritt.find().where("orderId", orderId).
-        exec(function (err, eintritte) {
-            callback(err, eintritte);
+        exec(function (err, eintritte ) {
+            callback(err, eintritte );
         });
 }
 

@@ -30,6 +30,10 @@ var Ticket = module.exports = mongoose.model('tickets99', TicketSchema);
 
 module.exports.getTicketById = function (id, callback) {
     Ticket.findById(id, callback);
+    // Ticket.find().where("_id", id).
+    //     exec(function (err, ticket, anzahl) {
+    //         callback(err, ticket, anzahl);
+    //     });
 }
 
 module.exports.getTicket = function (id, callback) {

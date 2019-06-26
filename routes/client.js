@@ -360,7 +360,7 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 router.post('/renderBasket', ensureAuthenticated, function(req, res){
     var bestellungen = [];
     var i = 0;
-    var y = 0;
+    var u = 0;
     Order.getOrdersByClientId(req.user.id, function(err, orders){
         if (err){
             console.log('error is thrown in get orders array');
@@ -370,16 +370,18 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
         console.log(orders);
 
         for (var key in orders){
+            
+            var order = orders[key];
             console.log('key1');
-            console.log(key);
+            console.log(order);
             console.log('keyeventID');
-            console.log(key.eventId);
-            Event.findById(key.eventId, function (err, event){
+            console.log(order.eventId);
+            Event.findById(order.eventId, function (err, event){
                 console.log('key2');
-                console.log(key);
-                var added = key.reservation;
+                console.log(order);
+                var added = order.reservation;
                 console.log('reservation??');
-                console.log(key.reservation);
+                console.log(order.reservation);
                 var expiresIn = new Date (added);
                 expiresIn.setMinutes ( added.getMinutes() + 30 );
                 console.log('expires iN');
@@ -410,22 +412,31 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
                         expireTime: expireTime,
                     }
                 })
-                y = y + 1;
+                u = u + 1;
+                console.log('we had a push: head :')
+                console.log(bestellungen);
+                console.log(Object.keys(bestellungen).length)
 
-                Eitritt.getEintritteByOrder(key.id, function(err, eintritte){
+                Eintritt.getEintritteByOrder(order.id,  function(err, eintritte){
                     if (err){
                         console.log(err);
                     }
-                    
+                    console.log('GGGIIIIVENNN BACKKKK UO ist '+ u)
                     for (var key in eintritte){
-                        Ticket.getTicketById(key.ticketId, function(err, ticket){
+                        console.log('in key eintritte u is:' + u)
+
+                        var eintritt = eintritte[key];
+                        Ticket.getTicketById(eintritt.ticketId, function(err, ticket){
                             if (err){
                                 console.log(err);
                             }
-                            bestellungen[y-1].head.push({
+                            var z = u -1;
+                            console.log('z ist : '+z);
+                            //list.splice( 1, 0, "baz");
+                            bestellungen[z].head.splice(i, 0, {
                                 bestellung: {
     
-                                    eintrittId: eintrittId,
+                                    eintrittId: eintritt.eintrittId,
                                     ticketKategorie: ticket.kategorie,
                                     datum: ticket.gueltig_datum,
                                     preis: ticket.preis,
@@ -434,22 +445,20 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
                             i = i + 1
                             if (i >= Object.keys(orders).length && y >= Object.keys(eintritte).length) {
                                 console.log('here kommte das bestellungs ARRAY');
+                                console.log('--------------------------------------------------');
+                                console.log('--------------------------------------------------');
                                 console.log(bestellungen);
                                 res.render('firstBasket', {
                                     client: req.user,
                                     bestellungen: bestellungen
                                 })
-                            }
-                            
+                            }                           
                         })
                     }
                 })        
-            })
-            
+            })         
         }
-
     })
-
 })
 
 

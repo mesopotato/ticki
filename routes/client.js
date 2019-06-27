@@ -247,8 +247,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     console.log('MINUTES?');
                     console.log(order.reservation.getMinutes());
                     var added = order.reservation;
-                    var expiresIn = new Date (added);
-                    expiresIn.setMinutes ( added.getMinutes() + 30 );
+                    var expiresIn = new Date(added);
+                    expiresIn.setMinutes(added.getMinutes() + 30);
                     console.log('expires iN');
                     console.log(expiresIn);
 
@@ -264,10 +264,10 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                     var hE = expiresIn.getHours();
                     var dE = expiresIn.getDate();
                     var monthE = expiresIn.getMonth();
-                    var yE = expiresIn.getFullYear();       
+                    var yE = expiresIn.getFullYear();
 
                     var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
-                    var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;               
+                    var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;
                     console.log('ANZAHL in ANZAHL');
                     console.log(Object.keys(array).length)
                     bestellungen.push({
@@ -314,8 +314,8 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
                                 console.log('------------------------------------------------------------');
                                 console.log('------------------------------------------------------------');
                                 console.log(bestellungen);
-                                console.log(bestellungen[0].head[0].eventTitle)
-                                console.log(bestellungen[0].head[1].bestellung.datum);
+
+
                                 res.render('firstBasket', {
                                     client: req.user,
                                     bestellungen: bestellungen
@@ -358,9 +358,9 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 })
 
 router.post('/renderBasket', ensureAuthenticated, function(req, res){
-    var bestellungen = [];
-    var i = 0;
-    var u = 0;
+var bestellungen = [];
+var i = 0;
+var u = 0;
     Order.getOrdersByClientId(req.user.id, function(err, orders){
         if (err){
             console.log('error is thrown in get orders array');
@@ -368,98 +368,113 @@ router.post('/renderBasket', ensureAuthenticated, function(req, res){
         }
         console.log('orders are :');
         console.log(orders);
-
+    
         for (var key in orders){
             
             var order = orders[key];
-            console.log('key1');
-            console.log(order);
-            console.log('keyeventID');
-            console.log(order.eventId);
-            Event.findById(order.eventId, function (err, event){
-                console.log('key2');
-                console.log(order);
-                var added = order.reservation;
-                console.log('reservation??');
-                console.log(order.reservation);
-                var expiresIn = new Date (added);
-                expiresIn.setMinutes ( added.getMinutes() + 30 );
-                console.log('expires iN');
-                console.log(expiresIn);
+    console.log('key1');
+    console.log(order);
+    console.log('keyeventID');
+    console.log(order.eventId);
+    Event.findById(order.eventId, function (err, event) {
+        console.log('key2');
+        console.log(order);
+        var added = order.reservation;
+        console.log('reservation??');
+        console.log(order.reservation);
+        var expiresIn = new Date(added);
+        expiresIn.setMinutes(added.getMinutes() + 30);
+        console.log('expires iN');
+        console.log(expiresIn);
 
-                var s = added.getSeconds();
-                var m = added.getMinutes();
-                var h = added.getHours();
-                var d = added.getDate();
-                var month = added.getMonth();
-                var y = added.getFullYear();
+        var s = added.getSeconds();
+        var m = added.getMinutes();
+        var h = added.getHours();
+        var d = added.getDate();
+        var month = added.getMonth();
+        var y = added.getFullYear();
 
-                var sE = expiresIn.getSeconds();
-                var mE = expiresIn.getMinutes();
-                var hE = expiresIn.getHours();
-                var dE = expiresIn.getDate();
-                var monthE = expiresIn.getMonth();
-                var yE = expiresIn.getFullYear();       
+        var sE = expiresIn.getSeconds();
+        var mE = expiresIn.getMinutes();
+        var hE = expiresIn.getHours();
+        var dE = expiresIn.getDate();
+        var monthE = expiresIn.getMonth();
+        var yE = expiresIn.getFullYear();
 
-                var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
-                var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE; 
-                bestellungen.push({
-                    head: {
-                        eventTitle: event.title,
-                        veranstalter: event.veranstalter,
-                        lokation: event.lokation,
-                        orderAdded: addedTime,
-                        expireTime: expireTime,
-                    }
-                })
-                u = u + 1;
-                console.log('we had a push: head :')
-                console.log(bestellungen);
-                console.log(Object.keys(bestellungen).length)
+        var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
+        var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;
+        bestellungen.push({
+            head: {
+                oderId: order.id,
+                eventTitle: event.title,
+                veranstalter: event.veranstalter,
+                lokation: event.lokation,
+                orderAdded: addedTime,
+                expireTime: expireTime,
+            }
+        })
+        u = u + 1;
+        console.log('we had a push: head :')
+        console.log(bestellungen);
+        console.log(Object.keys(bestellungen).length)
 
-                Eintritt.getEintritteByOrder(order.id,  function(err, eintritte){
-                    if (err){
+        Eintritt.getEintritteByOrder(order.id, function (err, eintritte) {
+            if (err) {
+                console.log(err);
+            }
+            console.log('GGGIIIIVENNN BACKKKK UO ist ' + u)
+            for (var key in eintritte) {
+                console.log('in key eintritte u is:' + u)
+
+                var eintritt = eintritte[key];
+                Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
+                    if (err) {
                         console.log(err);
                     }
-                    console.log('GGGIIIIVENNN BACKKKK UO ist '+ u)
-                    for (var key in eintritte){
-                        console.log('in key eintritte u is:' + u)
-
-                        var eintritt = eintritte[key];
-                        Ticket.getTicketById(eintritt.ticketId, function(err, ticket){
-                            if (err){
-                                console.log(err);
-                            }
-                            var z = u -1;
-                            console.log('z ist : '+z);
-                            //list.splice( 1, 0, "baz");
-                            bestellungen[z].head.splice(i, 0, {
-                                bestellung: {
-    
-                                    eintrittId: eintritt.eintrittId,
-                                    ticketKategorie: ticket.kategorie,
-                                    datum: ticket.gueltig_datum,
-                                    preis: ticket.preis,
+                    var z = u - 1;
+                    console.log('z ist : ' + z);
+                    //list.splice( 1, 0, "baz");
+                    bestellungen.push({
+                        bestellung: {
+                            orderId: eintritt.orderId,
+                            eintrittId: eintritt.eintrittId,
+                            ticketKategorie: ticket.kategorie,
+                            datum: ticket.gueltig_datum,
+                            preis: ticket.preis,
+                        }
+                    })
+                    i = i + 1
+                    if (i >= Object.keys(orders).length && y >= Object.keys(eintritte).length) {
+                        console.log('here kommte das bestellungs ARRAY');
+                        console.log('--------------------------------------------------');
+                        console.log('--------------------------------------------------');
+                        //console.log(bestellungen);
+                        for (var t = 0; t <= bestellungen.length; t++) {
+                            if (bestellungen[t].head != undefined) {
+                                var head = bestellungen[t].head;
+                                console.log('head iscchh');
+                                console.log(head)
+                                for (var r = 0; r <= bestellungen.length; r++) {
+                                    if (bestellungen[r].bestellung.orderId == head.orderId) {
+                                        var bestellung = bestellungen[r].bestellung;
+                                        console.log('bestellung dazu iscchh');
+                                        console.log(head)
+                                    }
                                 }
-                            })
-                            i = i + 1
-                            if (i >= Object.keys(orders).length && y >= Object.keys(eintritte).length) {
-                                console.log('here kommte das bestellungs ARRAY');
-                                console.log('--------------------------------------------------');
-                                console.log('--------------------------------------------------');
-                                console.log(bestellungen);
-                                res.render('firstBasket', {
-                                    client: req.user,
-                                    bestellungen: bestellungen
-                                })
-                            }                           
+                            }
+                        }
+                        res.render('basket', {
+                            client: req.user,
+                            bestellungen: bestellungen
                         })
                     }
-                })        
-            })         
+                })
+            }
+        })
+    })         
         }
     })
-})
+    
 
 
 //hmm sendin after the payment but reserving before should be possible .. then storin under the orders.. 
@@ -717,10 +732,11 @@ function ensureAuthenticated(req, res, next) {
 
     if (req.isAuthenticated()) {
         console.log('req.isAuthenticated is TRUE')
-        if (req.session.client) {
+        if (
+        req.session.client) {
             console.log('req.session is TRUE');
-            return next();
-        }
+                    return next(); 
+        
         //console.log(this._passport.instance._userPropert)       
     }
 

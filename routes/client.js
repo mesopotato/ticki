@@ -14,6 +14,7 @@ var Ticket = require('../models/tickets');
 var Eintritt = require('../models/eintritte');
 var Client = require('../models/client');
 var Order = require('../models/order');
+var getBasket = require('../routes/getBasket');
 const pdfMakePrinter = require('pdfmake');
 var Promise = require("bluebird");
 var bodyParser = require('body-parser');
@@ -358,128 +359,44 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 })
 
 router.post('/renderBasket', ensureAuthenticated, function (req, res) {
-    var bestellungen = [];
-    var i = 0;
-    var u = 0;
-    Order.getOrdersByClientId(req.user.id, function (err, orders) {
-        if (err) {
-            console.log('error is thrown in get orders array');
-            console.log(err);
+
+    getBasket.getOrders(req.user).then(getEintritte, failureCallback);
+
+    function failureCallback(orders) {
+        req.flash('error', 'Ihre Anfrage konnte nicht verarbeitet werden, versuchen Sie es später wieder.')
+        res.render('clientMainpage', {
+
+        });
+    }
+
+    function getEintritte(orders){
+        for (var order in orders){
+            getBasket.getEintrittePerOrder(order).then(addToArray, failureCallback)
         }
-        console.log('orders are :');
-        console.log(orders);
+    }
 
-        for (var key in orders) {
-
-            var order = orders[key];
-            console.log('key1');
-            console.log(order);
-            console.log('keyeventID');
-            console.log(order.eventId);
-            Event.findById(order.eventId, function (err, event) {
-                console.log('key2');
-                console.log(order);
-                var added = order.reservation;
-                console.log('reservation??');
-                console.log(order.reservation);
-                var expiresIn = new Date(added);
-                expiresIn.setMinutes(added.getMinutes() + 30);
-                console.log('expires iN');
-                console.log(expiresIn);
-
-                var s = added.getSeconds();
-                var m = added.getMinutes();
-                var h = added.getHours();
-                var d = added.getDate();
-                var month = added.getMonth();
-                var y = added.getFullYear();
-
-                var sE = expiresIn.getSeconds();
-                var mE = expiresIn.getMinutes();
-                var hE = expiresIn.getHours();
-                var dE = expiresIn.getDate();
-                var monthE = expiresIn.getMonth();
-                var yE = expiresIn.getFullYear();
-
-                var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
-                var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;
-                bestellungen.push({
-                    head: {
-                        orderId: order.id,
-                        eventTitle: event.title,
-                        veranstalter: event.veranstalter,
-                        lokation: event.lokation,
-                        orderAdded: addedTime,
-                        expireTime: expireTime,
-                    }
+    function addToArray(eintritteOfOrder){
+        var eintritte = [];
+        for (var eintritt in eintritteOfOrder){
+            //die eintritte aus diesem array hab alle dieselbe orderId
+            // man könnte einfach zwei arrays haben warum nicht.. 
+            eintritte.push(eintritt);
+            // aber woher bekommen wir nun das orderArray??
+            if (eintritte.length >= Object.keys(eintritteOfOrder).length){
+                //orders fehlt!!!!!!!!!
+                res.render('basket', {
+                    client: req.user,
+                    eintritte: eintritte, 
+                    orders: orders
                 })
-                u = u + 1;
-                console.log('we had a push: head :')
-                console.log(bestellungen);
-                console.log(Object.keys(bestellungen).length)
-
-                Eintritt.getEintritteByOrder(order.id, function (err, eintritte) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    console.log('GGGIIIIVENNN BACKKKK UO ist ' + u)
-                    for (var key in eintritte) {
-                        console.log('in key eintritte u is:' + u)
-
-                        var eintritt = eintritte[key];
-                        Ticket.getTicketById(eintritt.ticketId, function (err, ticket) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            var z = u - 1;
-                            console.log('z ist : ' + z);
-                            //list.splice( 1, 0, "baz");
-                            bestellungen.push({
-                                bestellung: {
-                                    orderId: eintritt.orderId,
-                                    eintrittId: eintritt.id,
-                                    ticketKategorie: ticket.kategorie,
-                                    datum: ticket.gueltig_datum,
-                                    preis: ticket.preis,
-                                }
-                            })
-                            i = i + 1
-                            if (i >= Object.keys(orders).length && y >= Object.keys(eintritte).length) {
-                                console.log('here kommte das bestellungs ARRAY');
-                                console.log('--------------------------------------------------');
-                                console.log('--------------------------------------------------');
-                                console.log(bestellungen);
-                                for (var t = 0; t <= bestellungen.length; t++) {
-                                    if (bestellungen[t].head != undefined) {
-                                        var head = bestellungen[t].head;
-                                        console.log('t iscchh' + t);
-                                        console.log('head iscchh');
-                                        console.log(head);
-                                        console.log('head.orderId iscchh');
-                                        console.log(head.orderId);
-                                        
-                                        console.log('bestellung.head.orderId iscchh');
-                                        console.log(bestellungen[t].head.orderId)
-                                        for (var r = 0; r <= bestellungen.length; r++) {
-                                            if (bestellungen[r].bestellung != undefined && bestellungen[r].bestellung.orderId == head.orderId) {
-                                                var bestellung = bestellungen[r].bestellung;
-                                                console.log('bestellung dazu iscchh');
-                                                console.log(bestellung)
-                                            }
-                                        }
-                                    }
-                                }
-                                res.render('basket', {
-                                    client: req.user,
-                                    bestellungen: bestellungen
-                                })
-                            }
-                        })
-                    }
-                })
-            })
+            }
         }
-    })
+    }
+
+    
+
+
+
 })
 
 

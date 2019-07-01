@@ -15,7 +15,9 @@ exports.getOrders = function (client) {
             }
             console.log('orders are :');
             console.log(orders);
-    
+            bestellungen.push({
+                anzahl: orders.length
+            })    
             for (var key in orders) {
     
                 var order = orders[key];

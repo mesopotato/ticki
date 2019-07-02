@@ -359,7 +359,7 @@ router.post('/addToBasket', ensureAuthenticated, jsonParser, function (req, res)
 })
 
 router.post('/renderBasket', ensureAuthenticated, function (req, res) {
-
+    console.log('');
     getBasket.getOrders(req.user).then(getEintritte, failureCallback);
 
     function failureCallback(orders) {
@@ -369,17 +369,109 @@ router.post('/renderBasket', ensureAuthenticated, function (req, res) {
     }
 
     function getEintritte(orders) {
+        console.log('');
         var i = 0;
-        for (var order in orders) {
-            if (order.anzahl != undefined) {
-                //shciss uf das..
-            } else {
-                getBasket.getEintrittePerOrder(order).then(addToArray, failureCallback).then(maybeRender)
+        for (let order in orders) {
+            console.log('');
+            getBasket.getEintrittePerOrder(order).then(addToArray, failureCallback)
 
-                i = i + 1;
-                if (i >= Object.keys(orders).length) {
+            i = i + 1;
+            console.log('checking the if statement');
+            if (i >= Object.keys(orders).length) {
+                console.log('if is furfilled');
+            }
 
-                }
+
+
+            function addToArray(eintritteOfOrder) {
+                console.log('in addToArray');
+                var eintritte = [];
+                // for (var eintritt in eintritteOfOrder) {
+                //     //die eintritte aus diesem array hab alle dieselbe orderId
+                //     // man könnte einfach zwei arrays haben warum nicht.. 
+                //     eintritte.push(eintritt);
+
+                //     // aber woher bekommen wir nun das orderArray??
+
+                //     if (eintritte.length >= Object.keys(eintritteOfOrder).length) {
+                //         //orders fehlt!!!!!!!!!
+                //         // res.render('basket', {
+                //         //     client: req.user,
+                //         //     eintritte: eintritte, 
+                //         //     orders: orders
+                //         // })
+                //     }
+                // }
+                console.log('..................pusching order ..');
+                console.log(order);
+                eintritte.push(order)
+                console.log('pushing eintritte of order ....');
+                console.log(eintritteOfOrder);
+                eintritte.push(eintritteOfOrder);
+
+                // Order.getOrderById(eintritteOfOrder[0].bestellung.orderId, function (err, order) {
+                //     if (err) {
+                //         console.log('error is thrown in get orders array');
+                //         console.log(err);
+                //         reject(err);
+                //     }
+                //     console.log('order is :');
+                //     console.log(order);
+
+
+                //     console.log('key1');
+                //     console.log(order);
+                //     console.log('keyeventID');
+                //     console.log(order.eventId);
+                //     Event.findById(order.eventId, function (err, event) {
+                //         if (err) {
+                //             console.log('error is thrown in find event orders array');
+                //             console.log(err);
+                //             reject(err);
+                //         }
+                //         console.log('key2');
+                //         console.log(order);
+                //         var added = order.reservation;
+                //         console.log('reservation??');
+                //         console.log(order.reservation);
+                //         var expiresIn = new Date(added);
+                //         expiresIn.setMinutes(added.getMinutes() + 30);
+                //         console.log('expires iN');
+                //         console.log(expiresIn);
+
+                //         var s = added.getSeconds();
+                //         var m = added.getMinutes();
+                //         var h = added.getHours();
+                //         var d = added.getDate();
+                //         var month = added.getMonth();
+                //         var y = added.getFullYear();
+
+                //         var sE = expiresIn.getSeconds();
+                //         var mE = expiresIn.getMinutes();
+                //         var hE = expiresIn.getHours();
+                //         var dE = expiresIn.getDate();
+                //         var monthE = expiresIn.getMonth();
+                //         var yE = expiresIn.getFullYear();
+
+                //         var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
+                //         var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;
+                //         eintritte.push({
+                //             head: {
+                //                 orderId: order.id,
+                //                 eventTitle: event.title,
+                //                 veranstalter: event.veranstalter,
+                //                 lokation: event.lokation,
+                //                 orderAdded: addedTime,
+                //                 expireTime: expireTime,
+                //             }
+                //         })
+                u = u + 1;
+                console.log('we had a push: eintritte SIND :')
+                console.log(eintritte);
+                console.log(Object.keys(eintritte).length)
+
+                //     })
+                // })
             }
         }
     }
@@ -387,95 +479,6 @@ router.post('/renderBasket', ensureAuthenticated, function (req, res) {
     /// SCHEISS AUF PERFORNAMCE ... MIR HOLE IZ AUS EINZEL CHUME SÜSCH NID NACHE..
     // ein element aus dem array hat einfach alle infos.. 
     //zwar es werden nur die bestellungen  angezeigt und erst später durch draufklicken die details geholt.. 
-
-    function addToArray(eintritteOfOrder) {
-        var eintritte = [];
-        // for (var eintritt in eintritteOfOrder) {
-        //     //die eintritte aus diesem array hab alle dieselbe orderId
-        //     // man könnte einfach zwei arrays haben warum nicht.. 
-        //     eintritte.push(eintritt);
-
-        //     // aber woher bekommen wir nun das orderArray??
-
-        //     if (eintritte.length >= Object.keys(eintritteOfOrder).length) {
-        //         //orders fehlt!!!!!!!!!
-        //         // res.render('basket', {
-        //         //     client: req.user,
-        //         //     eintritte: eintritte, 
-        //         //     orders: orders
-        //         // })
-        //     }
-        // }
-        eintritte.push(eintritteOfOrder);
-
-        Order.getOrderById(eintritteOfOrder[0].bestellung.orderId, function (err, order) {
-            if (err) {
-                console.log('error is thrown in get orders array');
-                console.log(err);
-                reject(err);
-            }
-            console.log('order is :');
-            console.log(order);
-
-
-            console.log('key1');
-            console.log(order);
-            console.log('keyeventID');
-            console.log(order.eventId);
-            Event.findById(order.eventId, function (err, event) {
-                if (err) {
-                    console.log('error is thrown in find event orders array');
-                    console.log(err);
-                    reject(err);
-                }
-                console.log('key2');
-                console.log(order);
-                var added = order.reservation;
-                console.log('reservation??');
-                console.log(order.reservation);
-                var expiresIn = new Date(added);
-                expiresIn.setMinutes(added.getMinutes() + 30);
-                console.log('expires iN');
-                console.log(expiresIn);
-
-                var s = added.getSeconds();
-                var m = added.getMinutes();
-                var h = added.getHours();
-                var d = added.getDate();
-                var month = added.getMonth();
-                var y = added.getFullYear();
-
-                var sE = expiresIn.getSeconds();
-                var mE = expiresIn.getMinutes();
-                var hE = expiresIn.getHours();
-                var dE = expiresIn.getDate();
-                var monthE = expiresIn.getMonth();
-                var yE = expiresIn.getFullYear();
-
-                var addedTime = h + ':' + m + ':' + s + '   ' + d + '.' + month + '.' + y;
-                var expireTime = hE + ':' + mE + ':' + sE + '   ' + dE + '.' + monthE + '.' + yE;
-                eintritte.push({
-                    head: {
-                        orderId: order.id,
-                        eventTitle: event.title,
-                        veranstalter: event.veranstalter,
-                        lokation: event.lokation,
-                        orderAdded: addedTime,
-                        expireTime: expireTime,
-                    }
-                })
-                u = u + 1;
-                console.log('we had a push: head :')
-                console.log(eintritte);
-                console.log(Object.keys(eintritte).length)
-                return eintritte;
-            })
-        })
-    }
-
-
-
-
 
 })
 

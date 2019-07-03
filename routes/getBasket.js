@@ -106,13 +106,15 @@ exports.getOrders = function (client) {
 exports.getEintrittePerOrder = function (order) {
     return new Promise((resolve, reject) => {
         var eintrittArray = [];
+        console.log(order.head.orderId)
 
-        Eintritt.getEintritteByOrder(order.id, function (err, eintritte) {
+        Eintritt.getEintritteByOrder(order.head.orderId, function (err, eintritte) {
             if (err) {
                 console.log(err);
                 reject(err);
             }
             console.log('GGGIIIIVENNN BACKKKK UO ist ')
+            console.log(eintritte);
 
             for (var key in eintritte) {
                 console.log('in key eintritte u is:')

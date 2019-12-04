@@ -102,6 +102,8 @@ function isLoggedIn(req, res, next) {
 // );
 
 router.post('/login', function(req, res, next) {
+  console.log('bin in login');
+  //console.log(req);
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }
     if (!user) { return res.redirect('/'); }

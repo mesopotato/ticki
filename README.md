@@ -1,6 +1,5 @@
 # Ticki #
-[![Build Status](https://travis-ci.com/mesopotato/ticki.svg?branch=master)](https://travis-ci.com/mesopotato/ticki)
-[![codecov](https://codecov.io/gh/mesopotato/ticki/branch/master/graph/badge.svg)](https://codecov.io/gh/mesopotato/ticki)
+
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com)
 ---
 A JavaScript implementation by using Node JS:)
